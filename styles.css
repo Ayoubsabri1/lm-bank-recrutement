@@ -1001,6 +1001,103 @@ ul {
         display: block !important;
     }
 
+    /* Mobile Typography - Responsive Text */
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.3rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    h4 {
+        font-size: 1rem !important;
+    }
+
+    p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Page titles */
+    .page-header h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .page-header p {
+        font-size: 0.85rem !important;
+    }
+
+    /* Card titles */
+    .card-title {
+        font-size: 1.1rem !important;
+    }
+
+    /* Steps list */
+    .steps-list li {
+        font-size: 0.9rem !important;
+        padding: 10px 0 !important;
+    }
+
+    .step-number {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Buttons */
+    .cta-btn,
+    .submit-btn,
+    button[type="submit"] {
+        font-size: 0.95rem !important;
+        padding: 12px 25px !important;
+    }
+
+    /* Form labels and inputs */
+    .form-group label {
+        font-size: 0.85rem !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.9rem !important;
+        padding: 12px !important;
+    }
+
+    /* Job listing text */
+    #job-list-content h4 a {
+        font-size: 0.95rem !important;
+    }
+
+    #job-list-content small {
+        font-size: 0.75rem !important;
+    }
+
+    /* Container padding */
+    .container {
+        padding: 0 15px !important;
+    }
+
+    .content-card {
+        padding: 20px !important;
+    }
+
+    /* Footer */
+    footer,
+    .footer {
+        font-size: 0.8rem !important;
+        padding: 20px 0 !important;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }
@@ -1032,7 +1129,7 @@ ul {
     }
 
     .logo span {
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
     }
 
     /* Mobile Job Page - Stack sidebar and main */

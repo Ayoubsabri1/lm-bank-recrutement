@@ -309,13 +309,14 @@
 
                 <div class="filter-group" style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 0.9rem; margin-bottom: 5px;">Mots clés</label>
-                    <input type="text" placeholder="Ex: Conseiller, IT..."
+                    <input type="text" id="keyword-input" placeholder="Ex: Conseiller, IT..."
                         style="width: 100%; padding: 8px; border: none; border-radius: 2px;">
                 </div>
 
                 <div class="filter-group" style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 0.9rem; margin-bottom: 5px;">Type de contrat</label>
-                    <select style="width: 100%; padding: 8px; border: none; border-radius: 2px; color: #333;">
+                    <select id="contract-select"
+                        style="width: 100%; padding: 8px; border: none; border-radius: 2px; color: #333;">
                         <option value="">Tous</option>
                         <option value="CDI">CDI</option>
                         <option value="CDD">CDD</option>
@@ -325,12 +326,16 @@
 
                 <div class="filter-group" style="margin-bottom: 25px;">
                     <label style="display: block; font-size: 0.9rem; margin-bottom: 5px;">Ville</label>
-                    <select style="width: 100%; padding: 8px; border: none; border-radius: 2px; color: #333;">
+                    <select id="city-select"
+                        style="width: 100%; padding: 8px; border: none; border-radius: 2px; color: #333;">
                         <option value="">Toutes les villes</option>
                         <option value="Casablanca">Casablanca</option>
                         <option value="Rabat">Rabat</option>
                         <option value="Marrakech">Marrakech</option>
                         <option value="Tanger">Tanger</option>
+                        <option value="Fès">Fès</option>
+                        <option value="Agadir">Agadir</option>
+                        <option value="Oujda">Oujda</option>
                     </select>
                 </div>
 
@@ -465,12 +470,14 @@
 
         // Search & Filter Functionality
         document.getElementById('search-btn').addEventListener('click', () => {
-            const keyword = document.querySelector('input[placeholder*="Mots"]')?.value.toLowerCase() || '';
-            const contract = document.querySelector('select:nth-of-type(1)')?.value || '';
-            const city = document.querySelector('select:nth-of-type(2)')?.value || '';
+            const keyword = document.getElementById('keyword-input').value.toLowerCase().trim();
+            const contract = document.getElementById('contract-select').value;
+            const city = document.getElementById('city-select').value;
 
             let filtered = jobOffers.filter(job => {
-                const matchKeyword = !keyword || job.title.toLowerCase().includes(keyword);
+                const matchKeyword = !keyword ||
+                    job.title.toLowerCase().includes(keyword) ||
+                    job.description.toLowerCase().includes(keyword);
                 const matchContract = !contract || job.contract === contract;
                 const matchCity = !city || job.location === city;
                 return matchKeyword && matchContract && matchCity;
@@ -478,6 +485,16 @@
 
             currentPage = 1;
             renderJobs(filtered, 1);
+
+            // Update job count
+            document.getElementById('job-count').textContent = filtered.length + ' offres';
+        });
+
+        // Also allow Enter key to search
+        document.getElementById('keyword-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('search-btn').click();
+            }
         });
 
         // Initial Render

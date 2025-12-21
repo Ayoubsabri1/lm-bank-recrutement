@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'offre - LM BANK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CIH Style Detail Page */
+        .detail-header-container {
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-box {
+            background: var(--accent);
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .date-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .date-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .title-box {
+            background: #E6E6E6;
+            /* CIH Grey */
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            color: #333;
+        }
+
+        .title-box h1 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            /* CIH uses lighter weight for headers */
+            margin: 0;
+            color: #333;
+        }
+
+        .job-info-grid {
+            margin-bottom: 40px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .job-info-grid td {
+            padding: 8px 0;
+            vertical-align: top;
+        }
+
+        .info-label {
+            font-weight: 700;
+            width: 150px;
+            color: #333;
+        }
+
+        .info-value {
+            color: #555;
+        }
+
+        .section-title {
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .content-block {
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .content-block ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .content-block li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        .next-link {
+            float: right;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-actions {
+            margin-top: 50px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-apply {
+            background: var(--accent);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .share-icons i {
+            font-size: 2rem;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        body {
+            background: white;
+        }
+
+        /* CIH detail page is white */
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-university" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <span>LM BANK Recrutement</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Nos offres d'emploi</a></li>
+                <li><a href="candidature.html">Candidature spontanée</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding: 40px 20px;">
+        <div style="margin-bottom: 20px;">
+            <a href="index.html" class="back-link">Retour à la liste des offres</a>
+            <a href="#" class="next-link">Offre suivante ></a>
+        </div>
+
+        <!-- Header Block -->
+        <div class="detail-header-container">
+            <div class="date-box">
+                <span class="date-label">Mise en ligne le</span>
+                <span class="date-value" id="job-date">...</span>
+            </div>
+            <div class="title-box">
+                <h1 id="job-title">...</h1>
+            </div>
+        </div>
+
+        <!-- Basic Info -->
+        <table class="job-info-grid">
+            <tr>
+                <td class="info-label">Direction</td>
+                <td class="info-value" id="job-direction">...</td>
+            </tr>
+            <tr>
+                <td class="info-label">Contrat</td>
+                <td class="info-value" id="job-contract">...</td>
+            </tr>
+            <tr>
+                <td class="info-label">Localisation</td>
+                <td class="info-value" id="job-location">...</td>
+            </tr>
+            <tr>
+                <td class="info-label">Fonction</td>
+                <td class="info-value" id="job-function">...</td>
+            </tr>
+        </table>
+
+        <!-- Context & Missions -->
+        <h2 class="section-title">Contexte du recrutement et définition de poste</h2>
+        <div class="content-block">
+            <p id="job-context">...</p>
+            <ul id="job-missions">
+                <!-- Missions populated by JS -->
+            </ul>
+        </div>
+
+        <!-- Profile -->
+        <h2 class="section-title">Profil recherché</h2>
+        <div class="content-block">
+            <p id="job-profile">...</p>
+        </div>
+
+        <!-- CV Submission Section -->
+        <div style="margin-top: 50px; background: var(--primary); padding: 40px; border-radius: 8px; color: white;">
+            <h2 style="margin-bottom: 25px; font-weight: 400; font-size: 1.6rem;">
+                <i class="fas fa-paper-plane"></i> Postuler à cette offre
+            </h2>
+
+            <form id="cv-form" style="display: grid; gap: 20px;">
+                <!-- Row 1: Name & Email -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Nom complet *</label>
+                        <input type="text" id="full-name" required
+                            style="width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1rem;"
+                            placeholder="Ex: Ahmed Benali">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Email *</label>
+                        <input type="email" id="email" required
+                            style="width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1rem;"
+                            placeholder="email@exemple.com">
+                    </div>
+                </div>
+
+                <!-- Row 2: Phone & LinkedIn -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Téléphone *</label>
+                        <input type="tel" id="phone" required
+                            style="width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1rem;"
+                            placeholder="+212 6XX XXX XXX">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">LinkedIn
+                            (optionnel)</label>
+                        <input type="url" id="linkedin"
+                            style="width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1rem;"
+                            placeholder="https://linkedin.com/in/...">
+                    </div>
+                </div>
+
+                <!-- Row 3: CV Upload -->
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">CV (PDF) *</label>
+                    <div
+                        style="background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.5); border-radius: 8px; padding: 30px; text-align: center;">
+                        <input type="file" id="cv-file" accept=".pdf,.doc,.docx" required style="display: none;">
+                        <label for="cv-file" style="cursor: pointer;">
+                            <i class="fas fa-cloud-upload-alt"
+                                style="font-size: 2.5rem; margin-bottom: 10px; display: block;"></i>
+                            <span id="file-name">Cliquez pour télécharger votre CV</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Row 4: Message -->
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Lettre de motivation
+                        (optionnel)</label>
+                    <textarea id="message" rows="4"
+                        style="width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1rem; resize: vertical;"
+                        placeholder="Présentez-vous brièvement..."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    style="background: var(--accent); color: white; border: none; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 4px; cursor: pointer; width: fit-content;">
+                    <i class="fas fa-send"></i> Envoyer ma candidature
+                </button>
+            </form>
+
+            <!-- Success Message (Hidden) -->
+            <div id="success-message" style="display: none; text-align: center; padding: 40px;">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: #4CAF50; margin-bottom: 20px;"></i>
+                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">Candidature envoyée avec succès !</h3>
+                <p>Nous vous contacterons prochainement. Bonne chance !</p>
+            </div>
+        </div>
+
+        <!-- Share Icons -->
+        <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
+            <span style="color: #666;">Partager :</span>
+            <i class="fab fa-linkedin" style="font-size: 2rem; color: #0077b5; cursor: pointer;"></i>
+            <i class="fab fa-twitter-square" style="font-size: 2rem; color: #1da1f2; cursor: pointer;"></i>
+            <i class="fab fa-whatsapp-square" style="font-size: 2rem; color: #25D366; cursor: pointer;"></i>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer
+        style="background: white; border-top: 1px solid #eee; color: #666; padding: 30px 0; text-align: center; margin-top: 60px;">
+        <div class="container">
+            <p style="opacity: 0.8; font-size: 0.85rem;">© 2025 LM BANK. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Load Data -->
+    <script src="jobs.js"></script>
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCIiqTyp-Pf9vrJFNfoCTSa0a4aPo5kMvAGyarlZEs9gokoCVOOxPUPkeVn9aLAmAG/exec';
+
+        // Get Job ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = parseInt(urlParams.get('id'));
+
+        // Find Job
+        const job = jobOffers.find(j => j.id === (jobId || 1));
+
+        if (job) {
+            document.title = `${job.title} - LM BANK`;
+            document.getElementById('job-title').textContent = job.title;
+            document.getElementById('job-date').textContent = job.date;
+            document.getElementById('job-direction').textContent = job.direction;
+            document.getElementById('job-contract').textContent = job.contract;
+            document.getElementById('job-location').textContent = job.location;
+            document.getElementById('job-function').textContent = job.function;
+            document.getElementById('job-context').textContent = job.context;
+            document.getElementById('job-profile').textContent = job.profile;
+
+            const missionsList = document.getElementById('job-missions');
+            job.missions.forEach(mission => {
+                const li = document.createElement('li');
+                li.textContent = mission;
+                missionsList.appendChild(li);
+            });
+
+            // Update Next Link
+            const nextLink = document.querySelector('.next-link');
+            nextLink.href = `detail.html?id=${job.id + 1}`;
+        } else {
+            document.body.innerHTML = "<div class='container' style='padding:50px'><h1>Offre non trouvée</h1><a href='index.html'>Retour</a></div>";
+        }
+
+        // File Upload Display
+        document.getElementById('cv-file').addEventListener('change', function (e) {
+            const fileName = e.target.files[0]?.name || 'Cliquez pour télécharger votre CV';
+            document.getElementById('file-name').textContent = '📄 ' + fileName;
+        });
+
+        // Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        // Form Submission with Google Sheets
+        document.getElementById('cv-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            submitBtn.disabled = true;
+
+            try {
+                // Get CV file
+                const cvFile = document.getElementById('cv-file').files[0];
+                let cvBase64 = '';
+                let cvFileName = '';
+
+                if (cvFile) {
+                    cvBase64 = await fileToBase64(cvFile);
+                    cvFileName = cvFile.name;
+                }
+
+                // Collect form data
+                const formData = {
+                    nom: document.getElementById('full-name').value.split(' ')[0] || '',
+                    prenom: document.getElementById('full-name').value.split(' ').slice(1).join(' ') || '',
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    ville: job?.location || '',
+                    niveau: '',
+                    poste: job?.title || 'Candidature spontanée',
+                    message: document.getElementById('message').value,
+                    cvBase64: cvBase64,
+                    cvFileName: cvFileName
+                };
+
+                // Send to Google Sheets
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                // Show success
+                document.getElementById('cv-form').style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

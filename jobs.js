@@ -175,19 +175,43 @@ const jobOffers = [
     // Génération automatique des offres restantes pour atteindre 40+
     ...Array.from({ length: 30 }, (_, i) => ({
         id: 11 + i,
-        title: ["Conseiller Clientèle", "Chargé de Compte", "Guichetier Payeur", "Commercial Terrain"][i % 4] + " - " + ["Agence Maârif", "Agence Agdal", "Agence Gueliz", "Agence Malabata", "Siège"][i % 5],
+        title: [
+            "Conseiller Clientèle",
+            "Chargé de Compte",
+            "Guichetier Payeur",
+            "Commercial Terrain",
+            "Data Analyst",
+            "Ingénieur DevOps",
+            "Développeur Mobile",
+            "Chargé Marketing Digital"
+        ][i % 8] + " - " + ["Agence Maârif", "Agence Agdal", "Agence Gueliz", "Agence Malabata", "Siège", "Agence Hay Riad", "Agence Hay Mohammadi"][i % 7],
         date: new Date(2025, 11, 15 + (i % 15)).toLocaleDateString('fr-FR').replace(/\//g, '-'),
-        direction: "RESEAU D'AGENCES",
-        contract: i % 5 === 0 ? "CDD" : "CDI",
-        location: ["Casablanca", "Rabat", "Marrakech", "Tanger", "Agadir", "Fès"][i % 6],
-        function: "Commercial",
-        context: "Au sein d'une de nos agences, vous participez au développement commercial.",
-        missions: [
-            "Accueillir les clients.",
-            "Traiter les opérations de guichet.",
-            "Proposer des produits simples.",
-            "Assurer la qualité de service."
-        ],
-        profile: "Bac+2/3 avec le sens du service client."
+        direction: i % 8 >= 4 ? "DIGITAL FACTORY" : "RESEAU D'AGENCES",
+        contract: i % 5 === 0 ? "CDD" : i % 7 === 0 ? "Stage" : "CDI",
+        // IT jobs (index 4-7) are in Casablanca, others distributed across cities
+        location: i % 8 >= 4 ? "Casablanca" : ["Casablanca", "Rabat", "Marrakech", "Tanger", "Agadir", "Fès", "Meknès", "Oujda", "Kénitra", "Tétouan"][i % 10],
+        function: i % 8 >= 4 ? "IT / Digital" : "Commercial",
+        context: i % 8 >= 4
+            ? "Au sein de notre Digital Factory, vous participez à la transformation digitale de la banque."
+            : "Au sein d'une de nos agences, vous participez au développement commercial.",
+        missions: i % 8 >= 4
+            ? [
+                "Développer et maintenir les applications.",
+                "Participer aux projets d'innovation.",
+                "Assurer la qualité du code.",
+                "Collaborer avec les équipes métiers."
+            ]
+            : [
+                "Accueillir les clients.",
+                "Traiter les opérations de guichet.",
+                "Proposer des produits simples.",
+                "Assurer la qualité de service."
+            ],
+        profile: i % 8 >= 4
+            ? "Bac+5 en Informatique avec expérience en développement."
+            : "Bac+2/3 avec le sens du service client.",
+        description: i % 8 >= 4
+            ? "Poste IT basé à Casablanca - siège de notre Digital Factory"
+            : "Poste commercial en agence"
     }))
 ];

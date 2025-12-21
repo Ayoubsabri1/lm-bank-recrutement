@@ -396,46 +396,87 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="jobs.js"></script>
+    <!-- Scripts -->
+    <!-- REMOVED jobs.js (Hardcoded Data) -->
     <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3WrOoWoaWnHqzZKqOZb4RI5eZGnEi09h_tB2wcISC7WC8AmlyLhj3dy08TyM1kWfd1w/exec';
+
+        let jobOffers = []; // Will be populated from API
         const JOBS_PER_PAGE = 10;
         let currentPage = 1;
 
+        // Fetch Data on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchJobs();
+        });
+
+        async function fetchJobs() {
+            const container = document.getElementById('job-list-content');
+            container.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:#00AEEF;"></i><p>Chargement des offres...</p></div>';
+
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                const data = await response.json();
+
+                // Sort by newest first (assuming date is reliable, or ID reverse order)
+                jobOffers = data.reverse();
+
+                // Initial Render
+                renderJobs(jobOffers, 1);
+
+            } catch (error) {
+                console.error("Error fetching jobs:", error);
+                container.innerHTML = '<div style="text-align:center; color:red; padding:40px;"><p>Erreur de chargement des offres. Veuillez réessayer plus tard.</p></div>';
+            }
+        }
+
         function renderJobs(jobs, page = 1) {
             const container = document.getElementById('job-list-content');
+
+            if (jobs.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:#777;"><p>Aucune offre ne correspond à vos critères pour le moment.</p></div>';
+                document.getElementById('job-count').textContent = "0 offre";
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
             const totalJobs = jobs.length;
             const totalPages = Math.ceil(totalJobs / JOBS_PER_PAGE);
 
             document.getElementById('job-count').textContent = totalJobs + " offres";
             container.innerHTML = '';
 
-            // Calculate start and end index
             const startIndex = (page - 1) * JOBS_PER_PAGE;
             const endIndex = Math.min(startIndex + JOBS_PER_PAGE, totalJobs);
             const pageJobs = jobs.slice(startIndex, endIndex);
 
-            // Display jobs for current page
             pageJobs.forEach(job => {
                 const jobRow = document.createElement('div');
                 jobRow.style.cssText = "display: grid; grid-template-columns: 2fr 1fr 1fr 120px; padding: 20px; border-bottom: 1px solid #eee; align-items: center; transition: background 0.2s;";
                 jobRow.onmouseover = function () { this.style.background = '#f9f9f9'; };
                 jobRow.onmouseout = function () { this.style.background = 'white'; };
 
+                // Determine Date Display
+                let dateDisplay = job.date;
+                try {
+                    const d = new Date(job.date);
+                    if (!isNaN(d.getTime())) dateDisplay = d.toLocaleDateString('fr-FR');
+                } catch (e) { }
+
                 jobRow.innerHTML = `
                     <div>
                         <h4 style="margin: 0; font-size: 1.05rem;"><a href="detail.html?id=${job.id}" style="color: var(--primary); text-decoration: none;">${job.title}</a></h4>
-                        <small style="color: #999;">Publié le ${job.date}</small>
+                        <small style="color: #999;">Publié le ${dateDisplay}</small>
                     </div>
                     <div style="font-weight: 500;">${job.contract}</div>
                     <div>${job.location}</div>
                     <div>
-                        <a href="detail.html?id=${job.id}" style="display: inline-block; padding: 6px 15px; background: var(--accent); color: white; text-decoration: none; font-size: 0.85rem; border-radius: 2px;">POSTULER</a>
+                        <a href="detail.html?id=${job.id}" style="display: inline-block; padding: 6px 15px; background: var(--secondary); color: white; text-decoration: none; font-size: 0.85rem; border-radius: 2px;">VOIR DÉTAILS</a>
                     </div>
                 `;
                 container.appendChild(jobRow);
             });
 
-            // Render pagination
             renderPagination(totalPages, page);
         }
 
@@ -443,22 +484,21 @@
             const paginationContainer = document.getElementById('pagination');
             paginationContainer.innerHTML = '';
 
-            // Previous button
+            if (totalPages <= 1) return;
+
+            // Prev
             if (currentPage > 1) {
-                const prevBtn = createPageButton('<', currentPage - 1);
-                paginationContainer.appendChild(prevBtn);
+                paginationContainer.appendChild(createPageButton('<', currentPage - 1));
             }
 
-            // Page numbers
+            // Pages
             for (let i = 1; i <= totalPages; i++) {
-                const pageBtn = createPageButton(i, i, i === currentPage);
-                paginationContainer.appendChild(pageBtn);
+                paginationContainer.appendChild(createPageButton(i, i, i === currentPage));
             }
 
-            // Next button
+            // Next
             if (currentPage < totalPages) {
-                const nextBtn = createPageButton('>', currentPage + 1);
-                paginationContainer.appendChild(nextBtn);
+                paginationContainer.appendChild(createPageButton('>', currentPage + 1));
             }
         }
 
@@ -476,48 +516,29 @@
             return btn;
         }
 
-        // Search & Filter Functionality
+        // Search Logic
         document.getElementById('search-btn').addEventListener('click', () => {
             const keyword = document.getElementById('keyword-input').value.toLowerCase().trim();
             const contract = document.getElementById('contract-select').value;
             const city = document.getElementById('city-select').value;
 
             let filtered = jobOffers.filter(job => {
-                const jobTitle = job.title?.toLowerCase() || '';
-                const jobDesc = job.description?.toLowerCase() || '';
-                const jobContext = job.context?.toLowerCase() || '';
-                const jobFunction = job.function?.toLowerCase() || '';
-
-                const matchKeyword = !keyword ||
-                    jobTitle.includes(keyword) ||
-                    jobDesc.includes(keyword) ||
-                    jobContext.includes(keyword) ||
-                    jobFunction.includes(keyword);
-                const matchContract = !contract || job.contract === contract;
-                const matchCity = !city || job.location === city;
+                const matchKeyword = !keyword || (job.title && job.title.toLowerCase().includes(keyword)) || (job.description && job.description.toLowerCase().includes(keyword));
+                // Note: Contract/City matching depends on exact string match from Google Sheet values
+                const matchContract = !contract || (job.contract && job.contract.toLowerCase() === contract.toLowerCase());
+                const matchCity = !city || (job.location && job.location.toLowerCase() === city.toLowerCase());
                 return matchKeyword && matchContract && matchCity;
             });
 
             currentPage = 1;
             renderJobs(filtered, 1);
-
-            // Update job count
-            document.getElementById('job-count').textContent = filtered.length + ' offres';
         });
 
-        // Also allow Enter key to search
+        // Enter Key Search
         document.getElementById('keyword-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('search-btn').click();
-            }
-        });
-
-        // Initial Render
-        document.addEventListener('DOMContentLoaded', () => {
-            renderJobs(jobOffers, 1);
+            if (e.key === 'Enter') document.getElementById('search-btn').click();
         });
     </script>
-
     <script src="app.js"></script>
 </body>
 

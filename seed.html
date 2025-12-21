@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur x42 - LM BANK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #e9ecef;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 500px;
+        }
+
+        .btn {
+            background: #6610f2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #520dc2;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #progress-container {
+            margin-top: 25px;
+            background: #e9ecef;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #6610f2;
+            transition: width 0.3s;
+        }
+
+        #status {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>🚀 Générateur de Masse (x42)</h2>
+        <p style="color: #6c757d; line-height: 1.6;">Cliquez générer exactement <strong>42 offres d'emploi</strong>
+            professionnelles (Mélange aléatoire de villes et contrats).</p>
+
+        <button id="start-btn" class="btn" onclick="startMassSeeding()">Lancer la Génération (x42)</button>
+
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="status"></p>
+        <a href="index.html" id="done-link"
+            style="display: none; margin-top: 25px; color: #6610f2; text-decoration: none; font-weight: bold; font-size: 1.1rem;">Voir
+            les 42 offres &rarr;</a>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3WrOoWoaWnHqzZKqOZb4RI5eZGnEi09h_tB2wcISC7WC8AmlyLhj3dy08TyM1kWfd1w/exec';
+
+        const cities = ["Casablanca", "Rabat", "Marrakech", "Tanger", "Agadir", "Fès", "Oujda", "Meknès", "Laâyoune"];
+        const contracts = ["CDI", "CDD", "Freelance", "Stage"];
+
+        // BASE TEMPLATES (Pro Descriptions)
+        const jobTemplates = [
+            { title: "Conseiller Clientèle Particuliers", level: "Bac+3", exp: "2 ans", desc: "MISSIONS PRINCIPALES :\n• Accueillir et conseiller la clientèle.\n• Vendre les produits bancaires.\n• Gérer les opérations courantes.\n\nPROFIL :\n• Bac+3 Commerce/Banque.\n• Sens de l'écoute." },
+            { title: "Chargé d'Affaires Entreprises", level: "Bac+5", exp: "4 ans", desc: "MISSIONS :\n• Gérer un portefeuille Entreprises.\n• Proposer des solutions de financement.\n• Analyse financière approfondie.\n\nPROFIL :\n• Ecole de Commerce.\n• 4 ans d'expérience." },
+            { title: "Chef de Projet Digital", level: "Ingénieur", exp: "5 ans", desc: "MISSIONS :\n• Piloter les projets mobiles.\n• Coordonner les équipes Dev & UX.\n• Suivi KPI et budget.\n\nPROFIL :\n• Ingénieur Informatique.\n• Expérience Agile." },
+            { title: "Analyste Risques", level: "Bac+5", exp: "3 ans", desc: "MISSIONS :\n• Analyser les demandes de crédit.\n• Evaluer les risques.\n• Rédaction des comités.\n\nPROFIL :\n• Finance / Audit.\n• Rigueur." },
+            { title: "Directeur d'Agence", level: "Master", exp: "7 ans", desc: "MISSIONS :\n• Pilotage du centre de profit.\n• Management équipe.\n• Représentation locale.\n\nPROFIL :\n• Bac+5 confirmé\n• Leadership." },
+            { title: "Développeur Fullstack", level: "Ingénieur", exp: "3 ans", desc: "MISSIONS :\n• Développement Java/Angular.\n• Maintenance des APIs.\n• Code Review.\n\nPROFIL :\n• Passionné tech.\n• Autonome." },
+            { title: "Auditeur Interne", level: "Bac+5", exp: "5 ans", desc: "MISSIONS :\n• Missions de contrôle.\n• Vérification conformité.\n• Rapports d'audit.\n\nPROFIL :\n• Big 4 ou Audit bancaire." },
+            { title: "Guichetier / Accueil", level: "Bac+2", exp: "Débutant", desc: "MISSIONS :\n• Opérations de caisse.\n• Orientation client.\n\nPROFIL :\n• Bac+2 Gestion.\n• Bonne présentation." },
+            { title: "Expert Sécurité SI", level: "Ingénieur", exp: "5 ans", desc: "MISSIONS :\n• Politique sécurité.\n• Gestion incidents SOC.\n• Tests intrusion.\n\nPROFIL :\n• Certifications CISSP/CEH." },
+            { title: "Juriste Contentieux", level: "Master Droit", exp: "4 ans", desc: "MISSIONS :\n• Recouvrement judiciaire.\n• Gestion avocats.\n• Négociation.\n\nPROFIL :\n• Droit des affaires." }
+        ];
+
+        async function startMassSeeding() {
+            const btn = document.getElementById('start-btn');
+            const status = document.getElementById('status');
+            const bar = document.getElementById('progress-bar');
+            const container = document.getElementById('progress-container');
+
+            btn.disabled = true;
+            btn.textContent = "Génération de 42 offres...";
+            container.style.display = 'block';
+
+            let count = 0;
+            const target = 42;
+
+            for (let i = 0; i < target; i++) {
+                // 1. Pick Random Template
+                const template = jobTemplates[Math.floor(Math.random() * jobTemplates.length)];
+
+                // 2. Randomize City & Contract
+                const randomCity = cities[Math.floor(Math.random() * cities.length)];
+                const randomContract = contracts[Math.floor(Math.random() * contracts.length)];
+
+                const payload = {
+                    action: 'add_offer',
+                    titre: template.title,
+                    ville: randomCity,
+                    contrat: randomContract,
+                    niveau_requis: template.level,
+                    experience_requise: template.exp,
+                    description: template.desc + `\n\n(Offre générée pour ${randomCity})`
+                };
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    count++;
+                    const pct = Math.round((count / target) * 100);
+                    bar.style.width = pct + "%";
+                    status.textContent = `Offre ${count}/42 : ${payload.titre} à ${payload.ville}`;
+
+                } catch (e) {
+                    console.error(e);
+                }
+
+                // Fast delay
+                await new Promise(r => setTimeout(r, 600));
+            }
+
+            btn.textContent = "✅ C'est fait !";
+            status.textContent = "42 Nouvelles offres ajoutées.";
+            document.getElementById('done-link').style.display = 'inline-block';
+        }
+    </script>
+</body>
+
+</html>

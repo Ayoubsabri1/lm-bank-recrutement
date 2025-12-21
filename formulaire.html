@@ -207,12 +207,31 @@
                 <i class="fas fa-university" style="color: #00AEEF; font-size: 1.5rem;"></i>
                 <span style="color: #00AEEF;">LM BANK RECRUTEMENT</span>
             </a>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()"
+                style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #00AEEF;">
+                <i class="fas fa-bars"></i>
+            </button>
             <ul class="nav-links">
                 <li><a href="index.html">Nos offres d'emploi</a></li>
                 <li><a href="candidature.html" class="active" style="color: #F15A24;">Candidature spontanée</a></li>
             </ul>
         </div>
+        <div class="mobile-menu" id="mobile-menu"
+            style="display: none; background: white; padding: 15px; border-top: 1px solid #eee;">
+            <a href="index.html"
+                style="display: block; padding: 12px 20px; color: #00AEEF; text-decoration: none; font-weight: 500;">Nos
+                offres d'emploi</a>
+            <a href="candidature.html"
+                style="display: block; padding: 12px 20px; color: #F15A24; text-decoration: none; font-weight: 500;">Candidature
+                spontanée</a>
+        </div>
     </nav>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 
     <div class="container">
         <a href="candidature.html" class="back-link">

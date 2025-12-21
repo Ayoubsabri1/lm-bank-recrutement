@@ -278,7 +278,10 @@
 
                 <div class="form-group">
                     <label>Poste souhaité</label>
-                    <input type="text" id="poste" placeholder="Ex: Conseiller Clientèle, Analyste...">
+                    <select id="poste">
+                        <option value="">-- Choisir une offre existante --</option>
+                        <!-- Options will be loaded from jobs.js -->
+                    </select>
                 </div>
 
                 <!-- CV Upload -->
@@ -326,8 +329,18 @@
         </div>
     </footer>
 
+    <script src="jobs.js"></script>
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCIiqTyp-Pf9vrJFNfoCTSa0a4aPo5kMvAGyarlZEs9gokoCVOOxPUPkeVn9aLAmAG/exec';
+
+        // Populate job offers dropdown
+        const posteSelect = document.getElementById('poste');
+        jobOffers.forEach(job => {
+            const option = document.createElement('option');
+            option.value = job.title;
+            option.textContent = `${job.title} - ${job.location}`;
+            posteSelect.appendChild(option);
+        });
 
         // File name display
         document.getElementById('cv-file').addEventListener('change', function (e) {

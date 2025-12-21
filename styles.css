@@ -1031,17 +1031,23 @@ ul {
         font-size: 0.9rem !important;
     }
 
-    /* Mobile Job Listings */
+    /* Mobile Job Page - Stack sidebar and main */
     .job-page-container {
-        display: block !important;
+        flex-direction: column !important;
     }
 
     .job-filter {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
         margin-bottom: 20px;
         border-radius: 8px !important;
     }
 
-    /* Mobile Job Table */
+    .job-results {
+        width: 100% !important;
+    }
+
+    /* Mobile Job Table - Convert to cards */
     .job-list-container>div:first-child {
         display: none !important;
     }
@@ -1054,6 +1060,10 @@ ul {
 
     #job-list-content>div>div:nth-child(1) {
         margin-bottom: 10px;
+    }
+
+    #job-list-content>div>div:nth-child(1) h4 {
+        font-size: 1rem;
     }
 
     #job-list-content>div>div:nth-child(2),
@@ -1073,6 +1083,7 @@ ul {
 
     #job-list-content>div>div:last-child a {
         width: 100%;
+        display: block !important;
         text-align: center;
         padding: 12px !important;
     }

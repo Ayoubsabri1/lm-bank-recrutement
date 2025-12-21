@@ -276,11 +276,11 @@
 
     <!-- Main Content Grid -->
     <div class="container" style="padding-top: 40px; padding-bottom: 60px;">
-        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
+        <div class="job-page-container" style="display: flex; flex-wrap: wrap; gap: 30px;">
 
             <!-- Sidebar Filter (Blue Box) -->
             <aside class="job-filter"
-                style="background: var(--primary); padding: 25px; border-radius: 4px; color: white; height: fit-content;">
+                style="background: var(--primary); padding: 25px; border-radius: 4px; color: white; min-width: 280px; flex: 0 0 280px;">
                 <h3
                     style="margin-bottom: 20px; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 10px;">
                     <i class="fas fa-search"></i> RECHERCHE
@@ -320,7 +320,7 @@
             </aside>
 
             <!-- Job List (Table Style) -->
-            <main class="job-results">
+            <main class="job-results" style="flex: 1; min-width: 0;">
                 <div
                     style="margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
                     <h2 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Offres disponibles</h2>

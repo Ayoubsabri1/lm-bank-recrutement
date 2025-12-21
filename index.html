@@ -483,9 +483,16 @@
             const city = document.getElementById('city-select').value;
 
             let filtered = jobOffers.filter(job => {
+                const jobTitle = job.title?.toLowerCase() || '';
+                const jobDesc = job.description?.toLowerCase() || '';
+                const jobContext = job.context?.toLowerCase() || '';
+                const jobFunction = job.function?.toLowerCase() || '';
+
                 const matchKeyword = !keyword ||
-                    job.title.toLowerCase().includes(keyword) ||
-                    job.description.toLowerCase().includes(keyword);
+                    jobTitle.includes(keyword) ||
+                    jobDesc.includes(keyword) ||
+                    jobContext.includes(keyword) ||
+                    jobFunction.includes(keyword);
                 const matchContract = !contract || job.contract === contract;
                 const matchCity = !city || job.location === city;
                 return matchKeyword && matchContract && matchCity;

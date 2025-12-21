@@ -997,6 +997,10 @@ ul {
         display: none;
     }
 
+    .mobile-menu-btn {
+        display: block !important;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }

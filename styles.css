@@ -1017,4 +1017,159 @@ ul {
         grid-template-columns: 1fr;
         text-align: center;
     }
+
+    /* Mobile Navigation */
+    .navbar .container {
+        flex-wrap: wrap;
+    }
+
+    .nav-container {
+        padding: 10px 15px;
+    }
+
+    .logo span {
+        font-size: 0.9rem !important;
+    }
+
+    /* Mobile Job Listings */
+    .job-page-container {
+        display: block !important;
+    }
+
+    .job-filter {
+        margin-bottom: 20px;
+        border-radius: 8px !important;
+    }
+
+    /* Mobile Job Table */
+    .job-list-container>div:first-child {
+        display: none !important;
+    }
+
+    #job-list-content>div {
+        display: block !important;
+        padding: 15px !important;
+        border-bottom: 1px solid #eee;
+    }
+
+    #job-list-content>div>div:nth-child(1) {
+        margin-bottom: 10px;
+    }
+
+    #job-list-content>div>div:nth-child(2),
+    #job-list-content>div>div:nth-child(3) {
+        display: inline-block;
+        background: #f0f0f0;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        margin-right: 8px;
+        margin-bottom: 10px;
+    }
+
+    #job-list-content>div>div:last-child {
+        margin-top: 10px;
+    }
+
+    #job-list-content>div>div:last-child a {
+        width: 100%;
+        text-align: center;
+        padding: 12px !important;
+    }
+
+    /* Mobile Detail Page */
+    .detail-header-container {
+        flex-direction: column !important;
+    }
+
+    .date-box {
+        min-width: 100% !important;
+        padding: 15px !important;
+    }
+
+    .title-box {
+        padding: 20px !important;
+    }
+
+    .title-box h1 {
+        font-size: 1.4rem !important;
+    }
+
+    .job-info-grid td {
+        display: block;
+        padding: 5px 0 !important;
+    }
+
+    .info-label {
+        width: 100% !important;
+        font-size: 0.85rem;
+    }
+
+    /* Mobile Forms */
+    .form-container {
+        margin: 15px !important;
+        padding: 25px !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .form-header h1 {
+        font-size: 1.4rem !important;
+    }
+
+    /* Mobile CV Form in Detail */
+    #cv-form>div {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Mobile Pagination */
+    #pagination {
+        flex-wrap: wrap;
+        gap: 8px !important;
+    }
+
+    #pagination a {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    /* Mobile CTA Section */
+    .cta-section {
+        padding: 30px 20px !important;
+        margin: 20px 0 !important;
+    }
+
+    .cta-section h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .contact-info {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    /* Mobile Benefits Grid */
+    .benefits-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 15px !important;
+    }
+
+    .benefit-item {
+        padding: 10px !important;
+    }
+
+    .benefit-icon {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .benefit-title {
+        font-size: 0.9rem !important;
+    }
+
+    .benefit-desc {
+        font-size: 0.8rem !important;
+    }
 }

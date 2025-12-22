@@ -144,10 +144,12 @@
                 };
 
                 try {
+                    // Using text/plain prevents CORS preflight issues while still sending JSON string
+                    // Google Apps Script can parse this perfectly
                     await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify(payload)
                     });
 
@@ -157,11 +159,11 @@
                     status.textContent = `Offre ${count}/42 : ${payload.titre} à ${payload.ville}`;
 
                 } catch (e) {
-                    console.error(e);
+                    console.error("Erreur avec l'offre", count, e);
                 }
 
-                // Fast delay
-                await new Promise(r => setTimeout(r, 600));
+                // Increased delay to 1.5s to play nice with Google quotas
+                await new Promise(r => setTimeout(r, 1500));
             }
 
             btn.textContent = "✅ C'est fait !";

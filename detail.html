@@ -140,8 +140,9 @@
             document.getElementById('job-date').textContent = dateDisplay;
 
             document.getElementById('job-contract').textContent = job.contract;
-            document.getElementById('job-level').textContent = job.level || "Non spécifié";
-            document.getElementById('job-exp').textContent = (job.desc.match(/Expérience.*?(\d+.*?ans?)/i) || [])[1] || "Selon profil"; // Try to extract exp or show default
+            // Direct access if available (V6 API), otherwise fallback to regex extraction
+            document.getElementById('job-level').textContent = job.level || (job.desc.match(/Niveau.*?:(.*?)(?:\n|$)/i) || [])[1] || "Bac+3/5";
+            document.getElementById('job-exp').textContent = job.exp || (job.desc.match(/Expérience.*?:(.*?)(?:\n|$)/i) || [])[1] || "Selon profil";
 
             // Handle description line breaks
             document.getElementById('job-description').textContent = job.desc;

@@ -363,6 +363,28 @@
             </div>
         </div>
 
+        <!-- OFFRES ACTIVES VIEW -->
+        <div id="offres" class="view-section" style="display: none;">
+            <div class="table-container active">
+                <h2 class="section-title"><i class="fas fa-briefcase" style="color: var(--primary);"></i> Offres
+                    d'Emploi Actives</h2>
+                <table id="offres-table" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Poste</th>
+                            <th>Ville</th>
+                            <th>Contrat</th>
+                            <th>Niveau Requis</th>
+                            <th>Expérience</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- Scripts -->
@@ -399,6 +421,8 @@
         function initDashboard() {
             fetchStats();
             fetchSimilarity();
+            fetchOffers();
+            populateJobSelector();
         }
 
         async function fetchStats() {
@@ -494,9 +518,101 @@
             }, stepTime);
         }
 
-        // Future enhancement: Dynamic Sheet Loading
-        function loadSheetData() {
-            alert("Cette fonctionnalité sera activée une fois que des dossiers de candidature seront créés par le script.");
+        // ══════════════════════════════════════════════════════════════════════════════
+        // OFFRES ACTIVES - Fetch and Display Job Offers
+        // ══════════════════════════════════════════════════════════════════════════════
+        async function fetchOffers() {
+            try {
+                if ($.fn.DataTable.isDataTable('#offres-table')) {
+                    $('#offres-table').DataTable().clear().destroy();
+                }
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                const offers = await response.json();
+
+                const tableData = offers.map(offer => {
+                    const contractBadge = `<span style="background:#e3f2fd; color:#0d47a1; padding:4px 10px; border-radius:4px; font-weight:500;">${offer.contract}</span>`;
+                    const levelBadge = `<span style="background:#fff3e0; color:#e65100; padding:4px 10px; border-radius:4px; font-weight:500;">${offer.level}</span>`;
+                    return [
+                        `<span style="color:#666;">${offer.date}</span>`,
+                        `<strong style="color:var(--primary);">${offer.title}</strong>`,
+                        `<i class="fas fa-map-marker-alt" style="color:#888;"></i> ${offer.location}`,
+                        contractBadge,
+                        levelBadge,
+                        `${offer.exp} ans`,
+                        `<button onclick="filterByJob('${offer.title}')" class="action-btn" style="background:#004B87; color:white;"><i class="fas fa-users"></i> Voir candidats</button>`
+                    ];
+                });
+
+                $('#offres-table').DataTable({
+                    data: tableData,
+                    language: { url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json" },
+                    pageLength: 10,
+                    lengthChange: false
+                });
+            } catch (e) {
+                console.error("Error offers", e);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // PAR POSTE - Populate Job Selector and Filter Candidates
+        // ══════════════════════════════════════════════════════════════════════════════
+        async function populateJobSelector() {
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                const offers = await response.json();
+                const selector = document.getElementById('sheet-selector');
+                selector.innerHTML = '<option value="">-- Sélectionnez un poste --</option>';
+                offers.forEach(offer => {
+                    selector.innerHTML += `<option value="${offer.title}">${offer.title} (${offer.location})</option>`;
+                });
+            } catch (e) {
+                console.error("Error populating selector", e);
+            }
+        }
+
+        async function loadSheetData() {
+            const selectedJob = document.getElementById('sheet-selector').value;
+            if (!selectedJob) {
+                alert('Veuillez sélectionner un poste.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
+                const candidates = await response.json();
+
+                // Filter candidates by selected job
+                const filtered = candidates.filter(c => c.job && c.job.includes(selectedJob));
+
+                let html = '';
+                if (filtered.length === 0) {
+                    html = '<div style="text-align:center; padding:40px; color:#888;"><i class="fas fa-inbox fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><p>Aucun candidat pour ce poste.</p></div>';
+                } else {
+                    html = '<table class="display" style="width:100%"><thead><tr><th>Candidat</th><th>Ville</th><th>Score</th><th>Niveau</th><th>CV</th></tr></thead><tbody>';
+                    filtered.forEach(c => {
+                        const scoreColor = c.score >= 75 ? '#28a745' : c.score >= 50 ? '#ffc107' : '#dc3545';
+                        html += `<tr>
+                            <td><strong>${c.nom} ${c.prenom}</strong><br><small style="color:#888;">${c.email}</small></td>
+                            <td>${c.ville}</td>
+                            <td><span style="background:${scoreColor}20; color:${scoreColor}; padding:5px 12px; border-radius:20px; font-weight:700;">${c.score}%</span></td>
+                            <td>${c.niveau} (${c.exp} ans)</td>
+                            <td><a href="${c.cv}" target="_blank" class="action-btn"><i class="fas fa-file-pdf"></i></a></td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                document.getElementById('dynamic-table-area').innerHTML = html;
+            } catch (e) {
+                console.error("Error loading sheet data", e);
+                document.getElementById('dynamic-table-area').innerHTML = '<p style="color:red;">Erreur de chargement.</p>';
+            }
+        }
+
+        function filterByJob(jobTitle) {
+            document.getElementById('sheet-selector').value = jobTitle;
+            switchTab('positions');
+            loadSheetData();
         }
     </script>
 </body>

@@ -426,6 +426,7 @@
 
                 // Collect form data
                 const formData = {
+                    action: 'candidate',  // CRITICAL: Tell backend this is a job application
                     nom: document.getElementById('nom').value,
                     prenom: document.getElementById('prenom').value,
                     email: document.getElementById('email').value,

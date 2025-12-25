@@ -564,7 +564,7 @@
                 const selector = document.getElementById('sheet-selector');
                 selector.innerHTML = '<option value="">-- Sélectionnez un poste --</option>';
                 offers.forEach(offer => {
-                    selector.innerHTML += `<option value="${offer.title}">${offer.title} (${offer.location})</option>`;
+                    selector.innerHTML += `<option value="${offer.title}">${offer.title}</option>`;
                 });
             } catch (e) {
                 console.error("Error populating selector", e);

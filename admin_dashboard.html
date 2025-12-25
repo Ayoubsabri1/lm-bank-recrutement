@@ -420,39 +420,63 @@
                     $('#similarity-table').DataTable().clear().destroy();
                 }
 
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getSimilarity`);
+                // Updated Action to match V8 Backend
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
                 const data = await response.json();
 
-                const tableData = data.map(row => {
-                    const scoreVal = parseInt(row[4]);
+                // Check if data is array
+                if (!Array.isArray(data)) throw new Error("Format de données invalide");
+
+                // New Mapping based on V8 Object Structure
+                const tableData = data.map(candidate => {
+                    const scoreVal = parseInt(candidate.score) || 0;
 
                     // Style score badge
                     let badgeColor = scoreVal >= 75 ? '#28a745' : scoreVal >= 50 ? '#ffc107' : '#dc3545';
                     let badgeBg = scoreVal >= 75 ? '#e6ffec' : scoreVal >= 50 ? '#fff9db' : '#ffe6e6';
 
-                    const scoreBadge = `<span style="display:inline-block; padding:5px 10px; border-radius:15px; font-weight:bold; background:${badgeBg}; color:${badgeColor}; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">${row[4]}</span>`;
+                    const scoreBadge = `<span style="display:inline-block; padding:5px 12px; border-radius:15px; font-weight:700; background:${badgeBg}; color:${badgeColor}; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size:0.9rem;">${scoreVal}%</span>`;
+
+                    // Contract Badge
+                    const contractBadge = `<span class="badge badge-info" style="background:#e3f2fd; color:#0d47a1; padding:2px 8px; border-radius:4px; font-size:0.8rem;">${candidate.contrat}</span>`;
 
                     return [
-                        `<span style="color:#666;">${new Date(row[0]).toLocaleDateString('fr-FR')}</span>`,
-                        `<strong style="color:var(--primary); font-size:1.05rem;">${row[1]}</strong>`,
-                        row[3], // Offer Title
-                        scoreBadge,
-                        `<small style="color:#555;">${row[5]}</small>`,
-                        `<a href="mailto:?subject=Entretien LM Bank&body=Bonjour ${row[1]}, votre profil correspond à notre offre ${row[3]}." class="action-btn"><i class="fas fa-envelope"></i> Contacter</a>`
+                        `<span style="color:#555; white-space:nowrap;">${new Date(candidate.date).toLocaleDateString('fr-FR')}</span>`,
+                        `<div>
+                            <div style="font-weight:700; color:var(--primary);">${candidate.nom} ${candidate.prenom}</div>
+                            <div style="font-size:0.85rem; color:#888;"><i class="fas fa-map-marker-alt"></i> ${candidate.ville}</div>
+                         </div>`,
+                        `<div>
+                            <div style="font-weight:600; color:#333;">${candidate.job}</div>
+                            <div style="margin-top:2px;">${contractBadge}</div>
+                         </div>`,
+                        `<div style="text-align:center;">${scoreBadge}</div>`,
+                        `<div style="font-size:0.85rem; color:#666;">
+                            <strong>Niveau:</strong> ${candidate.niveau}<br>
+                            <strong>Exp:</strong> ${candidate.exp} ans
+                         </div>`,
+                        `<div style="display:flex; gap:5px;">
+                            <a href="${candidate.cv}" target="_blank" class="action-btn" title="Voir CV" style="background:#f1f3f4; color:#333;"><i class="fas fa-eye"></i></a>
+                            <a href="mailto:${candidate.email}?subject=Entretien LM Bank&body=Bonjour ${candidate.nom}, suite à votre candidature pour ${candidate.job}..." class="action-btn" title="Contacter"><i class="fas fa-envelope"></i></a>
+                         </div>`
                     ];
                 });
 
                 $('#similarity-table').DataTable({
                     data: tableData,
                     language: { url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json" },
-                    order: [[3, "desc"]], // Sort by score
+                    order: [[3, "desc"]], // Sort by SCORE descending
                     pageLength: 8,
-                    lengthChange: false
+                    lengthChange: false,
+                    autoWidth: false,
+                    columnDefs: [
+                        { className: "text-center", targets: [0, 3] }
+                    ]
                 });
 
             } catch (e) {
                 console.error("Error similarity", e);
-                $('#similarity-table').parent().html('<div style="text-align:center; padding:40px; color:#999;"><i class="fas fa-inbox fa-3x" style="margin-bottom:15px; opacity:0.5;"></i><p>Aucune donnée de matching pour le moment.</p></div>');
+                $('#similarity-table').parent().html('<div style="text-align:center; padding:40px; color:#999;"><i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><p>Impossible de charger les données. Vérifiez que le Backend V8 est déployé.</p><p style="font-size:0.8rem;">Erreur: ' + e.message + '</p></div>');
             }
         }
 

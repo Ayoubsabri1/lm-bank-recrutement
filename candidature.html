@@ -15,8 +15,6 @@
             --gradient-primary: linear-gradient(135deg, #0056B3 0%, #00AEEF 100%);
             --gradient-accent: linear-gradient(135deg, #F15A24 0%, #FF8C00 100%);
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
             --radius: 12px;
         }
 
@@ -64,9 +62,7 @@
 
         .logo i {
             font-size: 1.6rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary-light);
         }
 
         .logo span {
@@ -85,7 +81,6 @@
             color: #555;
             font-weight: 500;
             transition: color 0.3s;
-            position: relative;
         }
 
         .nav-links a:hover,
@@ -93,315 +88,69 @@
             color: var(--primary);
         }
 
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-accent);
-            border-radius: 2px;
-        }
-
-        /* Hero Section */
+        /* Hero Section - Full Height */
         .hero {
-            background: var(--gradient-primary);
-            padding: 80px 20px;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
         }
 
         .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 700px;
-            margin: 0 auto;
+            text-align: center;
+            max-width: 600px;
         }
 
         .hero-icon {
-            width: 90px;
-            height: 90px;
-            background: rgba(255, 255, 255, 0.2);
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 25px;
-            backdrop-filter: blur(10px);
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 86, 179, 0.3);
         }
 
         .hero-icon i {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
+            color: white;
         }
 
         .hero h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: var(--primary);
+            margin-bottom: 20px;
         }
 
         .hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
+            font-size: 1.15rem;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 40px;
         }
 
         .hero-cta {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: var(--gradient-accent);
             color: white;
-            padding: 16px 35px;
+            padding: 18px 45px;
             border-radius: 30px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(241, 90, 36, 0.4);
+            box-shadow: 0 6px 25px rgba(241, 90, 36, 0.4);
         }
 
         .hero-cta:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(241, 90, 36, 0.5);
-        }
-
-        /* Main Content */
-        .main-container {
-            max-width: 1000px;
-            margin: -50px auto 60px;
-            padding: 0 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .info-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 30px;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s;
-            animation: fadeUp 0.5s ease;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card-icon {
-            width: 55px;
-            height: 55px;
-            background: var(--gradient-primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .card-icon i {
-            font-size: 1.4rem;
-            color: white;
-        }
-
-        .card-icon.accent {
-            background: var(--gradient-accent);
-        }
-
-        .info-card h3 {
-            color: var(--primary);
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-        }
-
-        .info-card p {
-            color: #666;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        /* Steps Section */
-        .steps-section {
-            background: white;
-            border-radius: var(--radius);
-            padding: 40px;
-            margin-top: 40px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .section-title h2 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            color: #666;
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-        }
-
-        .step-item {
-            text-align: center;
-        }
-
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--gradient-primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 0 auto 15px;
-        }
-
-        .step-item h4 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .step-item p {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        /* Benefits Section */
-        .benefits-section {
-            margin-top: 40px;
-        }
-
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .benefit-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 25px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .benefit-card:hover {
-            border-color: var(--primary-light);
-        }
-
-        .benefit-card i {
-            font-size: 2rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-
-        .benefit-card h4 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .benefit-card p {
-            color: #888;
-            font-size: 0.85rem;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background: var(--gradient-primary);
-            border-radius: var(--radius);
-            padding: 50px 40px;
-            text-align: center;
-            color: white;
-            margin-top: 40px;
-        }
-
-        .cta-section h2 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-        }
-
-        .cta-section p {
-            opacity: 0.9;
-            margin-bottom: 25px;
-        }
-
-        .cta-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            color: var(--primary);
-            padding: 16px 35px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .cta-button:hover {
-            transform: scale(1.05);
+            box-shadow: 0 10px 35px rgba(241, 90, 36, 0.5);
         }
 
         /* Footer */
@@ -410,34 +159,20 @@
             padding: 30px;
             color: #888;
             font-size: 0.85rem;
-            margin-top: 60px;
         }
 
         /* Mobile */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--primary);
-            cursor: pointer;
-        }
-
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
-            }
-
-            .mobile-menu-btn {
-                display: block;
             }
 
             .hero h1 {
                 font-size: 1.8rem;
             }
 
-            .hero {
-                padding: 60px 20px;
+            .hero p {
+                font-size: 1rem;
             }
         }
     </style>
@@ -456,9 +191,6 @@
                 <li><a href="index.html">Nos offres d'emploi</a></li>
                 <li><a href="candidature.html" class="active">Candidature spontanée</a></li>
             </ul>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
     </nav>
 
@@ -469,117 +201,21 @@
                 <i class="fas fa-user-plus"></i>
             </div>
             <h1>Candidature Spontanée</h1>
-            <p>Vous ne trouvez pas l'offre idéale ? Déposez votre CV et notre IA trouvera le poste qui vous correspond.
+            <p>
+                Vous ne trouvez pas l'offre qui vous correspond ?<br>
+                Déposez votre candidature et nous vous contacterons dès qu'une opportunité adaptée à votre profil sera
+                disponible.
             </p>
             <a href="spontanee.html" class="hero-cta">
-                <i class="fas fa-paper-plane"></i> Déposer mon CV
+                <i class="fas fa-paper-plane"></i> Déposer ma candidature
             </a>
         </div>
     </section>
-
-    <!-- Main Content -->
-    <div class="main-container">
-
-        <!-- Info Cards -->
-        <div class="cards-grid">
-            <div class="info-card">
-                <div class="card-icon">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <h3>Analyse IA Avancée</h3>
-                <p>Notre intelligence artificielle analyse votre CV et identifie vos compétences clés pour vous proposer
-                    les meilleures opportunités.</p>
-            </div>
-            <div class="info-card">
-                <div class="card-icon accent">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <h3>Processus Rapide</h3>
-                <p>En quelques clics, votre candidature est envoyée et classée automatiquement dans notre base de
-                    talents.</p>
-            </div>
-            <div class="info-card">
-                <div class="card-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <h3>Alertes Personnalisées</h3>
-                <p>Soyez notifié dès qu'une offre correspondant à votre profil est publiée sur notre plateforme.</p>
-            </div>
-        </div>
-
-        <!-- Steps Section -->
-        <div class="steps-section">
-            <div class="section-title">
-                <h2>Comment ça marche ?</h2>
-                <p>Un processus simple en 3 étapes</p>
-            </div>
-            <div class="steps-grid">
-                <div class="step-item">
-                    <div class="step-number">1</div>
-                    <h4>Téléchargez votre CV</h4>
-                    <p>Format PDF uniquement</p>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">2</div>
-                    <h4>Analyse automatique</h4>
-                    <p>Notre IA lit votre profil</p>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">3</div>
-                    <h4>Classification</h4>
-                    <p>Classement par domaine</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Benefits -->
-        <div class="benefits-section">
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <i class="fas fa-shield-alt"></i>
-                    <h4>Confidentialité</h4>
-                    <p>Vos données sont protégées</p>
-                </div>
-                <div class="benefit-card">
-                    <i class="fas fa-users"></i>
-                    <h4>Équipe dédiée</h4>
-                    <p>Des experts RH à votre écoute</p>
-                </div>
-                <div class="benefit-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h4>Évolution</h4>
-                    <p>Opportunités de carrière</p>
-                </div>
-                <div class="benefit-card">
-                    <i class="fas fa-coins"></i>
-                    <h4>Rémunération</h4>
-                    <p>Salaires compétitifs</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
-        <div class="cta-section">
-            <h2>Prêt à nous rejoindre ?</h2>
-            <p>Déposez votre candidature dès maintenant</p>
-            <a href="spontanee.html" class="cta-button">
-                <i class="fas fa-arrow-right"></i> Commencer
-            </a>
-        </div>
-
-    </div>
 
     <!-- Footer -->
     <footer>
         © 2025 LM BANK - Votre partenaire bancaire de confiance
     </footer>
-
-    <script>
-        function toggleMenu() {
-            const links = document.querySelector('.nav-links');
-            links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-        }
-    </script>
 
 </body>
 

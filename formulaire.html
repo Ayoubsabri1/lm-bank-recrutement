@@ -622,14 +622,10 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Type de contrat <span class="required">*</span></label>
-                            <div class="input-wrapper select-wrapper">
-                                <select id="contrat" required>
-                                    <option value="CDI">CDI</option>
-                                    <option value="CDD">CDD</option>
-                                    <option value="Stage">Stage</option>
-                                    <option value="Freelance">Freelance</option>
-                                </select>
+                            <label>Type de contrat</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="contrat" readonly
+                                    style="background: #e9ecef; cursor: not-allowed;">
                                 <i class="fas fa-file-contract"></i>
                             </div>
                         </div>
@@ -705,6 +701,14 @@
         } else {
             document.getElementById('job-title-display').textContent = "Candidature Spontanée";
             document.getElementById('poste').value = "Candidature Spontanée";
+        }
+
+        // Get contract from URL
+        const contractType = urlParams.get('contract');
+        if (contractType) {
+            document.getElementById('contrat').value = decodeURIComponent(contractType);
+        } else {
+            document.getElementById('contrat').value = "CDI"; // Default
         }
 
         // File Upload Handler

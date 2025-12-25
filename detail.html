@@ -449,8 +449,8 @@
             // Description
             document.getElementById('job-description').textContent = job.desc;
 
-            // Apply Button
-            document.getElementById('apply-btn').href = `formulaire.html?job=${encodeURIComponent(job.title)}`;
+            // Apply Button (with contract type)
+            document.getElementById('apply-btn').href = `formulaire.html?job=${encodeURIComponent(job.title)}&contract=${encodeURIComponent(job.contract)}`;
         }
 
         function showError() {

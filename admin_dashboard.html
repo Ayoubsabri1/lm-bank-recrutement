@@ -427,14 +427,28 @@
 
         async function fetchStats() {
             try {
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getStats`);
-                const data = await response.json();
+                // Fetch candidates count
+                const candResponse = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
+                const candidates = await candResponse.json();
+                const totalCandidates = Array.isArray(candidates) ? candidates.length : 0;
 
-                animateValue("total-candidates", 0, data.candidates, 1000);
-                animateValue("total-offers", 0, data.offers, 1000);
-                animateValue("high-matches", 0, data.high_matches, 1000);
+                // Fetch offers count
+                const offersResponse = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                const offers = await offersResponse.json();
+                const totalOffers = Array.isArray(offers) ? offers.length : 0;
+
+                // Count high matches (score >= 75)
+                const highMatches = Array.isArray(candidates) ? candidates.filter(c => c.score >= 75).length : 0;
+
+                // Update UI
+                document.getElementById("total-candidates").textContent = totalCandidates;
+                document.getElementById("total-offers").textContent = totalOffers;
+                document.getElementById("high-matches").textContent = highMatches;
             } catch (e) {
                 console.error("Error stats", e);
+                document.getElementById("total-candidates").textContent = "0";
+                document.getElementById("total-offers").textContent = "0";
+                document.getElementById("high-matches").textContent = "0";
             }
         }
 

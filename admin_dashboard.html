@@ -656,27 +656,72 @@
                 // Filter candidates by selected job
                 const filtered = candidates.filter(c => c.job && c.job.includes(selectedJob));
 
-                let html = '';
-                if (filtered.length === 0) {
-                    html = '<div style="text-align:center; padding:40px; color:#888;"><i class="fas fa-inbox fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><p>Aucun candidat pour ce poste.</p></div>';
-                } else {
-                    html = '<table class="display" style="width:100%"><thead><tr><th>Candidat</th><th>Ville</th><th>Score</th><th>Niveau</th><th>CV</th></tr></thead><tbody>';
-                    filtered.forEach(c => {
-                        const scoreColor = c.score >= 75 ? '#28a745' : c.score >= 50 ? '#ffc107' : '#dc3545';
-                        html += `<tr>
-                            <td><strong>${c.nom} ${c.prenom}</strong><br><small style="color:#888;">${c.email}</small></td>
-                            <td>${c.ville}</td>
-                            <td><span style="background:${scoreColor}20; color:${scoreColor}; padding:5px 12px; border-radius:20px; font-weight:700;">${c.score}%</span></td>
-                            <td>${c.niveau} (${c.exp} ans)</td>
-                            <td><a href="${c.cv}" target="_blank" class="action-btn"><i class="fas fa-file-pdf"></i></a></td>
-                        </tr>`;
-                    });
-                    html += '</tbody></table>';
-                }
-                document.getElementById('dynamic-table-area').innerHTML = html;
+                // Clear previous content
+                const container = document.getElementById('dynamic-table-area');
+                container.innerHTML = '<table id="positions-table" class="display" style="width:100%"><thead><tr><th>Date</th><th>Candidat</th><th>Ville</th><th>Niveau</th><th>Expérience</th><th>Contrat</th><th>Score Match</th><th>Statut</th><th>Actions</th></tr></thead><tbody></tbody></table>';
+
+                const tableData = filtered.map(c => {
+                    const scoreVal = parseInt(c.score) || 0;
+
+                    // Score Badge
+                    let badgeColor = scoreVal >= 75 ? '#28a745' : scoreVal >= 50 ? '#ffc107' : '#dc3545';
+                    let badgeBg = scoreVal >= 75 ? '#e6ffec' : scoreVal >= 50 ? '#fff9db' : '#ffe6e6';
+                    const scoreBadge = `<span style="display:inline-block; padding:5px 12px; border-radius:15px; font-weight:700; background:${badgeBg}; color:${badgeColor};">${scoreVal}%</span>`;
+
+                    // Status Badge
+                    let statusText, statusColor, statusBg;
+                    if (scoreVal >= 75) {
+                        statusText = '⭐ Très Favorable';
+                        statusColor = '#155724'; statusBg = '#d4edda';
+                    } else if (scoreVal >= 50) {
+                        statusText = '✅ Favorable';
+                        statusColor = '#856404'; statusBg = '#fff3cd';
+                    } else {
+                        statusText = '⚠️ Risqué';
+                        statusColor = '#721c24'; statusBg = '#f8d7da';
+                    }
+                    const statusBadge = `<span style="display:inline-block; padding:4px 10px; border-radius:6px; font-weight:600; background:${statusBg}; color:${statusColor}; font-size:0.8rem; white-space:nowrap;">${statusText}</span>`;
+
+                    // Contract Badge
+                    const contratBadge = `<span style="background:#e3f2fd; color:#0d47a1; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${c.contrat || 'N/A'}</span>`;
+
+                    // Level Badge
+                    const niveauBadge = `<span style="background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${c.niveau || 'N/A'}</span>`;
+
+                    // Mailto Subject
+                    const mailSubject = `Candidature pour le poste de ${selectedJob}`;
+
+                    return [
+                        `<span style="color:#555;">${new Date(c.date).toLocaleDateString('fr-FR')}</span>`,
+                        `<div>
+                            <div style="font-weight:700; color:var(--primary);">${c.nom} ${c.prenom}</div>
+                            <div style="font-size:0.8rem; color:#888;">${c.email}</div>
+                         </div>`,
+                        `<i class="fas fa-map-marker-alt" style="color:#888;"></i> ${c.ville || 'N/A'}`,
+                        niveauBadge,
+                        `${c.exp || '0'} ans`,
+                        contratBadge,
+                        `<div style="text-align:center;">${scoreBadge}</div>`,
+                        statusBadge,
+                        `<div style="display:flex; gap:5px; justify-content:center;">
+                            <a href="${c.cv}" target="_blank" class="action-btn" title="Voir CV" style="background:#f1f3f4; color:#333;"><i class="fas fa-eye"></i></a>
+                            <a href="mailto:${c.email}?subject=${mailSubject}&body=Bonjour ${c.nom},%0D%0A%0D%0ASuite à votre candidature pour le poste de ${selectedJob}, nous souhaitons faire un point avec vous.%0D%0A%0D%0ACordialement,%0D%0ALM Bank RH" class="action-btn" title="Contacter" style="background:#e3f2fd; color:#0d47a1;"><i class="fas fa-envelope"></i></a>
+                         </div>`
+                    ];
+                });
+
+                $('#positions-table').DataTable({
+                    data: tableData,
+                    language: { url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json" },
+                    order: [[6, "desc"]], // Sort by Score Match
+                    pageLength: 10,
+                    lengthChange: false,
+                    autoWidth: false
+                });
+
             } catch (e) {
                 console.error("Error loading sheet data", e);
-                document.getElementById('dynamic-table-area').innerHTML = '<p style="color:red;">Erreur de chargement.</p>';
+                document.getElementById('dynamic-table-area').innerHTML = '<p style="color:red; text-align:center;">Erreur de chargement des données. Veuillez vérifier la connexion.</p>';
             }
         }
 

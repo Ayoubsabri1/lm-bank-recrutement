@@ -467,8 +467,8 @@
 
                 if (!Array.isArray(data)) throw new Error("Format de données invalide");
 
-                // FILTER: Only spontaneous candidates (job field contains "Recommandé")
-                const spontaneousCandidates = data.filter(c => c.job && c.job.includes('Recommandé'));
+                // FILTER: Only spontaneous candidates (job field contains "Recommandé" OR "Spontanée")
+                const spontaneousCandidates = data.filter(c => c.job && (c.job.includes('Recommandé') || c.job.includes('Spontanée')));
 
                 // Map data to table format with ALL evaluation details
                 const tableData = spontaneousCandidates.map(candidate => {

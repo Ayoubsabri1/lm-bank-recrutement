@@ -312,27 +312,31 @@
             </div>
         </div>
 
-        <!-- SIMILARITY VIEW -->
+        <!-- SIMILARITY VIEW (Candidatures Spontanées Only) -->
         <div id="similarity" class="view-section" style="display: none;">
             <div class="table-container active">
                 <h2 class="section-title">
                     <i class="fas fa-magic" style="color: var(--accent);"></i>
-                    Moteur de Recommandation
+                    Recommandation IA - Candidatures Spontanées
                 </h2>
+                <p style="margin-bottom:20px; color:#666;">Classement automatique des profils spontanés du meilleur au
+                    plus faible selon les critères: Ville, Contrat, Niveau, Expérience.</p>
                 <table id="similarity-table" class="display" style="width:100%">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Candidat</th>
-                            <th>Offre Ciblée</th>
+                            <th>Ville</th>
+                            <th>Niveau</th>
+                            <th>Expérience</th>
+                            <th>Contrat</th>
                             <th>Score IA</th>
-                            <th>Détails de l'analyse</th>
-                            <th>Action</th>
+                            <th>Offre Recommandée</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be loaded here -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -458,44 +462,65 @@
                     $('#similarity-table').DataTable().clear().destroy();
                 }
 
-                // Updated Action to match V8 Backend
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
                 const data = await response.json();
 
-                // Check if data is array
                 if (!Array.isArray(data)) throw new Error("Format de données invalide");
 
-                // New Mapping based on V8 Object Structure
-                const tableData = data.map(candidate => {
+                // FILTER: Only spontaneous candidates (job field contains "Recommandé")
+                const spontaneousCandidates = data.filter(c => c.job && c.job.includes('Recommandé'));
+
+                // Map data to table format with ALL evaluation details
+                const tableData = spontaneousCandidates.map(candidate => {
                     const scoreVal = parseInt(candidate.score) || 0;
 
-                    // Style score badge
+                    // Score Badge with color coding
                     let badgeColor = scoreVal >= 75 ? '#28a745' : scoreVal >= 50 ? '#ffc107' : '#dc3545';
                     let badgeBg = scoreVal >= 75 ? '#e6ffec' : scoreVal >= 50 ? '#fff9db' : '#ffe6e6';
+                    const scoreBadge = `<span style="display:inline-block; padding:5px 12px; border-radius:15px; font-weight:700; background:${badgeBg}; color:${badgeColor};">${scoreVal}%</span>`;
 
-                    const scoreBadge = `<span style="display:inline-block; padding:5px 12px; border-radius:15px; font-weight:700; background:${badgeBg}; color:${badgeColor}; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size:0.9rem;">${scoreVal}%</span>`;
+                    // Status Badge
+                    let statusText, statusColor, statusBg;
+                    if (scoreVal >= 75) {
+                        statusText = '⭐ Fortement Recommandé';
+                        statusColor = '#155724'; statusBg = '#d4edda';
+                    } else if (scoreVal >= 50) {
+                        statusText = '✅ Recommandé';
+                        statusColor = '#856404'; statusBg = '#fff3cd';
+                    } else if (scoreVal >= 25) {
+                        statusText = '⚠️ À Revoir';
+                        statusColor = '#856404'; statusBg = '#fff3cd';
+                    } else {
+                        statusText = '❌ Non Compatible';
+                        statusColor = '#721c24'; statusBg = '#f8d7da';
+                    }
+                    const statusBadge = `<span style="display:inline-block; padding:4px 10px; border-radius:6px; font-weight:600; background:${statusBg}; color:${statusColor}; font-size:0.8rem; white-space:nowrap;">${statusText}</span>`;
+
+                    // Extract recommended job from "Recommandé: Job Title"
+                    const recommendedJob = candidate.job.replace('Recommandé: ', '');
 
                     // Contract Badge
-                    const contractBadge = `<span class="badge badge-info" style="background:#e3f2fd; color:#0d47a1; padding:2px 8px; border-radius:4px; font-size:0.8rem;">${candidate.contrat}</span>`;
+                    const contratBadge = `<span style="background:#e3f2fd; color:#0d47a1; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${candidate.contrat || 'N/A'}</span>`;
+
+                    // Level Badge
+                    const niveauBadge = `<span style="background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${candidate.niveau || 'N/A'}</span>`;
 
                     return [
-                        `<span style="color:#555; white-space:nowrap;">${new Date(candidate.date).toLocaleDateString('fr-FR')}</span>`,
+                        `<span style="color:#555;">${new Date(candidate.date).toLocaleDateString('fr-FR')}</span>`,
                         `<div>
                             <div style="font-weight:700; color:var(--primary);">${candidate.nom} ${candidate.prenom}</div>
-                            <div style="font-size:0.85rem; color:#888;"><i class="fas fa-map-marker-alt"></i> ${candidate.ville}</div>
+                            <div style="font-size:0.8rem; color:#888;">${candidate.email}</div>
                          </div>`,
-                        `<div>
-                            <div style="font-weight:600; color:#333;">${candidate.job}</div>
-                            <div style="margin-top:2px;">${contractBadge}</div>
-                         </div>`,
+                        `<i class="fas fa-map-marker-alt" style="color:#888;"></i> ${candidate.ville || 'N/A'}`,
+                        niveauBadge,
+                        `${candidate.exp || '0'} ans`,
+                        contratBadge,
                         `<div style="text-align:center;">${scoreBadge}</div>`,
-                        `<div style="font-size:0.85rem; color:#666;">
-                            <strong>Niveau:</strong> ${candidate.niveau}<br>
-                            <strong>Exp:</strong> ${candidate.exp} ans
-                         </div>`,
+                        `<strong style="color:var(--primary);">${recommendedJob}</strong>`,
+                        statusBadge,
                         `<div style="display:flex; gap:5px;">
                             <a href="${candidate.cv}" target="_blank" class="action-btn" title="Voir CV" style="background:#f1f3f4; color:#333;"><i class="fas fa-eye"></i></a>
-                            <a href="mailto:${candidate.email}?subject=Entretien LM Bank&body=Bonjour ${candidate.nom}, suite à votre candidature pour ${candidate.job}..." class="action-btn" title="Contacter"><i class="fas fa-envelope"></i></a>
+                            <a href="mailto:${candidate.email}?subject=Entretien LM Bank - ${recommendedJob}&body=Bonjour ${candidate.nom},\n\nSuite à l'analyse de votre candidature spontanée, votre profil correspond à notre offre: ${recommendedJob}.\n\nNous souhaitons vous rencontrer pour un entretien.\n\nCordialement,\nLM Bank RH" class="action-btn" title="Contacter"><i class="fas fa-envelope"></i></a>
                          </div>`
                     ];
                 });
@@ -503,18 +528,15 @@
                 $('#similarity-table').DataTable({
                     data: tableData,
                     language: { url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json" },
-                    order: [[3, "desc"]], // Sort by SCORE descending
-                    pageLength: 8,
+                    order: [[6, "desc"]], // Sort by SCORE (column 6) descending
+                    pageLength: 10,
                     lengthChange: false,
-                    autoWidth: false,
-                    columnDefs: [
-                        { className: "text-center", targets: [0, 3] }
-                    ]
+                    autoWidth: false
                 });
 
             } catch (e) {
                 console.error("Error similarity", e);
-                $('#similarity-table').parent().html('<div style="text-align:center; padding:40px; color:#999;"><i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><p>Impossible de charger les données. Vérifiez que le Backend V8 est déployé.</p><p style="font-size:0.8rem;">Erreur: ' + e.message + '</p></div>');
+                $('#similarity-table').parent().html('<div style="text-align:center; padding:40px; color:#999;"><i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><p>Impossible de charger les données.</p><p style="font-size:0.8rem;">Erreur: ' + e.message + '</p></div>');
             }
         }
 

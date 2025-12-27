@@ -497,7 +497,12 @@
                     const statusBadge = `<span style="display:inline-block; padding:4px 10px; border-radius:6px; font-weight:600; background:${statusBg}; color:${statusColor}; font-size:0.8rem; white-space:nowrap;">${statusText}</span>`;
 
                     // Extract recommended job from "Recommandé: Job Title"
-                    const recommendedJob = candidate.job.replace('Recommandé: ', '');
+                    let recommendedJob = candidate.job.replace('Recommandé: ', '');
+
+                    // If job is generic or score is too low, show "Non Compatible"
+                    if (recommendedJob.includes('Spontanée') || recommendedJob.includes('Candidatures_Generales') || recommendedJob.includes('Candidature Générale') || scoreVal < 25) {
+                        recommendedJob = '<span style="color:#721c24; font-style:italic;"><i class="fas fa-times-circle"></i> Profil Non Compatible</span>';
+                    }
 
                     // Contract Badge
                     const contratBadge = `<span style="background:#e3f2fd; color:#0d47a1; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${candidate.contrat || 'N/A'}</span>`;

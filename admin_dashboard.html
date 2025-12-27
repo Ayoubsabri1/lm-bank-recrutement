@@ -497,11 +497,14 @@
                     const statusBadge = `<span style="display:inline-block; padding:4px 10px; border-radius:6px; font-weight:600; background:${statusBg}; color:${statusColor}; font-size:0.8rem; white-space:nowrap;">${statusText}</span>`;
 
                     // Extract recommended job from "Recommandé: Job Title"
-                    let recommendedJob = candidate.job.replace('Recommandé: ', '');
+                    let recommendedJobRaw = candidate.job.replace('Recommandé: ', '');
+                    let recommendedJobDisplay = recommendedJobRaw;
+                    let recommendedJobMailSubject = recommendedJobRaw;
 
                     // If job is generic or score is too low, show "Non Compatible"
-                    if (recommendedJob.includes('Spontanée') || recommendedJob.includes('Candidatures_Generales') || recommendedJob.includes('Candidature Générale') || scoreVal < 25) {
-                        recommendedJob = '<span style="color:#721c24; font-style:italic;"><i class="fas fa-times-circle"></i> Profil Non Compatible</span>';
+                    if (recommendedJobRaw.includes('Spontanée') || recommendedJobRaw.includes('Candidatures_Generales') || recommendedJobRaw.includes('Candidature Générale') || scoreVal < 25) {
+                        recommendedJobDisplay = '<span style="color:#721c24; font-style:italic;"><i class="fas fa-times-circle"></i> Profil Non Compatible</span>';
+                        recommendedJobMailSubject = "Votre Candidature Spontanée";
                     }
 
                     // Contract Badge
@@ -521,11 +524,11 @@
                         `${candidate.exp || '0'} ans`,
                         contratBadge,
                         `<div style="text-align:center;">${scoreBadge}</div>`,
-                        `<strong style="color:var(--primary);">${recommendedJob}</strong>`,
+                        `<strong style="color:var(--primary);">${recommendedJobDisplay}</strong>`,
                         statusBadge,
-                        `<div style="display:flex; gap:5px;">
+                        `<div style="display:flex; gap:5px; justify-content:center;">
                             <a href="${candidate.cv}" target="_blank" class="action-btn" title="Voir CV" style="background:#f1f3f4; color:#333;"><i class="fas fa-eye"></i></a>
-                            <a href="mailto:${candidate.email}?subject=Entretien LM Bank - ${recommendedJob}&body=Bonjour ${candidate.nom},\n\nSuite à l'analyse de votre candidature spontanée, votre profil correspond à notre offre: ${recommendedJob}.\n\nNous souhaitons vous rencontrer pour un entretien.\n\nCordialement,\nLM Bank RH" class="action-btn" title="Contacter"><i class="fas fa-envelope"></i></a>
+                            <a href="mailto:${candidate.email}?subject=Entretien LM Bank - ${recommendedJobMailSubject}&body=Bonjour ${candidate.nom},%0D%0A%0D%0ASuite à l'analyse de votre candidature, nous souhaitons faire un point avec vous.%0D%0A%0D%0ACordialement,%0D%0ALM Bank RH" class="action-btn" title="Contacter" style="background:#e3f2fd; color:#0d47a1;"><i class="fas fa-envelope"></i></a>
                          </div>`
                     ];
                 });

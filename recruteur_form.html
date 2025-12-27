@@ -254,20 +254,50 @@
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkRs_Elvq5GRPzYiasgSRdGSua7UyRw5V55P_JhzUQi3G3WfwhYgZRdXXK2gYuL547Tw/exec';
 
+        // ══════════════════════════════════════════════════════════════════════════════
+        // COOKIE FUNCTIONS (Synchronized with admin_dashboard.html)
+        // ══════════════════════════════════════════════════════════════════════════════
+        const SESSION_COOKIE_NAME = 'lm_bank_session';
+
+        function setCookie(name, value, minutes) {
+            const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
+            document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Strict`;
+        }
+
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        function deleteCookie(name) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+
         // Check Session on Load
         window.addEventListener('load', () => {
             document.body.style.opacity = '1';
-            if (sessionStorage.getItem('recruiter_logged_in') === 'true') {
+            const isLoggedIn = sessionStorage.getItem('recruiter_logged_in') === 'true';
+            const hasValidCookie = getCookie(SESSION_COOKIE_NAME) === 'active';
+
+            if (isLoggedIn && hasValidCookie) {
                 document.getElementById('login-overlay').style.display = 'none';
+            } else {
+                // Clear any stale session data
+                sessionStorage.removeItem('recruiter_logged_in');
+                deleteCookie(SESSION_COOKIE_NAME);
             }
         });
 
-        // Login Logic
+        // Login Logic with Cookie + SessionStorage
         document.getElementById('login-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const pass = document.getElementById('admin-pass').value;
+
             if (pass === 'admin123') {
-                sessionStorage.setItem('recruiter_logged_in', 'true'); // SET SESSION
+                // Set BOTH sessionStorage AND cookie for dual-layer security
+                sessionStorage.setItem('recruiter_logged_in', 'true');
+                setCookie(SESSION_COOKIE_NAME, 'active', 2); // Cookie expires in 2 minutes
+
                 document.getElementById('login-overlay').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = 'none';
@@ -278,9 +308,10 @@
             }
         });
 
-        // Logout Logic
+        // Logout Logic - Clear ALL session data
         function logout() {
             sessionStorage.removeItem('recruiter_logged_in');
+            deleteCookie(SESSION_COOKIE_NAME);
             location.reload();
         }
 

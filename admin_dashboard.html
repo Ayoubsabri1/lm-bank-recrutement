@@ -398,20 +398,207 @@
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkRs_Elvq5GRPzYiasgSRdGSua7UyRw5V55P_JhzUQi3G3WfwhYgZRdXXK2gYuL547Tw/exec';
 
-        // SECURITY CHECK (SESSION)
+        // ══════════════════════════════════════════════════════════════════════════════
+        // SECURITY SYSTEM - Auto-Logout & Cookie Protection
+        // ══════════════════════════════════════════════════════════════════════════════
+
+        const SESSION_TIMEOUT = 2 * 60 * 1000; // 2 minutes in milliseconds
+        const SESSION_COOKIE_NAME = 'lm_bank_session';
+        let inactivityTimer;
+        let sessionCheckInterval;
+
+        // Cookie Functions
+        function setCookie(name, value, minutes) {
+            const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
+            document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Strict`;
+        }
+
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        function deleteCookie(name) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+
+        // Session Management
+        function validateSession() {
+            const sessionCookie = getCookie(SESSION_COOKIE_NAME);
+            const sessionStorage_logged_in = sessionStorage.getItem('recruiter_logged_in');
+
+            // Both cookie AND sessionStorage must be valid
+            if (!sessionCookie || !sessionStorage_logged_in || sessionCookie !== 'active') {
+                forceLogout('Session invalide ou expirée');
+                return false;
+            }
+            return true;
+        }
+
+        function refreshSession() {
+            // Refresh cookie expiration on activity
+            setCookie(SESSION_COOKIE_NAME, 'active', 2); // 2 minutes
+        }
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            refreshSession();
+
+            inactivityTimer = setTimeout(() => {
+                showLogoutWarning();
+            }, SESSION_TIMEOUT - 30000); // Warning 30 seconds before logout
+        }
+
+        function showLogoutWarning() {
+            // Show warning overlay
+            let warningOverlay = document.getElementById('logout-warning-overlay');
+            if (!warningOverlay) {
+                warningOverlay = document.createElement('div');
+                warningOverlay.id = 'logout-warning-overlay';
+                warningOverlay.innerHTML = `
+                    <div style="background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 400px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #F15A24; margin-bottom: 20px;"></i>
+                        <h3 style="color: #004B87; margin-bottom: 15px;">Session Expirée</h3>
+                        <p style="color: #666; margin-bottom: 10px;">Vous serez déconnecté dans <span id="logout-countdown" style="font-weight: bold; color: #F15A24;">30</span> secondes.</p>
+                        <p style="color: #888; font-size: 0.9rem;">Cliquez n'importe où pour rester connecté.</p>
+                        <button onclick="stayLoggedIn()" style="background: linear-gradient(135deg, #004B87, #00AEEF); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 15px;">
+                            <i class="fas fa-user-check"></i> Rester Connecté
+                        </button>
+                    </div>
+                `;
+                warningOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+                document.body.appendChild(warningOverlay);
+            }
+            warningOverlay.style.display = 'flex';
+
+            // Countdown
+            let countdown = 30;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                const countdownEl = document.getElementById('logout-countdown');
+                if (countdownEl) countdownEl.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    forceLogout('Déconnexion automatique pour inactivité');
+                }
+            }, 1000);
+
+            // Store interval for cancellation
+            warningOverlay.dataset.countdownInterval = countdownInterval;
+        }
+
+        function stayLoggedIn() {
+            const warningOverlay = document.getElementById('logout-warning-overlay');
+            if (warningOverlay) {
+                clearInterval(parseInt(warningOverlay.dataset.countdownInterval));
+                warningOverlay.style.display = 'none';
+            }
+            resetInactivityTimer();
+            showToast('Session prolongée', 'success');
+        }
+
+        function forceLogout(message) {
+            // Clear all session data
+            sessionStorage.removeItem('recruiter_logged_in');
+            deleteCookie(SESSION_COOKIE_NAME);
+            clearTimeout(inactivityTimer);
+            clearInterval(sessionCheckInterval);
+
+            // Show message and redirect
+            const overlay = document.getElementById('redirect-overlay');
+            if (overlay) {
+                overlay.querySelector('h2').textContent = message || 'Déconnexion';
+                overlay.querySelector('p').textContent = 'Redirection vers la page de connexion...';
+                overlay.style.display = 'flex';
+            }
+
+            setTimeout(() => {
+                window.location.href = 'recruteur_form.html';
+            }, 2000);
+        }
+
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                forceLogout('Déconnexion réussie');
+            }
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'info') {
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; z-index: 10001; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); transition: opacity 0.3s;';
+                document.body.appendChild(toast);
+            }
+
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            toast.style.background = colors[type] || colors.info;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i> ${message}`;
+            toast.style.display = 'flex';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Activity Tracking
+        function setupActivityTracking() {
+            const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+            events.forEach(event => {
+                document.addEventListener(event, () => {
+                    resetInactivityTimer();
+                    // Hide warning if shown
+                    const warningOverlay = document.getElementById('logout-warning-overlay');
+                    if (warningOverlay && warningOverlay.style.display !== 'none') {
+                        stayLoggedIn();
+                    }
+                }, { passive: true });
+            });
+        }
+
+        // SECURITY CHECK (On Page Load)
         window.addEventListener('load', () => {
             const isLoggedIn = sessionStorage.getItem('recruiter_logged_in');
+            const sessionCookie = getCookie(SESSION_COOKIE_NAME);
 
-            if (!isLoggedIn) {
+            if (!isLoggedIn || !sessionCookie || sessionCookie !== 'active') {
                 // Not logged in -> Show Overlay & Redirect
                 document.getElementById('redirect-overlay').style.display = 'flex';
                 setTimeout(() => {
                     window.location.href = 'recruteur_form.html';
-                }, 2000); // 2 second delay to read the message
+                }, 2000);
             } else {
-                // Logged in -> Hide overlay & Init
+                // Logged in -> Initialize
                 document.getElementById('redirect-overlay').style.display = 'none';
+
+                // Start security systems
+                setupActivityTracking();
+                resetInactivityTimer();
+
+                // Periodic session validation (every 10 seconds)
+                sessionCheckInterval = setInterval(() => {
+                    if (!validateSession()) {
+                        clearInterval(sessionCheckInterval);
+                    }
+                }, 10000);
+
                 initDashboard();
+                showToast('Bienvenue dans le Dashboard RH', 'success');
+            }
+        });
+
+        // Validate session on visibility change (when user returns to tab)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                validateSession();
             }
         });
 
@@ -458,12 +645,18 @@
 
         async function fetchSimilarity() {
             try {
+                // Show loading spinner
+                $('#similarity-table').parent().prepend('<div id="similarity-loading" style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin fa-3x" style="color:#00AEEF;"></i><p style="margin-top:15px; color:#666;">Chargement des candidats...</p></div>');
+
                 if ($.fn.DataTable.isDataTable('#similarity-table')) {
                     $('#similarity-table').DataTable().clear().destroy();
                 }
 
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
                 const data = await response.json();
+
+                // Remove loading spinner
+                $('#similarity-loading').remove();
 
                 if (!Array.isArray(data)) throw new Error("Format de données invalide");
 
@@ -601,9 +794,12 @@
             }
         }
 
-        // Delete Offer Function
+        // Delete Offer Function with Toast Notification
         async function deleteOffer(offerId) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) return;
+            if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer cette offre ?\n\nCette action est irréversible.')) return;
+
+            // Show loading toast
+            showToast('Suppression en cours...', 'info');
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
@@ -613,12 +809,13 @@
                     body: JSON.stringify({ action: 'delete_offer', id: offerId })
                 });
 
-                alert('✅ Offre supprimée avec succès !');
+                showToast('Offre supprimée avec succès', 'success');
                 fetchOffers(); // Refresh the table
                 fetchStats();  // Refresh stats
+                populateJobSelector(); // Refresh job selector
             } catch (e) {
                 console.error("Error deleting offer", e);
-                alert('❌ Erreur lors de la suppression.');
+                showToast('Erreur lors de la suppression', 'error');
             }
         }
 

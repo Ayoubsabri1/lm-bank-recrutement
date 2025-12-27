@@ -5,12 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard RH - LM BANK</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         :root {
@@ -209,6 +216,133 @@
             color: white;
             text-align: center;
         }
+
+        /* ══════════════════════════════════════════════════════════════════════════════
+           MOBILE RESPONSIVE STYLES
+           ══════════════════════════════════════════════════════════════════════════════ */
+
+        /* Mobile Menu Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Tablet & Mobile Styles */
+        @media (max-width: 1024px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 70px 20px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-header>div:last-child {
+                justify-content: center;
+            }
+        }
+
+        /* Small Mobile Styles */
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-card h3 {
+                font-size: 1.8rem;
+            }
+
+            /* Charts Grid */
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Export Section */
+            div[style*="justify-content: space-between"] {
+                flex-direction: column !important;
+                gap: 15px;
+                text-align: center;
+            }
+
+            div[style*="justify-content: space-between"]>div:last-child {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            div[style*="justify-content: space-between"] button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Tables */
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            /* DataTables Responsive */
+            .dataTables_wrapper {
+                overflow-x: auto;
+            }
+
+            .dataTables_filter input {
+                width: 150px !important;
+            }
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -220,6 +354,14 @@
         <h2>Accès Restreint</h2>
         <p>Redirection vers la page de connexion...</p>
     </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
 
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -299,11 +441,54 @@
                 </div>
             </div>
 
-            <!-- Welcome Message or Recent Activity -->
+            <!-- Charts Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <!-- Score Distribution Chart -->
+                <div
+                    style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.04);">
+                    <h4 style="margin: 0 0 15px; color: var(--primary); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-chart-pie" style="color: var(--accent);"></i>
+                        Distribution des Scores
+                    </h4>
+                    <canvas id="scoreChart" height="200"></canvas>
+                </div>
+
+                <!-- Candidates by City Chart -->
+                <div
+                    style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.04);">
+                    <h4 style="margin: 0 0 15px; color: var(--primary); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-chart-bar" style="color: var(--secondary);"></i>
+                        Candidats par Ville
+                    </h4>
+                    <canvas id="cityChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Export & Actions Section -->
             <div
-                style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border-left: 5px solid var(--accent);">
+                style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px; color: var(--primary);">Exporter les Données</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Télécharger toutes les candidatures au format
+                        Excel</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="exportToExcel('candidates')"
+                        style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-excel"></i> Exporter Candidats
+                    </button>
+                    <button onclick="exportToExcel('offers')"
+                        style="background: linear-gradient(135deg, #004B87, #00AEEF); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-excel"></i> Exporter Offres
+                    </button>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div
+                style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border-left: 5px solid var(--accent); margin-top: 20px;">
                 <h3 style="margin:0 0 10px; color: var(--primary);">Bienvenue sur votre espace de pilotage</h3>
-                <p style="color: #666; line-height: 1.6;">
+                <p style="color: #666; line-height: 1.6; margin: 0;">
                     Le système d'intelligence artificielle analyse automatiquement chaque nouveau CV reçu.
                     Consultez l'onglet <strong>"Meilleurs Profils"</strong> pour voir les recommandations basées sur les
                     critères :
@@ -614,6 +799,158 @@
             fetchSimilarity();
             fetchOffers();
             populateJobSelector();
+            loadCharts(); // Load charts
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // CHARTS - Score Distribution & City Distribution
+        // ══════════════════════════════════════════════════════════════════════════════
+        let scoreChartInstance = null;
+        let cityChartInstance = null;
+
+        async function loadCharts() {
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
+                const candidates = await response.json();
+
+                if (!Array.isArray(candidates)) return;
+
+                // Score Distribution Data
+                const excellent = candidates.filter(c => parseInt(c.score) >= 75).length;
+                const good = candidates.filter(c => parseInt(c.score) >= 50 && parseInt(c.score) < 75).length;
+                const fair = candidates.filter(c => parseInt(c.score) >= 25 && parseInt(c.score) < 50).length;
+                const poor = candidates.filter(c => parseInt(c.score) < 25).length;
+
+                // Destroy existing chart if exists
+                if (scoreChartInstance) scoreChartInstance.destroy();
+
+                const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+                scoreChartInstance = new Chart(scoreCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Excellent (≥75%)', 'Bon (50-74%)', 'Moyen (25-49%)', 'Faible (<25%)'],
+                        datasets: [{
+                            data: [excellent, good, fair, poor],
+                            backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { font: { family: 'Outfit', size: 12 } }
+                            }
+                        }
+                    }
+                });
+
+                // City Distribution Data
+                const cityCount = {};
+                candidates.forEach(c => {
+                    const city = c.ville || 'Non spécifié';
+                    cityCount[city] = (cityCount[city] || 0) + 1;
+                });
+
+                const cityLabels = Object.keys(cityCount).slice(0, 6); // Top 6 cities
+                const cityData = cityLabels.map(city => cityCount[city]);
+
+                // Destroy existing chart if exists
+                if (cityChartInstance) cityChartInstance.destroy();
+
+                const cityCtx = document.getElementById('cityChart').getContext('2d');
+                cityChartInstance = new Chart(cityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: cityLabels,
+                        datasets: [{
+                            label: 'Candidats',
+                            data: cityData,
+                            backgroundColor: ['#004B87', '#00AEEF', '#F15A24', '#28a745', '#ffc107', '#6c757d'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+
+            } catch (e) {
+                console.error("Error loading charts", e);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // EXCEL EXPORT - Using SheetJS
+        // ══════════════════════════════════════════════════════════════════════════════
+        async function exportToExcel(type) {
+            showToast('Préparation de l\'export...', 'info');
+
+            try {
+                let data = [];
+                let filename = '';
+
+                if (type === 'candidates') {
+                    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
+                    const candidates = await response.json();
+
+                    data = candidates.map(c => ({
+                        'Date': c.date || '',
+                        'Nom': c.nom || '',
+                        'Email': c.email || '',
+                        'Téléphone': c.phone || '',
+                        'Ville': c.ville || '',
+                        'Niveau': c.niveau || '',
+                        'Expérience': c.exp || '',
+                        'Contrat': c.contrat || '',
+                        'Poste Cible': c.job || '',
+                        'Score (%)': c.score || 0,
+                        'Statut': parseInt(c.score) >= 75 ? 'Excellent' : parseInt(c.score) >= 50 ? 'Bon' : 'À revoir',
+                        'CV': c.cv || ''
+                    }));
+                    filename = 'LM_Bank_Candidats_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+
+                } else if (type === 'offers') {
+                    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                    const offers = await response.json();
+
+                    data = offers.map(o => ({
+                        'ID': o.id || '',
+                        'Date Publication': o.date || '',
+                        'Titre': o.title || '',
+                        'Ville': o.location || '',
+                        'Type Contrat': o.contract || '',
+                        'Niveau Requis': o.level || '',
+                        'Expérience Requise': o.exp || '',
+                        'Description': o.desc || ''
+                    }));
+                    filename = 'LM_Bank_Offres_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+                }
+
+                // Create workbook
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, type === 'candidates' ? 'Candidats' : 'Offres');
+
+                // Download
+                XLSX.writeFile(wb, filename);
+                showToast('Export réussi ! Fichier téléchargé.', 'success');
+
+            } catch (e) {
+                console.error("Error exporting", e);
+                showToast('Erreur lors de l\'export', 'error');
+            }
         }
 
         async function fetchStats() {
@@ -927,6 +1264,34 @@
             switchTab('positions');
             loadSheetData();
         }
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // MOBILE MENU TOGGLE
+        // ══════════════════════════════════════════════════════════════════════════════
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const toggleBtn = document.querySelector('.mobile-menu-toggle i');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+
+            // Toggle icon between bars and times
+            if (sidebar.classList.contains('open')) {
+                toggleBtn.className = 'fas fa-times';
+            } else {
+                toggleBtn.className = 'fas fa-bars';
+            }
+        }
+
+        // Close mobile menu when clicking a nav link (on mobile)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    toggleMobileMenu();
+                }
+            });
+        });
     </script>
 </body>
 

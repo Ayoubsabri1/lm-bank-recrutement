@@ -555,8 +555,15 @@
         <!-- OFFRES ACTIVES VIEW -->
         <div id="offres" class="view-section" style="display: none;">
             <div class="table-container active">
-                <h2 class="section-title"><i class="fas fa-briefcase" style="color: var(--primary);"></i> Offres
-                    d'Emploi Actives</h2>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <h2 class="section-title" style="margin: 0;"><i class="fas fa-briefcase"
+                            style="color: var(--primary);"></i> Offres d'Emploi Actives</h2>
+                    <button onclick="deleteAllOffers()"
+                        style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                        <i class="fas fa-trash-alt"></i> Supprimer Toutes les Offres
+                    </button>
+                </div>
                 <table id="offres-table" class="display" style="width:100%">
                     <thead>
                         <tr>
@@ -1152,6 +1159,67 @@
                 populateJobSelector(); // Refresh job selector
             } catch (e) {
                 console.error("Error deleting offer", e);
+                showToast('Erreur lors de la suppression', 'error');
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // DELETE ALL OFFERS - Bulk Delete with Strong Confirmation
+        // ══════════════════════════════════════════════════════════════════════════════
+        async function deleteAllOffers() {
+            // First confirmation
+            if (!confirm('⚠️ ATTENTION !\n\nVous êtes sur le point de SUPPRIMER TOUTES LES OFFRES D\'EMPLOI.\n\nCette action est IRRÉVERSIBLE et supprimera définitivement toutes les données.\n\nÊtes-vous sûr de vouloir continuer ?')) {
+                return;
+            }
+
+            // Second confirmation - Type "SUPPRIMER"
+            const confirmation = prompt('🔴 CONFIRMATION REQUISE\n\nPour confirmer la suppression de toutes les offres, tapez exactement:\n\nSUPPRIMER');
+
+            if (confirmation !== 'SUPPRIMER') {
+                showToast('Suppression annulée - Confirmation incorrecte', 'warning');
+                return;
+            }
+
+            showToast('Suppression en cours...', 'info');
+
+            try {
+                // Fetch all offers to get their IDs
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
+                const offers = await response.json();
+
+                if (!Array.isArray(offers) || offers.length === 0) {
+                    showToast('Aucune offre à supprimer', 'warning');
+                    return;
+                }
+
+                const totalOffers = offers.length;
+                let deleted = 0;
+
+                // Delete each offer
+                for (const offer of offers) {
+                    try {
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'delete_offer', id: offer.id })
+                        });
+                        deleted++;
+                    } catch (e) {
+                        console.error(`Error deleting offer ${offer.id}`, e);
+                    }
+                }
+
+                showToast(`${deleted}/${totalOffers} offres supprimées avec succès`, 'success');
+
+                // Refresh everything
+                fetchOffers();
+                fetchStats();
+                populateJobSelector();
+                loadCharts();
+
+            } catch (e) {
+                console.error("Error deleting all offers", e);
                 showToast('Erreur lors de la suppression', 'error');
             }
         }

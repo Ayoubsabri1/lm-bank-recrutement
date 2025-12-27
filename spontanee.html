@@ -619,13 +619,141 @@
             }
         });
 
-        // Form Submission
+        // ══════════════════════════════════════════════════════════════════════════════
+        // DATA VALIDATION FUNCTIONS
+        // ══════════════════════════════════════════════════════════════════════════════
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function validatePhone(phone) {
+            // Moroccan phone format: 06/07/05 + 8 digits or international
+            const regex = /^(\+212|0)(5|6|7)[0-9]{8}$/;
+            return regex.test(phone.replace(/\s/g, ''));
+        }
+
+        function validateName(name) {
+            return name.trim().length >= 2;
+        }
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            field.style.borderColor = '#dc3545';
+            field.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.15)';
+
+            // Remove existing error message
+            const existingError = field.parentElement.querySelector('.error-message');
+            if (existingError) existingError.remove();
+
+            // Add new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.cssText = 'color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: flex; align-items: center; gap: 5px;';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            field.parentElement.appendChild(errorDiv);
+        }
+
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.style.borderColor = '';
+            field.style.boxShadow = '';
+            const existingError = field.parentElement.querySelector('.error-message');
+            if (existingError) existingError.remove();
+        }
+
+        function clearAllErrors() {
+            ['nom', 'prenom', 'email', 'telephone', 'ville', 'niveau', 'experience', 'contrat'].forEach(clearError);
+        }
+
+        // Form Submission with Validation
         document.getElementById('spontaneous-form').addEventListener('submit', async function (e) {
             e.preventDefault();
+            clearAllErrors();
 
+            let isValid = true;
+
+            // Validate Nom
+            const nom = document.getElementById('nom').value;
+            if (!validateName(nom)) {
+                showError('nom', 'Le nom doit contenir au moins 2 caractères');
+                isValid = false;
+            }
+
+            // Validate Prénom
+            const prenom = document.getElementById('prenom').value;
+            if (!validateName(prenom)) {
+                showError('prenom', 'Le prénom doit contenir au moins 2 caractères');
+                isValid = false;
+            }
+
+            // Validate Email
+            const email = document.getElementById('email').value;
+            if (!validateEmail(email)) {
+                showError('email', 'Format email invalide (ex: nom@domaine.com)');
+                isValid = false;
+            }
+
+            // Validate Phone
+            const phone = document.getElementById('telephone').value;
+            if (!validatePhone(phone)) {
+                showError('telephone', 'Format téléphone invalide (ex: 0612345678)');
+                isValid = false;
+            }
+
+            // Validate Ville
+            if (!document.getElementById('ville').value) {
+                showError('ville', 'Veuillez sélectionner une ville');
+                isValid = false;
+            }
+
+            // Validate Niveau
+            if (!document.getElementById('niveau').value) {
+                showError('niveau', 'Veuillez sélectionner un niveau');
+                isValid = false;
+            }
+
+            // Validate Experience
+            const exp = document.getElementById('experience').value;
+            if (exp === '' || isNaN(exp) || parseInt(exp) < 0) {
+                showError('experience', 'Veuillez entrer un nombre valide (0+)');
+                isValid = false;
+            }
+
+            // Validate Contrat
+            if (!document.getElementById('contrat').value) {
+                showError('contrat', 'Veuillez sélectionner un type de contrat');
+                isValid = false;
+            }
+
+            // Validate CV
             const file = fileInput.files[0];
-            if (!file) { alert('Veuillez joindre votre CV'); return; }
+            if (!file) {
+                alert('⚠️ Veuillez joindre votre CV (PDF ou Word)');
+                return;
+            }
 
+            // Check file type
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('⚠️ Format de fichier non supporté. Utilisez PDF ou Word.');
+                return;
+            }
+
+            // Check file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('⚠️ Le fichier est trop volumineux. Maximum 10 MB.');
+                return;
+            }
+
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('.error-message');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // All validations passed - proceed with submission
             document.getElementById('loading-overlay').classList.add('show');
 
             const reader = new FileReader();
@@ -635,10 +763,10 @@
 
                 const formData = {
                     action: 'spontaneous_application',
-                    nom: document.getElementById('nom').value,
-                    prenom: document.getElementById('prenom').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('telephone').value,
+                    nom: nom.trim(),
+                    prenom: prenom.trim(),
+                    email: email.trim().toLowerCase(),
+                    phone: phone.replace(/\s/g, ''),
                     ville: document.getElementById('ville').value,
                     niveau: document.getElementById('niveau').value,
                     experience: document.getElementById('experience').value,
@@ -664,7 +792,7 @@
                     }, 3500);
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Erreur. Veuillez réessayer.');
+                    alert('❌ Erreur de connexion. Veuillez réessayer.');
                     document.getElementById('loading-overlay').classList.remove('show');
                 }
             };

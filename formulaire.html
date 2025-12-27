@@ -734,38 +734,152 @@
             });
         }
 
-        // Form Submission
+        // ══════════════════════════════════════════════════════════════════════════════
+        // DATA VALIDATION FUNCTIONS
+        // ══════════════════════════════════════════════════════════════════════════════
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function validatePhone(phone) {
+            const regex = /^(\+212|0)(5|6|7)[0-9]{8}$/;
+            return regex.test(phone.replace(/\s/g, ''));
+        }
+
+        function validateName(name) {
+            return name.trim().length >= 2;
+        }
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            field.style.borderColor = '#dc3545';
+            field.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.15)';
+
+            const existingError = field.parentElement.querySelector('.error-message');
+            if (existingError) existingError.remove();
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.cssText = 'color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: flex; align-items: center; gap: 5px;';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            field.parentElement.appendChild(errorDiv);
+        }
+
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            field.style.borderColor = '';
+            field.style.boxShadow = '';
+            const existingError = field.parentElement.querySelector('.error-message');
+            if (existingError) existingError.remove();
+        }
+
+        function clearAllErrors() {
+            ['nom', 'prenom', 'email', 'telephone', 'ville', 'niveau_etudes', 'experience'].forEach(clearError);
+        }
+
+        // Form Submission with Validation
         document.getElementById('application-form').addEventListener('submit', async function (e) {
             e.preventDefault();
+            clearAllErrors();
 
+            let isValid = true;
+
+            // Validate Nom
+            const nom = document.getElementById('nom').value;
+            if (!validateName(nom)) {
+                showError('nom', 'Le nom doit contenir au moins 2 caractères');
+                isValid = false;
+            }
+
+            // Validate Prénom
+            const prenom = document.getElementById('prenom').value;
+            if (!validateName(prenom)) {
+                showError('prenom', 'Le prénom doit contenir au moins 2 caractères');
+                isValid = false;
+            }
+
+            // Validate Email
+            const email = document.getElementById('email').value;
+            if (!validateEmail(email)) {
+                showError('email', 'Format email invalide (ex: nom@domaine.com)');
+                isValid = false;
+            }
+
+            // Validate Phone
+            const phone = document.getElementById('telephone').value;
+            if (!validatePhone(phone)) {
+                showError('telephone', 'Format téléphone invalide (ex: 0612345678)');
+                isValid = false;
+            }
+
+            // Validate Ville
+            if (!document.getElementById('ville').value) {
+                showError('ville', 'Veuillez sélectionner une ville');
+                isValid = false;
+            }
+
+            // Validate Niveau
+            if (!document.getElementById('niveau_etudes').value) {
+                showError('niveau_etudes', 'Veuillez sélectionner un niveau');
+                isValid = false;
+            }
+
+            // Validate Experience
+            const exp = document.getElementById('experience').value;
+            if (exp === '' || isNaN(exp) || parseInt(exp) < 0) {
+                showError('experience', 'Veuillez entrer un nombre valide (0+)');
+                isValid = false;
+            }
+
+            // Validate CV
+            const cvFile = fileInput.files[0];
+            if (!cvFile) {
+                alert('⚠️ Veuillez joindre votre CV (PDF ou Word)');
+                return;
+            }
+
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(cvFile.type)) {
+                alert('⚠️ Format de fichier non supporté. Utilisez PDF ou Word.');
+                return;
+            }
+
+            if (cvFile.size > 10 * 1024 * 1024) {
+                alert('⚠️ Le fichier est trop volumineux. Maximum 10 MB.');
+                return;
+            }
+
+            if (!isValid) {
+                const firstError = document.querySelector('.error-message');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // All validations passed
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
             submitBtn.disabled = true;
 
             try {
-                const cvFile = fileInput.files[0];
-                let cvBase64 = '';
-                let cvFileName = '';
-
-                if (cvFile) {
-                    cvBase64 = await fileToBase64(cvFile);
-                    cvFileName = cvFile.name;
-                }
+                const cvBase64 = await fileToBase64(cvFile);
 
                 const formData = {
                     action: 'candidate',
-                    nom: document.getElementById('nom').value,
-                    prenom: document.getElementById('prenom').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('telephone').value,
+                    nom: nom.trim(),
+                    prenom: prenom.trim(),
+                    email: email.trim().toLowerCase(),
+                    phone: phone.replace(/\s/g, ''),
                     ville: document.getElementById('ville').value,
                     niveau: document.getElementById('niveau_etudes').value,
                     experience: document.getElementById('experience').value,
                     contrat: document.getElementById('contrat').value,
                     poste: document.getElementById('poste').value,
                     cvBase64: cvBase64,
-                    cvFileName: cvFileName,
-                    mimeType: cvFile ? cvFile.type : ''
+                    cvFileName: cvFile.name,
+                    mimeType: cvFile.type
                 };
 
                 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkRs_Elvq5GRPzYiasgSRdGSua7UyRw5V55P_JhzUQi3G3WfwhYgZRdXXK2gYuL547Tw/exec';
@@ -784,7 +898,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
+                alert('❌ Une erreur est survenue. Veuillez réessayer.');
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma candidature';
                 submitBtn.disabled = false;
             }

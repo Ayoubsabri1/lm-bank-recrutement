@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur Candidats - LM BANK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #e9ecef;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 500px;
+        }
+
+        .btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #progress-container {
+            margin-top: 25px;
+            background: #e9ecef;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #28a745;
+            transition: width 0.3s;
+        }
+
+        #status {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>👥 Générateur de Candidats (x10)</h2>
+        <p style="color: #6c757d; line-height: 1.6;">Générer <strong>10 candidats</strong> de test avec scores variés.
+        </p>
+
+        <button id="start-btn" class="btn" onclick="startCandidateSeeding()">Lancer la Génération</button>
+
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="status"></p>
+        <a href="admin_dashboard.html" id="done-link"
+            style="display: none; margin-top: 25px; color: #28a745; text-decoration: none; font-weight: bold; font-size: 1.1rem;">Voir
+            le Dashboard &rarr;</a>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RslDBgWMMNL71Q/exec';
+
+        // Minimal PDF Base64 (Empty page)
+        const DUMMY_PDF = "JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwogIC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKICAvVHlwZSAvUGFnZXMKICAvTWVkaWFCb3ggWyAwIDAgMjAwIDIwMCBdCiAgL0NvdW50IDEKICAvS2lkcyBbIDMgMCBSIF0KPj4KZW5kb2JqCgozIDAgb2JqCjw8CiAgL1R5cGUgL1BhZ2UKICAvUGFyZW50IDIgMCBSCiAgL1Jlc291cmNlcyA8PAogICAgL0ZvbnQgPDwKICAgICAgL0YxIDQgMCBSC    AgICA+PgogID4+CiAgL0NvbnRlbnRzIDUgMCBSCj4+CmVuZG9iagoKNCAwIG9iago8PAogIC9UeXBlIC9Gb250CiAgL1N1YnR5cGUgL1R5cGUxCiAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgo+PgplbmRvYmoKCjUgMCBvYmoKPDwgL0xlbmd0aCAyMiA+PgpzdHJlYW0KQlQKL0YxIDEyIFRmCjEwMCAxMDAgVGMKKFRlc3QgQ2FuZGlkYXQpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZgowMDAwMDAwMDEwIDAwMDAwIG4KMDAwMDAwMDA2MCAwMDAwMCBuCjAwMDAwMDAxNTcgMDAwMDAgbgowMDAwMDAwMzA1IDAwMDAwIG4KMDAwMDAwMDM5MiAwMDAwMCBuCnRyYWlsZXIKPDwKICAvU2l6ZSA2CiAgL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjQ2NAolJUVPRgo=";
+
+        const firstNames = ["Ahmed", "Sarah", "Youssef", "Khadija", "Omar", "Fatima", "Karim", "Amina", "Rachid", "Leila"];
+        const lastNames = ["Benali", "Alaoui", "Mansouri", "Idrissi", "Tazi", "Berrada", "Chraibi", "Fassi", "Naciri", "Zouhair"];
+        const cities = ["Casablanca", "Rabat", "Marrakech", "Tanger", "Agadir"];
+        const levels = ["Bac+3", "Bac+5", "Master", "Ingénieur"];
+        const jobs = ["Conseiller Clientèle Particuliers", "Chargé d'Affaires Entreprises", "Développeur Fullstack", "Analyste Risques", "Chef de Projet Digital"];
+
+        async function startCandidateSeeding() {
+            const btn = document.getElementById('start-btn');
+            const status = document.getElementById('status');
+            const bar = document.getElementById('progress-bar');
+            const container = document.getElementById('progress-container');
+
+            btn.disabled = true;
+            btn.textContent = "Création des candidats...";
+            container.style.display = 'block';
+
+            let count = 0;
+            const target = 10;
+
+            for (let i = 0; i < target; i++) {
+                const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
+                const city = cities[Math.floor(Math.random() * cities.length)];
+                const job = jobs[Math.floor(Math.random() * jobs.length)];
+
+                const payload = {
+                    action: 'candidate',
+                    nom: lname,
+                    prenom: fname,
+                    email: `${fname.toLowerCase()}.${lname.toLowerCase()}.${Math.floor(Math.random() * 1000)}@gmail.com`,
+                    phone: "06" + Math.floor(Math.random() * 90000000 + 10000000),
+                    ville: city,
+                    niveau: levels[Math.floor(Math.random() * levels.length)],
+                    experience: Math.floor(Math.random() * 10) + " ans",
+                    contrat: "CDI",
+                    poste: job,
+                    cvBase64: DUMMY_PDF,
+                    cvFileName: `CV_${lname}_${fname}.pdf`,
+                    mimeType: "application/pdf"
+                };
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    count++;
+                    const pct = Math.round((count / target) * 100);
+                    bar.style.width = pct + "%";
+                    status.textContent = `Candidat ${count}/${target} : ${fname} ${lname} -> ${job}`;
+
+                } catch (e) {
+                    console.error("Erreur", count, e);
+                }
+
+                await new Promise(r => setTimeout(r, 2000)); // Delay to avoid quota issues
+            }
+
+            btn.textContent = "✅ Terminé !";
+            status.textContent = "10 Candidats ajoutés avec succès.";
+            document.getElementById('done-link').style.display = 'inline-block';
+        }
+    </script>
+</body>
+
+</html>

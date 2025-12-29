@@ -548,8 +548,8 @@
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOffers`);
                 const data = await response.json();
-                // Limit to 7 jobs
-                jobOffers = data.reverse().slice(0, 7);
+                // Show all jobs (removed slice limit)
+                jobOffers = data.reverse();
                 filteredJobs = jobOffers;
                 renderJobs(filteredJobs, 1);
             } catch (error) {

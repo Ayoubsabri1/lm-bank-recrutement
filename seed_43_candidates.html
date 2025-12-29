@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur 43 Candidats - LM BANK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00b894);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            display: block;
+            margin: 20px auto;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .log {
+            background: #0a0a15;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry.success {
+            color: #00d4aa;
+        }
+
+        .log-entry.error {
+            color: #ff6b6b;
+        }
+
+        .log-entry.info {
+            color: #74b9ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎯 Générateur 43 Candidats Variés</h1>
+
+        <div class="progress-container">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number" id="total">0</div>
+                    <div class="label">Total Créés</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="spontaneous">0</div>
+                    <div class="label">Spontanées</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="specific">0</div>
+                    <div class="label">Offres Ciblées</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="avgScore">0%</div>
+                    <div class="label">Score Moyen</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+
+            <button id="startBtn" onclick="startSeeding()">🚀 Démarrer la Génération</button>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-t9SJSfBZt3-5BU_N5yWehDPexStI859IeM-8SIQUS5VHFMz-s9Jl99HdhEesRB8w/exec';
+
+        // 43 Candidats avec profils variés
+        const candidates = [
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 1: PERFECT MATCHES (Spécialité + Ville + Expérience) → Score ~70-95%
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "El Mansouri", prenom: "Youssef", email: "youssef.mansouri@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "Informatique", type: "spontaneous", expectedScore: "85-95%" },
+            { nom: "Benjelloun", prenom: "Sara", email: "sara.benjelloun@gmail.com", ville: "Rabat", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "Finance", type: "spontaneous", expectedScore: "80-90%" },
+            { nom: "Alaoui", prenom: "Karim", email: "karim.alaoui@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "Juridique", type: "spontaneous", expectedScore: "75-85%" },
+            { nom: "Tazi", prenom: "Fatima", email: "fatima.tazi@gmail.com", ville: "Tanger", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "Marketing", type: "spontaneous", expectedScore: "75-85%" },
+            { nom: "Fassi", prenom: "Omar", email: "omar.fassi@gmail.com", ville: "Marrakech", niveau: "Bac+5", experience: "7", contrat: "CDI", specialite: "Gestion", type: "spontaneous", expectedScore: "70-80%" },
+
+            // Candidats ciblant des offres spécifiques (Perfect Match)
+            { nom: "Bouazza", prenom: "Ahmed", email: "ahmed.bouazza@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "Informatique", type: "candidate", poste: "Développeur Full Stack", expectedScore: "85-95%" },
+            { nom: "Chraibi", prenom: "Layla", email: "layla.chraibi@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "Finance", type: "candidate", poste: "Analyste Crédit", expectedScore: "80-90%" },
+            { nom: "Bennani", prenom: "Mehdi", email: "mehdi.bennani@gmail.com", ville: "Rabat", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "RH", type: "candidate", poste: "Chargé de Recrutement", expectedScore: "80-90%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 2: PARTIAL MATCHES (Spécialité OK mais Ville différente) → Score ~50-70%
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "Idrissi", prenom: "Nadia", email: "nadia.idrissi@gmail.com", ville: "Fès", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "Informatique", type: "spontaneous", expectedScore: "55-65%" },
+            { nom: "Kettani", prenom: "Hamza", email: "hamza.kettani@gmail.com", ville: "Agadir", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "Finance", type: "spontaneous", expectedScore: "50-60%" },
+            { nom: "Ouazzani", prenom: "Salma", email: "salma.ouazzani@gmail.com", ville: "Oujda", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "Comptabilité", type: "spontaneous", expectedScore: "45-55%" },
+            { nom: "Senhaji", prenom: "Rachid", email: "rachid.senhaji@gmail.com", ville: "Meknès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "Commerce", type: "spontaneous", expectedScore: "50-60%" },
+            { nom: "Berrada", prenom: "Imane", email: "imane.berrada@gmail.com", ville: "Kenitra", niveau: "Bac+3", experience: "2", contrat: "CDI", specialite: "Marketing", type: "spontaneous", expectedScore: "45-55%" },
+
+            // Candidats ciblant des offres (Partial Match)
+            { nom: "Lahlou", prenom: "Amine", email: "amine.lahlou@gmail.com", ville: "Fès", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "Informatique", type: "candidate", poste: "Data Analyst", expectedScore: "55-65%" },
+            { nom: "Benjdia", prenom: "Hiba", email: "hiba.benjdia@gmail.com", ville: "Agadir", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "RH", type: "candidate", poste: "Assistant RH", expectedScore: "45-55%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 3: WEAK MATCHES (Spécialité différente) → Score ~20-40%
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "Filali", prenom: "Yassine", email: "yassine.filali@gmail.com", ville: "Casablanca", niveau: "Bac+2", experience: "1", contrat: "Stage", specialite: "Logistique", type: "spontaneous", expectedScore: "25-35%" },
+            { nom: "Zouaki", prenom: "Kenza", email: "kenza.zouaki@gmail.com", ville: "Rabat", niveau: "Bac+3", experience: "0", contrat: "Stage", specialite: "Autre", type: "spontaneous", expectedScore: "20-30%" },
+            { nom: "Louafi", prenom: "Bilal", email: "bilal.louafi@gmail.com", ville: "Tanger", niveau: "Bac", experience: "1", contrat: "CDD", specialite: "Logistique", type: "spontaneous", expectedScore: "15-25%" },
+            { nom: "Haddad", prenom: "Meryem", email: "meryem.haddad@gmail.com", ville: "Marrakech", niveau: "Bac+2", experience: "0", contrat: "Stage", specialite: "Autre", type: "spontaneous", expectedScore: "15-25%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 4: MIXED PROFILES (Variété de combinaisons)
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "El Amrani", prenom: "Soufiane", email: "soufiane.amrani@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "8", contrat: "CDI", specialite: "Gestion", type: "candidate", poste: "Chef de Projet", expectedScore: "70-80%" },
+            { nom: "Jaidi", prenom: "Rim", email: "rim.jaidi@gmail.com", ville: "Rabat", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "Juridique", type: "candidate", poste: "Juriste Senior", expectedScore: "75-85%" },
+            { nom: "Naciri", prenom: "Zakaria", email: "zakaria.naciri@gmail.com", ville: "Casablanca", niveau: "Bac+3", experience: "3", contrat: "CDI", specialite: "Commerce", type: "candidate", poste: "Commercial B2B", expectedScore: "60-70%" },
+            { nom: "Guedira", prenom: "Asmae", email: "asmae.guedira@gmail.com", ville: "Tanger", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "Finance", type: "spontaneous", expectedScore: "65-75%" },
+            { nom: "Tahiri", prenom: "Adil", email: "adil.tahiri@gmail.com", ville: "Fès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "Comptabilité", type: "spontaneous", expectedScore: "55-65%" },
+            { nom: "Bouzidi", prenom: "Hajar", email: "hajar.bouzidi@gmail.com", ville: "Casablanca", niveau: "Bac+2", experience: "2", contrat: "CDD", specialite: "RH", type: "spontaneous", expectedScore: "45-55%" },
+            { nom: "Skalli", prenom: "Othmane", email: "othmane.skalli@gmail.com", ville: "Rabat", niveau: "Bac+5", experience: "7", contrat: "CDI", specialite: "Informatique", type: "candidate", poste: "Architecte Cloud", expectedScore: "80-90%" },
+            { nom: "Lamrani", prenom: "Ghita", email: "ghita.lamrani@gmail.com", ville: "Marrakech", niveau: "Bac+3", experience: "2", contrat: "CDI", specialite: "Marketing", type: "candidate", poste: "Community Manager", expectedScore: "55-65%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 5: JUNIORS & STAGIAIRES (Peu d'expérience)
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "Boutaleb", prenom: "Ayoub", email: "ayoub.boutaleb@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "0", contrat: "Stage", specialite: "Informatique", type: "spontaneous", expectedScore: "45-55%" },
+            { nom: "Sbai", prenom: "Wiam", email: "wiam.sbai@gmail.com", ville: "Rabat", niveau: "Bac+3", experience: "0", contrat: "Stage", specialite: "Finance", type: "spontaneous", expectedScore: "40-50%" },
+            { nom: "Rami", prenom: "Ilyas", email: "ilyas.rami@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "1", contrat: "CDD", specialite: "Informatique", type: "candidate", poste: "Développeur Junior", expectedScore: "55-65%" },
+            { nom: "Kadiri", prenom: "Lina", email: "lina.kadiri@gmail.com", ville: "Tanger", niveau: "Bac+2", experience: "0", contrat: "Stage", specialite: "Comptabilité", type: "spontaneous", expectedScore: "30-40%" },
+            { nom: "Moussaoui", prenom: "Saad", email: "saad.moussaoui@gmail.com", ville: "Agadir", niveau: "Bac+3", experience: "1", contrat: "CDD", specialite: "Commerce", type: "spontaneous", expectedScore: "35-45%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 6: SENIORS EXPÉRIMENTÉS
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "Cherkaoui", prenom: "Nabil", email: "nabil.cherkaoui@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "12", contrat: "CDI", specialite: "Gestion", type: "candidate", poste: "Directeur Régional", expectedScore: "75-85%" },
+            { nom: "Bensouda", prenom: "Houda", email: "houda.bensouda@gmail.com", ville: "Rabat", niveau: "Doctorat", experience: "10", contrat: "CDI", specialite: "Finance", type: "spontaneous", expectedScore: "85-95%" },
+            { nom: "Ait Taleb", prenom: "Mohamed", email: "mohamed.aittaleb@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "15", contrat: "CDI", specialite: "Juridique", type: "candidate", poste: "Responsable Conformité", expectedScore: "80-90%" },
+            { nom: "Erraji", prenom: "Samira", email: "samira.erraji@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "9", contrat: "CDI", specialite: "RH", type: "candidate", poste: "DRH Adjoint", expectedScore: "75-85%" },
+
+            // ═══════════════════════════════════════════════════════════════
+            // GROUPE 7: PROFILS DIVERS (Compléter jusqu'à 43)
+            // ═══════════════════════════════════════════════════════════════
+            { nom: "Zerhouni", prenom: "Khalid", email: "khalid.zerhouni@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "Informatique", type: "spontaneous", expectedScore: "75-85%" },
+            { nom: "Bahloul", prenom: "Nisrine", email: "nisrine.bahloul@gmail.com", ville: "Rabat", niveau: "Bac+3", experience: "4", contrat: "CDI", specialite: "Commerce", type: "candidate", poste: "Chargé de Clientèle", expectedScore: "60-70%" },
+            { nom: "Fikri", prenom: "Reda", email: "reda.fikri@gmail.com", ville: "Tanger", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "Marketing", type: "spontaneous", expectedScore: "55-65%" },
+            { nom: "Sefiani", prenom: "Loubna", email: "loubna.sefiani@gmail.com", ville: "Fès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "Comptabilité", type: "candidate", poste: "Auditeur Interne", expectedScore: "60-70%" },
+            { nom: "Ameur", prenom: "Tarik", email: "tarik.ameur@gmail.com", ville: "Casablanca", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "Finance", type: "candidate", poste: "Gestionnaire de Risque", expectedScore: "75-85%" },
+            { nom: "Hakimi", prenom: "Amina", email: "amina.hakimi@gmail.com", ville: "Marrakech", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "RH", type: "spontaneous", expectedScore: "40-50%" }
+        ];
+
+        // Fake PDF base64 (minimal valid PDF)
+        const fakePDFBase64 = "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvUmVzb3VyY2VzIDw8ID4+IC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdID4+CmVuZG9iagp4cmVmCjAgNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNCAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKMjE2CiUlRU9G";
+
+        let stats = { total: 0, spontaneous: 0, specific: 0, scores: [] };
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('total').textContent = stats.total;
+            document.getElementById('spontaneous').textContent = stats.spontaneous;
+            document.getElementById('specific').textContent = stats.specific;
+            const avg = stats.scores.length > 0 ? Math.round(stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length) : 0;
+            document.getElementById('avgScore').textContent = avg + '%';
+            const progress = Math.round((stats.total / candidates.length) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = progress + '%';
+        }
+
+        async function sendCandidate(candidate, index) {
+            const payload = {
+                action: candidate.type === 'spontaneous' ? 'spontaneous_application' : 'candidate',
+                nom: candidate.nom,
+                prenom: candidate.prenom,
+                email: candidate.email,
+                phone: '06' + String(Math.floor(10000000 + Math.random() * 89999999)),
+                ville: candidate.ville,
+                niveau: candidate.niveau,
+                specialite: candidate.specialite,
+                experience: candidate.experience,
+                contrat: candidate.contrat,
+                poste: candidate.poste || '',
+                cvBase64: fakePDFBase64,
+                cvFileName: `CV_${candidate.nom}_${candidate.prenom}.pdf`,
+                mimeType: 'application/pdf'
+            };
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                stats.total++;
+                if (candidate.type === 'spontaneous') stats.spontaneous++;
+                else stats.specific++;
+
+                // Estimate score based on profile
+                let estimatedScore = 20;
+                if (['Informatique', 'Finance', 'Juridique', 'RH', 'Gestion'].includes(candidate.specialite)) estimatedScore += 30;
+                if (['Casablanca', 'Rabat'].includes(candidate.ville)) estimatedScore += 20;
+                if (parseInt(candidate.experience) > 0) estimatedScore += 10;
+                if (['Bac+5', 'Doctorat'].includes(candidate.niveau)) estimatedScore += 10;
+                stats.scores.push(Math.min(95, estimatedScore + Math.floor(Math.random() * 5)));
+
+                log(`✅ ${candidate.prenom} ${candidate.nom} (${candidate.specialite}) - ${candidate.type === 'spontaneous' ? 'Spontanée' : 'Offre: ' + candidate.poste} - Attendu: ${candidate.expectedScore}`, 'success');
+                updateStats();
+            } catch (error) {
+                log(`❌ Erreur pour ${candidate.nom}: ${error.message}`, 'error');
+            }
+        }
+
+        async function startSeeding() {
+            const btn = document.getElementById('startBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Génération en cours...';
+
+            log('🚀 Démarrage de la génération de 43 candidats...', 'info');
+            log('📊 Profils variés: Perfect Match, Partial Match, Weak Match, Juniors, Seniors', 'info');
+
+            for (let i = 0; i < candidates.length; i++) {
+                await sendCandidate(candidates[i], i);
+                await new Promise(r => setTimeout(r, 1500)); // 1.5s delay to avoid rate limiting
+            }
+
+            log('🎉 Génération terminée! 43 candidats créés avec succès.', 'success');
+            btn.textContent = '✅ Terminé!';
+        }
+    </script>
+</body>
+
+</html>

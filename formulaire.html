@@ -592,15 +592,34 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
+                            <label>Spécialité / Domaine <span class="required">*</span></label>
+                            <div class="input-wrapper select-wrapper">
+                                <select id="specialite" required>
+                                    <option value="">Sélectionnez</option>
+                                    <option value="Informatique">Informatique / IT</option>
+                                    <option value="Finance">Finance / Banque</option>
+                                    <option value="Comptabilité">Comptabilité / Audit</option>
+                                    <option value="Commerce">Commerce / Vente</option>
+                                    <option value="Marketing">Marketing / Communication</option>
+                                    <option value="RH">Ressources Humaines</option>
+                                    <option value="Juridique">Juridique / Droit</option>
+                                    <option value="Gestion">Gestion / Management</option>
+                                    <option value="Logistique">Logistique / Transport</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 0;">
                             <label>Années d'expérience <span class="required">*</span></label>
                             <div class="input-wrapper">
                                 <input type="number" id="experience" required min="0" max="40" placeholder="Ex: 2">
                                 <i class="fas fa-clock"></i>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Ville de résidence <span class="required">*</span></label>
                             <div class="input-wrapper select-wrapper">
@@ -866,9 +885,9 @@
             submitBtn.disabled = true;
 
             try {
-                const cvBase64 = await fileToBase64(cvFile);
+                const fileBase64 = await fileToBase64(cvFile);
 
-                const formData = {
+                const payload = {
                     action: 'candidate',
                     nom: nom.trim(),
                     prenom: prenom.trim(),
@@ -876,15 +895,16 @@
                     phone: phone.replace(/\s/g, ''),
                     ville: document.getElementById('ville').value,
                     niveau: document.getElementById('niveau_etudes').value,
+                    specialite: document.getElementById('specialite').value,
                     experience: document.getElementById('experience').value,
                     contrat: document.getElementById('contrat').value,
                     poste: document.getElementById('poste').value,
-                    cvBase64: cvBase64,
+                    cvBase64: fileBase64,
                     cvFileName: cvFile.name,
                     mimeType: cvFile.type
                 };
 
-                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RslDBgWMMNL71Q/exec';
+                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-t9SJSfBZt3-5BU_N5yWehDPexStI859IeM-8SIQUS5VHFMz-s9Jl99HdhEesRB8w/exec';
 
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',

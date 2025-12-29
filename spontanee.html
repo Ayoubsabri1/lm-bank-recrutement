@@ -531,17 +531,39 @@
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Niveau d'études <span class="required">*</span></label>
                             <div class="input-wrapper select-wrapper">
-                                <select id="niveau" required>
+                                <select id="niveau_etudes" required>
                                     <option value="">Sélectionnez</option>
                                     <option value="Bac">Bac</option>
-                                    <option value="Bac+2">Bac+2</option>
-                                    <option value="Bac+3">Bac+3</option>
-                                    <option value="Bac+5">Bac+5</option>
+                                    <option value="Bac+2">Bac+2 (Technicien / DEUG)</option>
+                                    <option value="Bac+3">Bac+3 (Licence / Bachelor)</option>
+                                    <option value="Bac+5">Bac+5 (Master / Ingénieur)</option>
                                     <option value="Doctorat">Doctorat</option>
                                 </select>
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
                         </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Spécialité / Domaine <span class="required">*</span></label>
+                            <div class="input-wrapper select-wrapper">
+                                <select id="specialite" required>
+                                    <option value="">Sélectionnez</option>
+                                    <option value="Informatique">Informatique / IT</option>
+                                    <option value="Finance">Finance / Banque</option>
+                                    <option value="Comptabilité">Comptabilité / Audit</option>
+                                    <option value="Commerce">Commerce / Vente</option>
+                                    <option value="Marketing">Marketing / Communication</option>
+                                    <option value="RH">Ressources Humaines</option>
+                                    <option value="Juridique">Juridique / Droit</option>
+                                    <option value="Gestion">Gestion / Management</option>
+                                    <option value="Logistique">Logistique / Transport</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Années d'expérience <span class="required">*</span></label>
                             <div class="input-wrapper">
@@ -761,24 +783,25 @@
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async function () {
-                const base64 = reader.result.split(',')[1];
+                const fileBase64 = reader.result.split(',')[1];
 
-                const formData = {
+                const payload = {
                     action: 'spontaneous_application',
-                    nom: nom.trim(),
-                    prenom: prenom.trim(),
-                    email: email.trim().toLowerCase(),
-                    phone: phone.replace(/\s/g, ''),
+                    nom: document.getElementById('nom').value.trim(),
+                    prenom: document.getElementById('prenom').value.trim(),
+                    email: document.getElementById('email').value.trim().toLowerCase(),
+                    phone: document.getElementById('telephone').value.replace(/\s/g, ''),
                     ville: document.getElementById('ville').value,
-                    niveau: document.getElementById('niveau').value,
+                    niveau: document.getElementById('niveau_etudes').value,
+                    specialite: document.getElementById('specialite').value,
                     experience: document.getElementById('experience').value,
                     contrat: document.getElementById('contrat').value,
-                    cvBase64: base64,
+                    cvBase64: fileBase64,
                     cvFileName: file.name,
                     mimeType: file.type
                 };
 
-                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RslDBgWMMNL71Q/exec';
+                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-t9SJSfBZt3-5BU_N5yWehDPexStI859IeM-8SIQUS5VHFMz-s9Jl99HdhEesRB8w/exec';
 
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, {

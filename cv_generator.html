@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de CV - LM BANK Test Data</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #004B87, #00AEEF);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #004B87;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #004B87;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stat-card.excellent {
+            border-left: 4px solid #28a745;
+        }
+
+        .stat-card.good {
+            border-left: 4px solid #ffc107;
+        }
+
+        .stat-card.average {
+            border-left: 4px solid #fd7e14;
+        }
+
+        .stat-card.poor {
+            border-left: 4px solid #dc3545;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #004B87, #00AEEF);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 75, 135, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+        }
+
+        .log {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📄 Générateur de CV PDF</h1>
+        <p class="subtitle">Création de 40 CV fictifs marocains pour tester la plateforme LM BANK</p>
+
+        <div class="warning">
+            ⚠️ <strong>Important:</strong> Après la génération, les 40 fichiers PDF seront téléchargés automatiquement.
+            Assurez-vous que votre navigateur autorise les téléchargements multiples.
+        </div>
+
+        <div class="stats">
+            <div class="stat-card excellent">
+                <h3>10</h3>
+                <p>Excellents<br>(75-100%)</p>
+            </div>
+            <div class="stat-card good">
+                <h3>10</h3>
+                <p>Bons<br>(50-74%)</p>
+            </div>
+            <div class="stat-card average">
+                <h3>10</h3>
+                <p>Moyens<br>(25-49%)</p>
+            </div>
+            <div class="stat-card poor">
+                <h3>10</h3>
+                <p>Non Compatibles<br>(0%)</p>
+            </div>
+        </div>
+
+        <button class="btn" id="generateBtn" onclick="startGeneration()">
+            🚀 Générer les 40 CV PDF
+        </button>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-text" id="progressText">Préparation...</p>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // DONNÉES MAROCAINES ENRICHIES
+        // ══════════════════════════════════════════════════════════════════════════════
+
+        const prenomsHommes = ["Mohammed", "Ahmed", "Youssef", "Omar", "Hassan", "Ali", "Karim", "Mehdi", "Samir", "Rachid", "Khalid", "Amine", "Hamza", "Zakaria", "Younes", "Ismail", "Nabil", "Mustapha", "Adil", "Brahim"];
+        const prenomsFemmes = ["Fatima", "Khadija", "Aicha", "Nora", "Sara", "Salma", "Laila", "Hanae", "Meryem", "Imane", "Soukaina", "Zineb", "Hiba", "Assia", "Dounia", "Ghita", "Wafa", "Loubna", "Nawal", "Rim"];
+        const noms = ["Alaoui", "Bennani", "El Fassi", "Tazi", "Idrissi", "Belhaj", "Mansouri", "Naciri", "Cherkaoui", "Ouazzani", "Benjelloun", "Amrani", "Skalli", "Filali", "Berrada", "Lahlou", "Senhaji", "Benkirane", "Tahiri", "El Khattabi"];
+
+        const villesCompatibles = ["Casablanca", "Rabat", "Fès", "Marrakech", "Tanger"];
+        const villesNonCompatibles = ["Ouarzazate", "Errachidia", "Laâyoune", "Dakhla", "Nador"];
+
+        // ECOLES ET SPÉCIALITÉS
+        const formations = {
+            "Bac+5": [
+                { ecole: "ENCG Casablanca", specialite: "Finance et Comptabilité" },
+                { ecole: "ISCAE Rabat", specialite: "Audit et Contrôle de Gestion" },
+                { ecole: "HEM Business School", specialite: "Management des Entreprises" },
+                { ecole: "EHTP Casablanca", specialite: "Génie Informatique" },
+                { ecole: "ENSIAS Rabat", specialite: "Ingénierie Logicielle" },
+                { ecole: "EMI Rabat", specialite: "Génie Civil" },
+                { ecole: "INPT Rabat", specialite: "Télécommunications" },
+                { ecole: "ENSA Marrakech", specialite: "Data Science" }
+            ],
+            "Bac+3": [
+                { ecole: "FSJES Casablanca", specialite: "Économie et Gestion" },
+                { ecole: "FSJES Rabat", specialite: "Droit des Affaires" },
+                { ecole: "Faculté de Commerce Fès", specialite: "Commerce International" },
+                { ecole: "EST Salé", specialite: "Techniques de Management" }
+            ],
+            "Bac+2": [
+                { ecole: "ISTA Hay Riad", specialite: "Technicien Spécialisé en Développement Informatique" },
+                { ecole: "OFPPT Casablanca", specialite: "Technicien en Comptabilité" },
+                { ecole: "ISTA Tanger", specialite: "Technicien en Gestion des Entreprises" }
+            ],
+            "Bac": [
+                { ecole: "Lycée Mohammed V Casablanca", specialite: "Sciences Économiques" },
+                { ecole: "Lycée Hassan II Rabat", specialite: "Sciences Mathématiques" },
+                { ecole: "Lycée Ibn Sina Marrakech", specialite: "Lettres Modernes" }
+            ]
+        };
+
+        const competences = {
+            "Analyste Financier": ["Analyse financière avancée", "Modélisation financière", "Excel (VBA, Macros, Tableaux croisés)", "Power BI", "SAP Finance", "Bloomberg Terminal", "Normes IFRS", "Évaluation d'entreprise", "Gestion des risques"],
+            "Développeur Full Stack": ["JavaScript ES6+", "React.js / Vue.js", "Node.js / Express", "Python / Django", "SQL / PostgreSQL", "MongoDB", "Git / GitHub", "Docker / Kubernetes", "API REST", "Méthodologie Agile"],
+            "Chargé de Clientèle": ["Relation client B2B/B2C", "CRM Salesforce", "Techniques de vente", "Négociation commerciale", "Gestion de portefeuille", "Fidélisation client", "Analyse des besoins", "Reporting commercial"],
+            "Chef de Projet Digital": ["Gestion de projet Agile/Scrum", "JIRA / Confluence", "MS Project", "Leadership d'équipe", "Gestion budgétaire", "SEO/SEA", "UX/UI Design", "Conduite du changement"],
+            "Responsable Marketing": ["Marketing digital", "Google Analytics / Tag Manager", "SEO / SEM", "Gestion réseaux sociaux", "Email marketing", "Adobe Creative Suite", "Stratégie de marque", "Analyse de marché", "Content marketing"]
+        };
+
+        const certifications = {
+            "Analyste Financier": ["CFA Level I", "Certification AMF", "Excel Expert Microsoft"],
+            "Développeur Full Stack": ["AWS Certified Developer", "Google Cloud Professional", "MongoDB Certified Developer"],
+            "Chargé de Clientèle": ["Certification Salesforce", "DISC Assessment Certified"],
+            "Chef de Projet Digital": ["PMP Certified", "Scrum Master PSM I", "Google Project Management"],
+            "Responsable Marketing": ["Google Analytics Certified", "HubSpot Marketing", "Meta Blueprint"]
+        };
+
+        const experiences = {
+            excellent: [
+                {
+                    titre: "Analyste Senior",
+                    entreprise: "Attijariwafa Bank",
+                    duree: "2021 - Présent",
+                    description: "• Analyse des dossiers de crédit corporate (portefeuille de 50M MAD)\n• Modélisation financière et valorisation d'entreprises\n• Préparation des comités de crédit et reporting direction"
+                },
+                {
+                    titre: "Consultant Junior",
+                    entreprise: "Deloitte Maroc",
+                    duree: "2019 - 2021",
+                    description: "• Missions d'audit financier pour clients CAC 40\n• Due diligence dans le cadre de transactions M&A\n• Optimisation des processus comptables"
+                },
+                {
+                    titre: "Stagiaire Analyste",
+                    entreprise: "BMCE Bank of Africa",
+                    duree: "2018 - 2019",
+                    description: "• Analyse des états financiers des PME\n• Participation aux comités de crédit\n• Rédaction de notes de synthèse"
+                }
+            ],
+            good: [
+                {
+                    titre: "Chargé d'études",
+                    entreprise: "Banque Populaire",
+                    duree: "2022 - Présent",
+                    description: "• Étude de marché et veille concurrentielle\n• Analyse des indicateurs de performance\n• Support aux équipes commerciales"
+                },
+                {
+                    titre: "Assistant Administratif",
+                    entreprise: "Cabinet Mazars Maroc",
+                    duree: "2021 - 2022",
+                    description: "• Gestion administrative des dossiers clients\n• Coordination des missions d'audit\n• Préparation des livrables"
+                }
+            ],
+            average: [
+                {
+                    titre: "Stagiaire",
+                    entreprise: "PME Locale",
+                    duree: "2023 (6 mois)",
+                    description: "• Assistance comptable et saisie\n• Gestion des factures fournisseurs\n• Classement et archivage"
+                }
+            ],
+            poor: []
+        };
+
+        const projets = {
+            excellent: [
+                "Développement d'un modèle de scoring crédit (Python, ML)",
+                "Automatisation du reporting financier mensuel (VBA/Power BI)",
+                "Mise en place d'un dashboard de suivi des KPIs"
+            ],
+            good: [
+                "Création d'une base de données clients (Access/Excel)",
+                "Participation à un projet de digitalisation interne"
+            ],
+            average: [
+                "Projet de fin d'études : Analyse d'un secteur économique"
+            ],
+            poor: []
+        };
+
+        const hobbies = [
+            "Lecture (économie, développement personnel)",
+            "Football",
+            "Voyages et découverte culturelle",
+            "Bénévolat associatif",
+            "Photographie",
+            "Randonnée",
+            "Échecs",
+            "Musique"
+        ];
+
+        const postes = ["Analyste Financier", "Développeur Full Stack", "Chargé de Clientèle", "Chef de Projet Digital", "Responsable Marketing"];
+
+        let generatedCVs = [];
+
+        // ══════════════════════════════════════════════════════════════════════════════
+        // GÉNÉRATION PDF ENRICHIE
+        // ══════════════════════════════════════════════════════════════════════════════
+
+        function generateCVData(index, category) {
+            const isFemale = Math.random() > 0.5;
+            const prenom = isFemale ? prenomsFemmes[index % prenomsFemmes.length] : prenomsHommes[index % prenomsHommes.length];
+            const nom = noms[index % noms.length];
+            const poste = postes[index % postes.length];
+
+            let ville, niveau, exp, contrat, score, formation, expList, projetList, certList;
+
+            if (category === 'excellent') {
+                ville = villesCompatibles[index % villesCompatibles.length];
+                niveau = "Bac+5";
+                exp = 3 + Math.floor(Math.random() * 3);
+                contrat = "CDI";
+                score = 75 + Math.floor(Math.random() * 26);
+                formation = formations["Bac+5"][index % formations["Bac+5"].length];
+                expList = experiences.excellent;
+                projetList = projets.excellent;
+                certList = certifications[poste] || [];
+            } else if (category === 'good') {
+                ville = villesCompatibles[index % villesCompatibles.length];
+                niveau = "Bac+3";
+                exp = 2 + Math.floor(Math.random() * 2);
+                contrat = "CDD";
+                score = 50 + Math.floor(Math.random() * 25);
+                formation = formations["Bac+3"][index % formations["Bac+3"].length];
+                expList = experiences.good;
+                projetList = projets.good;
+                certList = [];
+            } else if (category === 'average') {
+                ville = villesCompatibles[index % villesCompatibles.length];
+                niveau = "Bac+2";
+                exp = 1;
+                contrat = "Stage";
+                score = 25 + Math.floor(Math.random() * 25);
+                formation = formations["Bac+2"][index % formations["Bac+2"].length];
+                expList = experiences.average;
+                projetList = projets.average;
+                certList = [];
+            } else {
+                ville = villesNonCompatibles[index % villesNonCompatibles.length];
+                niveau = "Bac";
+                exp = 0;
+                contrat = "Freelance";
+                score = 0;
+                formation = formations["Bac"][index % formations["Bac"].length];
+                expList = experiences.poor;
+                projetList = projets.poor;
+                certList = [];
+            }
+
+            const phone = "06" + String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
+            const email = `${prenom.toLowerCase()}.${nom.toLowerCase().replace(' ', '')}@gmail.com`;
+            const dateNaissance = `${10 + Math.floor(Math.random() * 20)}/${1 + Math.floor(Math.random() * 12)}/${1985 + Math.floor(Math.random() * 15)}`;
+            const adresse = `${Math.floor(Math.random() * 200) + 1}, Rue ${["Mohammed V", "Hassan II", "Al Massira", "Ibn Sina", "Zerktouni"][index % 5]}, ${ville}`;
+            const linkedin = `linkedin.com/in/${prenom.toLowerCase()}-${nom.toLowerCase().replace(' ', '-')}`;
+
+            // Select random hobbies
+            const selectedHobbies = hobbies.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+            return {
+                prenom, nom, ville, niveau, exp, contrat, score,
+                ecole: formation.ecole,
+                specialite: formation.specialite,
+                expList, projetList, certList,
+                phone, email, dateNaissance, poste, adresse, linkedin,
+                competences: competences[poste] || ["Communication", "Travail en équipe", "Office 365"],
+                langues: [
+                    { nom: "Arabe", niveau: "Langue maternelle" },
+                    { nom: "Français", niveau: "Courant (C1)" },
+                    { nom: "Anglais", niveau: category === 'excellent' ? "Courant (B2)" : "Intermédiaire (B1)" }
+                ],
+                hobbies: selectedHobbies,
+                filename: `CV_${prenom}_${nom.replace(' ', '_')}_${index + 1}.pdf`
+            };
+        }
+
+        function createPDF(data, index) {
+            const doc = new jsPDF();
+
+            // Header avec couleur
+            doc.setFillColor(0, 75, 135);
+            doc.rect(0, 0, 210, 55, 'F');
+
+            // Nom et titre
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont("helvetica", "bold");
+            doc.text(`${data.prenom} ${data.nom}`, 20, 20);
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "normal");
+            doc.text(data.poste, 20, 30);
+
+            // Contact info ligne 1
+            doc.setFontSize(9);
+            doc.text(`📧 ${data.email}  |  📞 ${data.phone}  |  📍 ${data.adresse}`, 20, 40);
+
+            // Contact info ligne 2
+            doc.text(`🔗 ${data.linkedin}  |  🎂 Né(e) le ${data.dateNaissance}`, 20, 48);
+
+            // Reset color
+            doc.setTextColor(0, 0, 0);
+
+            let y = 65;
+
+            // ═══════════════════════════════════════════════════════════════
+            // PROFIL
+            // ═══════════════════════════════════════════════════════════════
+            doc.setFillColor(0, 174, 239);
+            doc.rect(15, y, 180, 0.5, 'F');
+            y += 7;
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 75, 135);
+            doc.text("PROFIL PROFESSIONNEL", 20, y);
+            y += 6;
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(60, 60, 60);
+            const profil = data.exp > 0
+                ? `Professionnel avec ${data.exp} ans d'expérience en ${data.poste.toLowerCase()}. Diplômé en ${data.specialite} de ${data.ecole} (${data.niveau}). Recherche activement un poste en ${data.contrat} à ${data.ville}. Passionné par le domaine bancaire et financier.`
+                : `Jeune diplômé motivé en ${data.specialite} de ${data.ecole} (${data.niveau}). À la recherche d'une première opportunité professionnelle à ${data.ville}. Dynamique, rigoureux et désireux d'apprendre.`;
+
+            const profilLines = doc.splitTextToSize(profil, 170);
+            doc.text(profilLines, 20, y);
+            y += profilLines.length * 4 + 6;
+
+            // ═══════════════════════════════════════════════════════════════
+            // FORMATION
+            // ═══════════════════════════════════════════════════════════════
+            doc.setFillColor(0, 174, 239);
+            doc.rect(15, y, 180, 0.5, 'F');
+            y += 7;
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 75, 135);
+            doc.text("FORMATION ACADÉMIQUE", 20, y);
+            y += 7;
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text(`${data.niveau} - ${data.specialite}`, 20, y);
+            y += 5;
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(0, 75, 135);
+            doc.text(data.ecole, 20, y);
+
+            const anneeFormation = 2024 - data.exp - (data.niveau === "Bac+5" ? 5 : data.niveau === "Bac+3" ? 3 : 2);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`${anneeFormation} - ${anneeFormation + (data.niveau === "Bac+5" ? 5 : data.niveau === "Bac+3" ? 3 : 2)}`, 160, y);
+            y += 8;
+
+            // ═══════════════════════════════════════════════════════════════
+            // EXPÉRIENCE PROFESSIONNELLE
+            // ═══════════════════════════════════════════════════════════════
+            if (data.expList && data.expList.length > 0) {
+                doc.setFillColor(0, 174, 239);
+                doc.rect(15, y, 180, 0.5, 'F');
+                y += 7;
+
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 75, 135);
+                doc.text("EXPÉRIENCE PROFESSIONNELLE", 20, y);
+                y += 7;
+
+                data.expList.forEach(exp => {
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(exp.titre, 20, y);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(exp.duree, 155, y);
+                    y += 4;
+
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 75, 135);
+                    doc.text(exp.entreprise, 20, y);
+                    y += 5;
+
+                    // Description
+                    if (exp.description) {
+                        doc.setTextColor(60, 60, 60);
+                        const descLines = exp.description.split('\n');
+                        descLines.forEach(line => {
+                            doc.text(line, 22, y);
+                            y += 3.5;
+                        });
+                    }
+                    y += 3;
+                });
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // COMPÉTENCES TECHNIQUES
+            // ═══════════════════════════════════════════════════════════════
+            doc.setFillColor(0, 174, 239);
+            doc.rect(15, y, 180, 0.5, 'F');
+            y += 7;
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 75, 135);
+            doc.text("COMPÉTENCES TECHNIQUES", 20, y);
+            y += 6;
+
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(60, 60, 60);
+
+            let compX = 20;
+            data.competences.slice(0, 7).forEach((comp) => {
+                const compWidth = doc.getTextWidth(comp) + 6;
+                if (compX + compWidth > 190) {
+                    compX = 20;
+                    y += 6;
+                }
+                doc.setFillColor(230, 243, 255);
+                doc.roundedRect(compX - 1, y - 3.5, compWidth, 5, 1, 1, 'F');
+                doc.text(comp, compX + 2, y);
+                compX += compWidth + 4;
+            });
+            y += 10;
+
+            // ═══════════════════════════════════════════════════════════════
+            // CERTIFICATIONS (si disponibles)
+            // ═══════════════════════════════════════════════════════════════
+            if (data.certList && data.certList.length > 0) {
+                doc.setFillColor(0, 174, 239);
+                doc.rect(15, y, 180, 0.5, 'F');
+                y += 7;
+
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 75, 135);
+                doc.text("CERTIFICATIONS", 20, y);
+                y += 6;
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(60, 60, 60);
+                data.certList.forEach(cert => {
+                    doc.text("✓ " + cert, 22, y);
+                    y += 4;
+                });
+                y += 3;
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // PROJETS (si disponibles)
+            // ═══════════════════════════════════════════════════════════════
+            if (data.projetList && data.projetList.length > 0 && y < 240) {
+                doc.setFillColor(0, 174, 239);
+                doc.rect(15, y, 180, 0.5, 'F');
+                y += 7;
+
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 75, 135);
+                doc.text("PROJETS RÉALISÉS", 20, y);
+                y += 6;
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(60, 60, 60);
+                data.projetList.forEach(proj => {
+                    doc.text("• " + proj, 22, y);
+                    y += 4;
+                });
+                y += 3;
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // LANGUES
+            // ═══════════════════════════════════════════════════════════════
+            if (y < 255) {
+                doc.setFillColor(0, 174, 239);
+                doc.rect(15, y, 90, 0.5, 'F');
+                y += 7;
+
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 75, 135);
+                doc.text("LANGUES", 20, y);
+                y += 5;
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                data.langues.forEach(lang => {
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(lang.nom + ": ", 22, y);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(lang.niveau, 45, y);
+                    y += 4;
+                });
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // CENTRES D'INTÉRÊT (colonne droite)
+            // ═══════════════════════════════════════════════════════════════
+            let yRight = y - (data.langues.length * 4) - 5;
+            if (data.hobbies && data.hobbies.length > 0 && yRight < 260) {
+                doc.setFillColor(0, 174, 239);
+                doc.rect(110, yRight - 7, 85, 0.5, 'F');
+
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 75, 135);
+                doc.text("CENTRES D'INTÉRÊT", 115, yRight);
+                yRight += 5;
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(60, 60, 60);
+                data.hobbies.forEach(hobby => {
+                    doc.text("• " + hobby, 117, yRight);
+                    yRight += 4;
+                });
+            }
+
+            // Footer
+            doc.setFontSize(7);
+            doc.setTextColor(180, 180, 180);
+            doc.text(`CV généré pour test LM BANK - Spécialité: ${data.specialite} - Score estimé: ${data.score}%`, 20, 290);
+
+            return doc;
+        }
+
+        async function startGeneration() {
+            const btn = document.getElementById('generateBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const log = document.getElementById('log');
+
+            btn.disabled = true;
+            btn.textContent = "⏳ Génération en cours...";
+            progressContainer.style.display = 'block';
+            log.style.display = 'block';
+
+            generatedCVs = [];
+
+            const categories = [
+                { name: 'excellent', count: 10, start: 0 },
+                { name: 'good', count: 10, start: 10 },
+                { name: 'average', count: 10, start: 20 },
+                { name: 'poor', count: 10, start: 30 }
+            ];
+
+            let totalGenerated = 0;
+
+            for (const cat of categories) {
+                for (let i = 0; i < cat.count; i++) {
+                    const globalIndex = cat.start + i;
+                    const data = generateCVData(globalIndex, cat.name);
+
+                    progressText.textContent = `Génération: ${data.prenom} ${data.nom} (${cat.name})...`;
+                    log.innerHTML += `[${totalGenerated + 1}/40] Création de ${data.filename}...\n`;
+                    log.scrollTop = log.scrollHeight;
+
+                    const pdf = createPDF(data, globalIndex);
+
+                    // Save PDF
+                    pdf.save(data.filename);
+
+                    generatedCVs.push(data);
+                    totalGenerated++;
+
+                    progressFill.style.width = `${(totalGenerated / 40) * 100}%`;
+
+                    // Delay to prevent browser blocking
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            progressText.textContent = "✅ Génération terminée! 40 CV PDF créés.";
+            log.innerHTML += "\n✅ TERMINÉ! Vérifiez votre dossier de téléchargements.\n";
+            btn.textContent = "✅ 40 CV Générés!";
+            btn.style.background = "linear-gradient(135deg, #28a745, #20c997)";
+
+            // Generate summary
+            log.innerHTML += "\n📊 RÉSUMÉ:\n";
+            log.innerHTML += `- Excellents (75-100%): 10 CV\n`;
+            log.innerHTML += `- Bons (50-74%): 10 CV\n`;
+            log.innerHTML += `- Moyens (25-49%): 10 CV\n`;
+            log.innerHTML += `- Non Compatibles (0%): 10 CV\n`;
+        }
+    </script>
+</body>
+
+</html>

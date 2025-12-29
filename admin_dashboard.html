@@ -588,7 +588,7 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script>
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkRs_Elvq5GRPzYiasgSRdGSua7UyRw5V55P_JhzUQi3G3WfwhYgZRdXXK2gYuL547Tw/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RsIDbgWMMW4A54/exec';
 
         // ══════════════════════════════════════════════════════════════════════════════
         // SECURITY SYSTEM - Auto-Logout & Cookie Protection
@@ -1255,8 +1255,13 @@
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCandidates`);
                 const candidates = await response.json();
 
-                // Filter candidates by selected job
-                const filtered = candidates.filter(c => c.job && c.job.includes(selectedJob));
+                // Filter candidates by selected job (Handling "Recommandé: " prefix)
+                const filtered = candidates.filter(c => {
+                    if (!c.job) return false;
+                    const candidateJob = c.job.replace('Recommandé: ', '').trim().toLowerCase();
+                    const targetJob = selectedJob.trim().toLowerCase();
+                    return candidateJob.includes(targetJob); // Loose matching usually fine
+                });
 
                 // Clear previous content
                 const container = document.getElementById('dynamic-table-area');

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Uploader - LM BANK</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #004B87;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drop-zone {
+            border: 3px dashed #ccc;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.active {
+            border-color: #00AEEF;
+            background: #ecf9ff;
+        }
+
+        .drop-zone p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .btn {
+            background: #004B87;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #003366;
+        }
+
+        .log-container {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .stat-box strong {
+            display: block;
+            font-size: 1.5rem;
+            color: #004B87;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📤 Bulk Uploader Intelligent</h1>
+        <p style="margin-bottom: 20px; color: #666;">
+            Outil d'injection de données massives pour LM BANK.
+            Déposez les 40 CV PDF ici pour les traiter automatiquement.
+        </p>
+
+        <div class="stats">
+            <div class="stat-box"><strong>40</strong> Total requis</div>
+            <div class="stat-box"><strong>28</strong> Ciblées (70%)</div>
+            <div class="stat-box"><strong>12</strong> Spontanées (30%)</div>
+        </div>
+
+        <!-- NEW: Tool to Ensure Offers Exist -->
+        <div
+            style="margin-bottom: 20px; background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <strong style="color: #856404;"><i class="fas fa-exclamation-triangle"></i> Étape Préliminaire
+                    Importante</strong>
+                <p style="font-size: 0.9rem; color: #856404; margin-top: 5px;">
+                    Pour que le tri "Par Poste" fonctionne, les offres doivent exister dans la base de données.
+                </p>
+            </div>
+            <button class="btn" style="background: #856404; font-size: 0.9rem;" onclick="createTestOffers()">
+                🛠️ Créer les 5 Offres de Test
+            </button>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <span style="font-size: 3rem;">📂</span>
+            <p>Glissez-لdéposez les 40 fichiers PDF ici<br><span style="font-size: 0.9rem; color: #888;">ou cliquez pour
+                    sélectionner</span></p>
+            <input type="file" id="fileInput" multiple accept=".pdf" style="display: none;">
+        </div>
+
+        <button class="btn" id="uploadBtn" disabled onclick="startProcessing()">🚀 Lancer l'Injection (40 CV)</button>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="log-container" id="log">En attente des fichiers...</div>
+    </div>
+
+    <script>
+        // ✅ URL CONFIGURÉE AUTOMATIQUEMENT
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RsIDbgWMMW4A54/exec";
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const log = document.getElementById('log');
+        let selectedFiles = [];
+
+        // Drag & Drop Handlers
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => f.type === 'application/pdf');
+            if (selectedFiles.length > 0) {
+                log.innerHTML = `✅ ${selectedFiles.length} fichiers chargés prêts à l'envoi.\n`;
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = `🚀 Lancer l'Injection (${selectedFiles.length} CV)`;
+            }
+        }
+
+        async function startProcessing() {
+            // Utilisation de l'URL configurée automatiquement
+            const scriptUrl = GOOGLE_SCRIPT_URL;
+
+            uploadBtn.disabled = true;
+            document.getElementById('progressBar').style.display = 'block';
+
+            // Distribute files: 70% Targeted, 30% Spontaneous
+            // Since we know the filenames contain categories (Excellent, Good, Average, Poor)
+            // Strategy:
+            // - Excellents & Goods (Top 20) -> Targeted (Analyste, Dev, etc.)
+            // - Average (10) -> Targeted (Stage/Junior roles)
+            // - Poor (10) -> Spontaneous (To test rejection/low score) -> Or mix them up
+
+            // Random Shuffle first to mix categories
+            const files = selectedFiles; //.sort(() => Math.random() - 0.5);
+
+            let processed = 0;
+            let spontaneousCount = 0;
+            let targetedCount = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                // Determine Mode (70/30 Rule)
+                // Let's force the first 12 to be Spontaneous (30% of 40 = 12)
+                // And the rest (28) to be Targeted.
+                // But to make it cleaner, let's look at the filename content
+
+                let mode = 'candidate'; // Default Targeted
+                if (spontaneousCount < 12) {
+                    mode = 'spontaneous_application';
+                    spontaneousCount++;
+                } else {
+                    targetedCount++;
+                }
+
+                log.innerHTML += `\n[${i + 1}/${files.length}] Traitement de : ${file.name} (${mode === 'candidate' ? 'Ciblée' : 'Spontanée'})...`;
+                log.scrollTop = log.scrollHeight;
+
+                try {
+                    // Extract minimal data from filename/PDF to simulate form
+                    // Filename format: CV_Prenom_Nom_Index.pdf
+                    const nameParts = file.name.replace('CV_', '').replace('.pdf', '').split('_');
+                    const prenom = nameParts[0];
+                    const nom = nameParts[1];
+
+                    // Read File as Base64
+                    const base64 = await readFileAsBase64(file);
+
+                    // Prepare Payload
+                    const payload = {
+                        action: mode,
+                        nom: nom,
+                        prenom: prenom,
+                        email: `${prenom.toLowerCase()}.${nom.toLowerCase()}@test.com`,
+                        phone: "0600000000",
+                        ville: "Casablanca", // Default, will be OCR updated ideally but we pass basic
+                        niveau: "Bac+5", // Default
+                        experience: "2",
+                        contrat: "CDI",
+                        cvFileName: file.name,
+                        cvBase64: base64.split(',')[1], // Remove data:application/pdf;base64,
+                        mimeType: 'application/pdf',
+
+                        // Targeted Job Mapping (Simple Logic)
+                        poste: mode === 'candidate' ? mapJobFromFilename(file.name, i) : ""
+                    };
+
+                    // Send to Backend
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // Important for opaque response
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    processed++;
+                    document.getElementById('progressFill').style.width = `${(processed / files.length) * 100}%`;
+                    log.innerHTML += ` ✅ OK`;
+
+                } catch (e) {
+                    console.error(e);
+                    log.innerHTML += ` ❌ ERREUR`;
+                }
+
+                // Small delay to prevent rate limiting
+                await new Promise(r => setTimeout(r, 1500));
+            }
+
+            log.innerHTML += `\n\n🎉 TERMINÉ ! ${processed} fichiers envoyés.`;
+            log.innerHTML += `\n- Spontanées : ${spontaneousCount}`;
+            log.innerHTML += `\n- Ciblées : ${targetedCount}`;
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function mapJobFromFilename(filename, index) {
+            // Cyclical assignment to existing job titles
+            const jobs = [
+                "Analyste Financier",
+                "Développeur Full Stack",
+                "Chargé de Clientèle",
+                "Chef de Projet Digital",
+                "Responsable Marketing"
+            ];
+            return jobs[index % jobs.length];
+        }
+
+        async function createTestOffers() {
+            if (!confirm("Cela va créer 5 offres d'emploi (Analyste, Dev, etc.) dans votre base de données.\n\nConfirmer ?")) return;
+
+            const jobs = [
+                { title: "Analyste Financier", loc: "Casablanca", contract: "CDI", level: "Bac+5", exp: "2 ans", desc: "Analyse financière approfondie et reporting." },
+                { title: "Développeur Full Stack", loc: "Rabat", contract: "CDI", level: "Bac+5", exp: "3 ans", desc: "Développement d'applications web React/Node.js." },
+                { title: "Chargé de Clientèle", loc: "Tanger", contract: "CDD", level: "Bac+3", exp: "1 an", desc: "Gestion de portefeuille clients et prospection." },
+                { title: "Chef de Projet Digital", loc: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5 ans", desc: "Pilotage de projets digitaux transverses." },
+                { title: "Responsable Marketing", loc: "Marrakech", contract: "CDI", level: "Bac+5", exp: "4 ans", desc: "Stratégie marketing et communication." }
+            ];
+
+            log.innerHTML += `\n🚀 Création des offres en cours...`;
+
+            for (const job of jobs) {
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'add_offer',
+                            titre: job.title,
+                            ville: job.loc,
+                            contrat: job.contract,
+                            niveau_requis: job.level,
+                            experience_requise: job.exp,
+                            description: job.desc
+                        })
+                    });
+                    log.innerHTML += `\n✅ Offre créée : ${job.title}`;
+                } catch (e) {
+                    console.error(e);
+                    log.innerHTML += `\n❌ Erreur création : ${job.title}`;
+                }
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            log.innerHTML += `\n✨ Terminé ! Vous pouvez maintenant lancer l'injection des CVs.`;
+        }
+    </script>
+</body>
+
+</html>

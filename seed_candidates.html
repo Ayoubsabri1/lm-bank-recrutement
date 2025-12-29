@@ -3,17 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Générateur Candidats - LM BANK</title>
+    <title>Générateur Avancé - LM BANK</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Outfit', sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            background: #e9ecef;
+            min-height: 100vh;
+            background: #f0f2f5;
             margin: 0;
+            padding: 20px;
         }
 
         .card {
@@ -22,11 +24,41 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 500px;
+            width: 600px;
+            max-width: 100%;
+        }
+
+        h2 {
+            color: #0056B3;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .stat-val {
+            font-size: 1.2rem;
+            color: #0056B3;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
         }
 
         .btn {
-            background: #28a745;
+            background: linear-gradient(135deg, #0056B3 0%, #00AEEF 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -40,14 +72,15 @@
         }
 
         .btn:hover {
-            background: #218838;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 86, 179, 0.3);
         }
 
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         #progress-container {
@@ -66,102 +99,234 @@
             transition: width 0.3s;
         }
 
-        #status {
-            margin-top: 15px;
-            color: #666;
-            font-size: 0.95rem;
-            font-weight: 500;
+        .log-area {
+            margin-top: 20px;
+            text-align: left;
+            background: #2d3436;
+            color: #00D2D3;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 2px;
+        }
+
+        .log-success {
+            color: #55E6C1;
+        }
+
+        .log-error {
+            color: #ff7675;
+        }
+
+        .log-info {
+            color: #74b9ff;
         }
     </style>
 </head>
 
 <body>
+
     <div class="card">
-        <h2>👥 Générateur de Candidats (x10)</h2>
-        <p style="color: #6c757d; line-height: 1.6;">Générer <strong>10 candidats</strong> de test avec scores variés.
+        <h2>⚡ Générateur Candidats Intelligent</h2>
+        <p style="color: #6c757d;">Ce script va lire toutes vos offres actives et générer :</p>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-val" style="color: #28a745;">1 Match</div>
+                <div class="stat-label">Parfait (Score Élevé)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" style="color: #dc3545;">1 Mismatch</div>
+                <div class="stat-label">Non pertinent (Score Faible)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" style="color: #fd7e14;">~5 Spontanés</div>
+                <div class="stat-label">Candidatures Libres</div>
+            </div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: #888; font-style: italic;">
+            <i class="fas fa-info-circle"></i> Les CVs PDF sont générés dynamiquement avec des mots-clés pertinents pour
+            garantir le scoring IA.
         </p>
 
-        <button id="start-btn" class="btn" onclick="startCandidateSeeding()">Lancer la Génération</button>
+        <button id="start-btn" class="btn" onclick="startAdvancedSeeding()">🚀 Lancer la Simulation Complète</button>
 
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
-        <p id="status"></p>
+        <div id="logs" class="log-area"></div>
+
         <a href="admin_dashboard.html" id="done-link"
-            style="display: none; margin-top: 25px; color: #28a745; text-decoration: none; font-weight: bold; font-size: 1.1rem;">Voir
-            le Dashboard &rarr;</a>
+            style="display: none; margin-top: 25px; color: #0056B3; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+            Voir le Tableau de Bord &rarr;
+        </a>
     </div>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzyPbq9-HeZJ__IYOlvvCbd53ecF-a0PnVgh8VDHL5zrsBRdFmc3RslDBgWMMNL71Q/exec';
+        const { jsPDF } = window.jspdf;
 
-        // Minimal PDF Base64 (Empty page)
-        const DUMMY_PDF = "JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwogIC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKICAvVHlwZSAvUGFnZXMKICAvTWVkaWFCb3ggWyAwIDAgMjAwIDIwMCBdCiAgL0NvdW50IDEKICAvS2lkcyBbIDMgMCBSIF0KPj4KZW5kb2JqCgozIDAgb2JqCjw8CiAgL1R5cGUgL1BhZ2UKICAvUGFyZW50IDIgMCBSCiAgL1Jlc291cmNlcyA8PAogICAgL0ZvbnQgPDwKICAgICAgL0YxIDQgMCBSC    AgICA+PgogID4+CiAgL0NvbnRlbnRzIDUgMCBSCj4+CmVuZG9iagoKNCAwIG9iago8PAogIC9UeXBlIC9Gb250CiAgL1N1YnR5cGUgL1R5cGUxCiAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgo+PgplbmRvYmoKCjUgMCBvYmoKPDwgL0xlbmd0aCAyMiA+PgpzdHJlYW0KQlQKL0YxIDEyIFRmCjEwMCAxMDAgVGMKKFRlc3QgQ2FuZGlkYXQpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZgowMDAwMDAwMDEwIDAwMDAwIG4KMDAwMDAwMDA2MCAwMDAwMCBuCjAwMDAwMDAxNTcgMDAwMDAgbgowMDAwMDAwMzA1IDAwMDAwIG4KMDAwMDAwMDM5MiAwMDAwMCBuCnRyYWlsZXIKPDwKICAvU2l6ZSA2CiAgL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjQ2NAolJUVPRgo=";
+        // Data Pools
+        const names = {
+            fr: ["Thomas", "Lucas", "Léa", "Manon", "Camille", "Hugo", "Chloé", "Nathan"],
+            ma: ["Ahmed", "Karim", "Fatima", "Youssef", "Khadija", "Omar", "Amina", "Rachid", "Leila", "Driss"],
+            last: ["Benali", "Dubois", "Martin", "Alaoui", "Bernard", "Tazi", "Petit", "Idrissi", "Robert", "Mansouri"]
+        };
 
-        const firstNames = ["Ahmed", "Sarah", "Youssef", "Khadija", "Omar", "Fatima", "Karim", "Amina", "Rachid", "Leila"];
-        const lastNames = ["Benali", "Alaoui", "Mansouri", "Idrissi", "Tazi", "Berrada", "Chraibi", "Fassi", "Naciri", "Zouhair"];
-        const cities = ["Casablanca", "Rabat", "Marrakech", "Tanger", "Agadir"];
-        const levels = ["Bac+3", "Bac+5", "Master", "Ingénieur"];
-        const jobs = ["Conseiller Clientèle Particuliers", "Chargé d'Affaires Entreprises", "Développeur Fullstack", "Analyste Risques", "Chef de Projet Digital"];
+        const mismatchKeywords = "Recette Cuisine Chef Pâtisserie Sport Football Musique Piano Voyage Jardinage Peinture Histoire Géographie";
 
-        async function startCandidateSeeding() {
+        function log(msg, type = 'info') {
+            const area = document.getElementById('logs');
+            area.style.display = 'block';
+
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function generatePDF(text) {
+            const doc = new jsPDF();
+            // Split text to fit page
+            const splitText = doc.splitTextToSize(text, 180);
+            doc.text(splitText, 10, 10);
+            return doc.output('datauristring').split(',')[1]; // Return Base64 only
+        }
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        async function startAdvancedSeeding() {
             const btn = document.getElementById('start-btn');
-            const status = document.getElementById('status');
             const bar = document.getElementById('progress-bar');
-            const container = document.getElementById('progress-container');
-
+            document.getElementById('progress-container').style.display = 'block';
             btn.disabled = true;
-            btn.textContent = "Création des candidats...";
-            container.style.display = 'block';
 
-            let count = 0;
-            const target = 10;
+            try {
+                // 1. Fetch Offers
+                log("Récupération des offres actives...", 'info');
+                const resp = await fetch(GOOGLE_SCRIPT_URL + '?action=getOffers');
+                const offers = await resp.json();
 
-            for (let i = 0; i < target; i++) {
-                const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
-                const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
-                const city = cities[Math.floor(Math.random() * cities.length)];
-                const job = jobs[Math.floor(Math.random() * jobs.length)];
+                log(`${offers.length} offres trouvées. Démarrage de la génération...`, 'success');
 
-                const payload = {
-                    action: 'candidate',
-                    nom: lname,
-                    prenom: fname,
-                    email: `${fname.toLowerCase()}.${lname.toLowerCase()}.${Math.floor(Math.random() * 1000)}@gmail.com`,
-                    phone: "06" + Math.floor(Math.random() * 90000000 + 10000000),
-                    ville: city,
-                    niveau: levels[Math.floor(Math.random() * levels.length)],
-                    experience: Math.floor(Math.random() * 10) + " ans",
-                    contrat: "CDI",
-                    poste: job,
-                    cvBase64: DUMMY_PDF,
-                    cvFileName: `CV_${lname}_${fname}.pdf`,
-                    mimeType: "application/pdf"
-                };
+                const totalTasks = (offers.length * 2) + 5; // 2 per offer + 5 spontaneous
+                let completed = 0;
 
-                try {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload)
-                    });
+                // 2. Process Offers (Perfect & Mismatch Candidates)
+                for (const offer of offers) {
+                    // A. Perfect Match
+                    await createCandidate(offer, true);
+                    updateProgress(++completed, totalTasks);
 
-                    count++;
-                    const pct = Math.round((count / target) * 100);
-                    bar.style.width = pct + "%";
-                    status.textContent = `Candidat ${count}/${target} : ${fname} ${lname} -> ${job}`;
-
-                } catch (e) {
-                    console.error("Erreur", count, e);
+                    // B. Mismatch
+                    await createCandidate(offer, false);
+                    updateProgress(++completed, totalTasks);
                 }
 
-                await new Promise(r => setTimeout(r, 2000)); // Delay to avoid quota issues
+                // 3. Spontaneous Applications
+                for (let i = 0; i < 5; i++) {
+                    await createSpontaneous();
+                    updateProgress(++completed, totalTasks);
+                }
+
+                log("Terminé ! Toutes les candidatures ont été envoyées.", 'success');
+                btn.textContent = "✅ Génération Terminée";
+                document.getElementById('done-link').style.display = 'inline-block';
+
+            } catch (e) {
+                log("Erreur critique: " + e.message, 'error');
+                btn.disabled = false;
+            }
+        }
+
+        async function createCandidate(offer, isPerfect) {
+            const fname = getRandomItem(names.ma);
+            const lname = getRandomItem(names.last);
+
+            // Context-aware Resume Text
+            let cvText = `CV DE ${fname.toUpperCase()} ${lname.toUpperCase()}\n\n`;
+            if (isPerfect) {
+                cvText += `PROFIL:\nExpert en ${offer.title}.\n\nEXPÉRIENCE:\nJ'ai travaillé comme ${offer.title} pendant 5 ans.\n\nCOMPÉTENCES:\n${offer.desc}\n\nVILLE:\n${offer.location}\n\nCONTRAT:\nDisponible pour ${offer.contract}.`;
+            } else {
+                cvText += `PROFIL:\nPassionné de cuisine.\n\nEXPÉRIENCE:\nChef Cuisinier (3 ans).\n\nCOMPÉTENCES:\n${mismatchKeywords}\n\nVILLE:\nTombouctou\n\nCONTRAT:\nCDD uniquement.`;
             }
 
-            btn.textContent = "✅ Terminé !";
-            status.textContent = "10 Candidats ajoutés avec succès.";
-            document.getElementById('done-link').style.display = 'inline-block';
+            const payload = {
+                action: 'candidate',
+                nom: lname,
+                prenom: fname,
+                email: `${fname}.${lname}.${Math.floor(Math.random() * 1000)}@test.com`.toLowerCase(),
+                phone: "06" + Math.floor(Math.random() * 90000000 + 10000000),
+                ville: isPerfect ? offer.location : "Autre",
+                niveau: isPerfect ? offer.level : "Bac",
+                experience: isPerfect ? offer.exp : "Débutant",
+                contrat: isPerfect ? offer.contract : "Stage",
+                poste: offer.title, // Must match exactly for 'candidate' action
+                cvBase64: generatePDF(cvText),
+                cvFileName: `CV_${lname}_${fname}_${isPerfect ? 'Match' : 'Mismatch'}.pdf`,
+                mimeType: "application/pdf"
+            };
+
+            log(`Envoi: ${fname} ${lname} -> ${offer.title} (${isPerfect ? '⭐⭐⭐' : '⭐'})`);
+            await sendData(payload);
+        }
+
+        async function createSpontaneous() {
+            const fname = getRandomItem(names.fr);
+            const lname = getRandomItem(names.last);
+
+            const cvText = `CV SPONTANÉ\n\nJe cherche un poste dans la banque.\nCompétences: Finance, Accueil, Gestion.`;
+
+            const payload = {
+                action: 'spontaneous_application',
+                nom: lname,
+                prenom: fname,
+                email: `spontanee.${fname}@test.com`.toLowerCase(),
+                phone: "06" + Math.floor(Math.random() * 90000000 + 10000000),
+                ville: getRandomItem(["Casablanca", "Rabat", "Marrakech"]),
+                niveau: "Bac+5",
+                experience: "3 ans",
+                contrat: "CDI",
+                cvBase64: generatePDF(cvText),
+                cvFileName: `CV_Spontane_${lname}.pdf`,
+                mimeType: "application/pdf"
+            };
+
+            log(`Envoi Spontané: ${fname} ${lname}`);
+            await sendData(payload);
+        }
+
+        async function sendData(payload) {
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain avoids OPTIONS preflight which GAS doesn't like
+                    body: JSON.stringify(payload)
+                });
+                // Small delay to prevent quota limits
+                await new Promise(r => setTimeout(r, 1200));
+            } catch (e) {
+                log("Erreur réseau: " + e.message, 'error');
+            }
+        }
+
+        function updateProgress(current, total) {
+            const pct = Math.round((current / total) * 100);
+            document.getElementById('progress-bar').style.width = pct + "%";
         }
     </script>
 </body>

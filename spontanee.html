@@ -732,8 +732,8 @@
             }
 
             // Validate Niveau
-            if (!document.getElementById('niveau').value) {
-                showError('niveau', 'Veuillez sélectionner un niveau');
+            if (!document.getElementById('niveau_etudes').value) {
+                showError('niveau_etudes', 'Veuillez sélectionner un niveau');
                 isValid = false;
             }
 
@@ -792,7 +792,7 @@
                     email: document.getElementById('email').value.trim().toLowerCase(),
                     phone: document.getElementById('telephone').value.replace(/\s/g, ''),
                     ville: document.getElementById('ville').value,
-                    niveau: document.getElementById('niveau').value,
+                    niveau: document.getElementById('niveau_etudes').value,
                     specialite: document.getElementById('specialite').value,
                     experience: document.getElementById('experience').value,
                     contrat: document.getElementById('contrat').value,

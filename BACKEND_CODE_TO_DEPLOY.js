@@ -381,7 +381,7 @@ function doPost(e) {
             data.experience || "",
             data.contrat || "",
             matchResult.targetJob,
-            matchResult.score + "%",  // THE RANKING METRIC
+            matchResult.score,  // ✅ Save as NUMBER
             "Analysé",
             fileUrl,
             ocrText.substring(0, 500) // Preview text
@@ -441,7 +441,7 @@ function doGet(e) {
                 exp: r[7] || "",
                 contrat: r[8] || "",
                 job: r[9] || "",
-                score: parseInt(r[10]) || 0,
+                score: typeof r[10] === 'number' ? r[10] : (parseInt(r[10]) || 0),
                 status: r[11] || "",
                 cv: r[12] || "",
                 ocr: r[13] || ""
@@ -568,7 +568,7 @@ function seedTestData() {
             c.exp,
             c.contract,
             targetJob.title, // Colonne Poste/Cible
-            realScore + "%", // Le score calculé par l'algo
+            realScore, // ✅ Save as NUMBER not TEXT
             "Analysé",
             "https://fake-cv-link.com/" + c.cv,
             "Contenu extrait automatiquement..."

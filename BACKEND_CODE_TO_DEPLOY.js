@@ -479,16 +479,16 @@ function seedTestData() {
     offerSheet.getRange(1, 1, 1, 8).setBackground("#2c3e50").setFontColor("#ffffff").setFontWeight("bold");
 
     var jobsData = [
-        { id: "OFF_01", title: "Développeur Java Fullstack", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Développement Java/Angular. Expert Spring Boot requis." },
-        { id: "OFF_02", title: "Analyste Financier Senior", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Analyse financière de grands comptes et gestion des risques." },
-        { id: "OFF_03", title: "Directeur d'Agence", city: "Rabat", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Gestion commerciale et management d'équipe bancaire." },
-        { id: "OFF_04", title: "Conseiller Clientèle", city: "Marrakech", contract: "CDI", level: "Bac+3", exp: "1-3 ans", desc: "Accueil et gestion de portefeuille clients particuliers." },
-        { id: "OFF_05", title: "Responsable Conformité", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Contrôle réglementaire et audit interne." },
-        { id: "OFF_06", title: "Ingénieur Système & Réseau", city: "Tanger", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Administration infrastructure serveurs et sécurité." },
-        { id: "OFF_07", title: "Chargé de Recouvrement", city: "Fès", contract: "CDD", level: "Bac+2", exp: "1-3 ans", desc: "Gestion des impayés et relance téléphonique." },
-        { id: "OFF_08", title: "Chef de Projet Digital", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Pilotage de projets web et mobile banking." },
-        { id: "OFF_09", title: "Trésorier", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Gestion de trésorerie et placements financiers." },
-        { id: "OFF_10", title: "Guichetier Payeur", city: "Agadir", contract: "CDD", level: "Bac+2", exp: "0-1 an", desc: "Opérations de guichet et accueil client." }
+        { id: "OFF_01", title: "Directeur d'Agence", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Pilotage commercial et management de l'équipe agence. Responsable des objectifs et de la satisfaction client." },
+        { id: "OFF_02", title: "Responsable de Caisse", city: "Rabat", contract: "CDI", level: "Bac+3", exp: "3-5 ans", desc: "Supervision des opérations de caisse, gestion des fonds et encadrement des guichetiers." },
+        { id: "OFF_03", title: "Chargé de Clientèle Particuliers", city: "Marrakech", contract: "CDI", level: "Bac+3", exp: "1-3 ans", desc: "Accueil, conseil et gestion du portefeuille clients particuliers. Vente de produits bancaires." },
+        { id: "OFF_04", title: "Chargé de Clientèle Professionnels", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Gestion et développement d'un portefeuille de clients professionnels et TPE." },
+        { id: "OFF_05", title: "Chargé d'Affaires Entreprises", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Accompagnement des PME/PMI, montage de dossiers de crédit et financement." },
+        { id: "OFF_06", title: "Chargé de Compte", city: "Tanger", contract: "CDI", level: "Bac+3", exp: "2-4 ans", desc: "Suivi et gestion des comptes clients, traitement des réclamations et opérations courantes." },
+        { id: "OFF_07", title: "Conseiller Clientèle", city: "Fès", contract: "CDI", level: "Bac+2", exp: "1-3 ans", desc: "Accueil physique et téléphonique, orientation des clients et promotion des services." },
+        { id: "OFF_08", title: "Guichetier Payeur", city: "Agadir", contract: "CDD", level: "Bac+2", exp: "0-1 an", desc: "Opérations de guichet : retraits, versements, virements et change." },
+        { id: "OFF_09", title: "Analyste Crédit", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Analyse des dossiers de crédit, évaluation des risques et recommandations d'octroi." },
+        { id: "OFF_10", title: "Chargé de Recouvrement", city: "Oujda", contract: "CDD", level: "Bac+2", exp: "1-3 ans", desc: "Relance téléphonique et gestion des créances impayées. Négociation avec les débiteurs." }
     ];
 
     jobsData.forEach(function (j) {
@@ -502,32 +502,31 @@ function seedTestData() {
     // Définition des profils candidats à générer
     var candidatesData = [
         // --- TOP PROFILS (MATCH ~90-100%) ---
-        { nom: "El Amrani", prenom: "Youssef", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_youssef_java.pdf" },
-        { nom: "Benani", prenom: "Sara", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sara_finance.pdf" },
-        { nom: "Chraibi", prenom: "Omar", city: "Rabat", level: "Bac+5", exp: "7 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_03", cv: "cv_omar_dir.pdf" },
+        { nom: "El Amrani", prenom: "Youssef", city: "Casablanca", level: "Bac+5", exp: "7 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_youssef_dir.pdf" }, // Directeur d'Agence
+        { nom: "Benani", prenom: "Sara", city: "Rabat", level: "Bac+3", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sara_caisse.pdf" }, // Responsable de Caisse
+        { nom: "Chraibi", prenom: "Omar", city: "Marrakech", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_omar_client.pdf" }, // Chargé Clientèle Particuliers
 
         // --- BONS PROFILS (MATCH ~70-85%) ---
-        { nom: "Guedira", prenom: "Mehdi", city: "Casablanca", level: "Bac+5", exp: "3 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_mehdi_dev.pdf" }, // Exp un peu faible
-        { nom: "Tazi", prenom: "Leila", city: "Marrakech", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_04", cv: "cv_leila_cons.pdf" },
-        { nom: "Alaoui", prenom: "Karim", city: "Tanger", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_06", cv: "cv_karim_sys.pdf" },
+        { nom: "Guedira", prenom: "Mehdi", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_04", cv: "cv_mehdi_pro.pdf" }, // Chargé Clientèle Professionnels
+        { nom: "Tazi", prenom: "Leila", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_05", cv: "cv_leila_affaires.pdf" }, // Chargé d'Affaires
+        { nom: "Alaoui", prenom: "Karim", city: "Tanger", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_06", cv: "cv_karim_compte.pdf" }, // Chargé de Compte
 
-        // --- PROFILS MOYENS / GEOGRAPHIQUE (MATCH ~50-65%) ---
-        { nom: "Fassi", prenom: "Amine", city: "Rabat", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_amine_rabat.pdf" }, // Bonne spec, mauvaise ville
-        { nom: "Berrada", prenom: "Sofia", city: "Tanger", level: "Bac+5", exp: "5 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sofia_tanger.pdf" }, // Bonne spec, mauvaise ville
-        { nom: "Idrissi", prenom: "Hamza", city: "Casablanca", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "marketing", targetJobId: "OFF_08", cv: "cv_hamza_mkt.pdf" }, // Spec proche mais pas exacte
+        // --- PROFILS MOYENS (MATCH ~50-65%) ---
+        { nom: "Fassi", prenom: "Amine", city: "Fès", level: "Bac+2", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_07", cv: "cv_amine_conseil.pdf" }, // Conseiller Clientèle
+        { nom: "Berrada", prenom: "Sofia", city: "Agadir", level: "Bac+2", exp: "0 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_08", cv: "cv_sofia_guichet.pdf" }, // Guichetier
 
-        // --- PROFILS JUNIORS (MATCH ~40-50%) ---
-        { nom: "Mernissi", prenom: "Salma", city: "Agadir", level: "Bac+2", exp: "0 ans", contract: "Stage", spec: "commerce", targetJobId: "OFF_10", cv: "cv_salma_jun.pdf" },
-        { nom: "Kettani", prenom: "Reda", city: "Fès", level: "Bac+2", exp: "1 an", contract: "CDD", spec: "commerce", targetJobId: "OFF_07", cv: "cv_reda_recouv.pdf" },
+        // --- PROFILS SPÉCIALISÉS ---
+        { nom: "Idrissi", prenom: "Hamza", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_09", cv: "cv_hamza_credit.pdf" }, // Analyste Crédit
+        { nom: "Mernissi", prenom: "Salma", city: "Oujda", level: "Bac+2", exp: "2 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_10", cv: "cv_salma_recouv.pdf" }, // Chargé Recouvrement
 
         // --- PROFILS NON COMPATIBLES (MATCH <30%) ---
-        { nom: "Zouaki", prenom: "Nabil", city: "Oujda", level: "Bac", exp: "10 ans", contract: "CDI", spec: "logistique", targetJobId: "OFF_01", cv: "cv_nabil_log.pdf" }, // Rien à voir
-        { nom: "Hakam", prenom: "Mouna", city: "Meknès", level: "Bac+2", exp: "2 ans", contract: "Intérim", spec: "rh", targetJobId: "OFF_02", cv: "cv_mouna_rh.pdf" }, // RH postule Finance
+        { nom: "Zouaki", prenom: "Nabil", city: "Meknès", level: "Bac", exp: "10 ans", contract: "CDI", spec: "logistique", targetJobId: "OFF_01", cv: "cv_nabil_log.pdf" }, // Logistique postule Directeur
+        { nom: "Hakam", prenom: "Mouna", city: "Kénitra", level: "Bac+2", exp: "2 ans", contract: "Stage", spec: "rh", targetJobId: "OFF_05", cv: "cv_mouna_rh.pdf" }, // RH postule Chargé d'Affaires
 
-        // --- DIVERS POUR REMPLIR ---
-        { nom: "Rami", prenom: "Samir", city: "Casablanca", level: "Bac+5", exp: "8 ans", contract: "CDI", spec: "juridique", targetJobId: "OFF_05", cv: "cv_samir_jur.pdf" },
-        { nom: "Sefiani", prenom: "Hiba", city: "Casablanca", level: "Bac+5", exp: "3 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_09", cv: "cv_hiba_tr.pdf" },
-        { nom: "Benjelloun", prenom: "Othman", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_08", cv: "cv_othman_pm.pdf" }
+        // --- DIVERS POUR STATISTIQUES ---
+        { nom: "Rami", prenom: "Samir", city: "Casablanca", level: "Bac+5", exp: "5 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_samir_gest.pdf" },
+        { nom: "Sefiani", prenom: "Hiba", city: "Rabat", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_hiba_fin.pdf" },
+        { nom: "Benjelloun", prenom: "Othman", city: "Marrakech", level: "Bac+3", exp: "1 an", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_othman_com.pdf" }
     ];
 
     candidatesData.forEach(function (c) {

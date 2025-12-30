@@ -366,3 +366,136 @@ function doGet(e) {
         return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
     }
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 5. 🚀 SEED TEST DATA - RUN THIS FROM APPS SCRIPT EDITOR!
+// ══════════════════════════════════════════════════════════════════════════════
+
+function seedTestData() {
+    var ss = getMyDatabase();
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 1: Clear existing data
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    var offerSheet = ss.getSheetByName("Offres");
+    if (offerSheet) {
+        offerSheet.clear();
+    } else {
+        offerSheet = ss.insertSheet("Offres");
+    }
+
+    var candidateSheet = ss.getSheetByName("All_Candidats");
+    if (candidateSheet) {
+        candidateSheet.clear();
+    } else {
+        candidateSheet = ss.insertSheet("All_Candidats");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 2: Create 10 Banking Jobs
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    offerSheet.appendRow(["ID", "Date", "Titre", "Ville", "Contrat", "Niveau", "Experience", "Description"]);
+
+    var jobs = [
+        ["OFF_001", "30/12/2024", "Développeur Applications Bancaires", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Développement d'applications bancaires Java/Spring, APIs REST, Core Banking"],
+        ["OFF_002", "30/12/2024", "Analyste Crédit Bancaire", "Casablanca", "CDI", "Bac+5", "2-4 ans", "Analyse des dossiers de crédit, évaluation des risques, scoring"],
+        ["OFF_003", "30/12/2024", "Directeur d'Agence Bancaire", "Rabat", "CDI", "Bac+5", "5+ ans", "Gestion d'agence, management équipe, développement commercial"],
+        ["OFF_004", "30/12/2024", "Responsable Conformité Bancaire", "Casablanca", "CDI", "Bac+5", "5+ ans", "Conformité Bank Al-Maghrib, LCB-FT, KYC, audit"],
+        ["OFF_005", "30/12/2024", "Conseiller Clientèle Particuliers", "Marrakech", "CDI", "Bac+3", "1-3 ans", "Conseil produits bancaires, gestion portefeuille clients"],
+        ["OFF_006", "30/12/2024", "Analyste Risques Financiers", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Gestion risques marché, VaR, Bâle III, stress testing"],
+        ["OFF_007", "30/12/2024", "Trésorier Banque", "Casablanca", "CDI", "Bac+5", "5+ ans", "Gestion trésorerie, opérations marché, change, ALM"],
+        ["OFF_008", "30/12/2024", "Responsable Opérations Bancaires", "Rabat", "CDI", "Bac+5", "3-5 ans", "Back-office, virements SWIFT, compensation"],
+        ["OFF_009", "30/12/2024", "Chef de Produit Digital Banking", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Mobile banking, fintech, innovation digitale"],
+        ["OFF_010", "30/12/2024", "Chargé de Recouvrement Bancaire", "Tanger", "CDI", "Bac+3", "2-4 ans", "Recouvrement créances, négociation, contentieux"]
+    ];
+
+    jobs.forEach(function (job) {
+        offerSheet.appendRow(job);
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 3: Create 20 Candidates with REAL Scores
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    candidateSheet.appendRow([
+        "Date", "Nom", "Prénom", "Email", "Téléphone", "Ville",
+        "Niveau", "Expérience", "Contrat", "Poste/Cible",
+        "Score (%)", "Status IA", "CV Link", "OCR Extract (Snippet)"
+    ]);
+
+    // 20 Candidates with varied scores
+    var candidates = [
+        // ⭐ EXCELLENT MATCHES (85-95%)
+        ["30/12/2024", "El Mansouri", "Youssef", "youssef.elmansouri@gmail.com", "0661234567", "Casablanca", "Bac+5", "5 ans", "CDI", "Recommandé: Développeur Applications Bancaires", "92%", "Analysé", "https://drive.google.com/cv1", "Java Spring Developer 5 years experience banking"],
+        ["30/12/2024", "Benjelloun", "Sara", "sara.benjelloun@gmail.com", "0662345678", "Casablanca", "Bac+5", "4 ans", "CDI", "Recommandé: Analyste Crédit Bancaire", "88%", "Analysé", "https://drive.google.com/cv2", "Analyste financier crédit risk expert"],
+        ["30/12/2024", "Alaoui", "Karim", "karim.alaoui@gmail.com", "0663456789", "Casablanca", "Bac+5", "6 ans", "CDI", "Recommandé: Responsable Conformité Bancaire", "85%", "Analysé", "https://drive.google.com/cv3", "Juriste conformité bancaire LCB-FT"],
+
+        // ⭐ GOOD MATCHES (70-84%)
+        ["30/12/2024", "Bouazza", "Ahmed", "ahmed.bouazza@gmail.com", "0664567890", "Casablanca", "Bac+5", "4 ans", "CDI", "Développeur Applications Bancaires", "79%", "Analysé", "https://drive.google.com/cv4", "Full stack developer Java APIs"],
+        ["30/12/2024", "Chraibi", "Layla", "layla.chraibi@gmail.com", "0665678901", "Casablanca", "Bac+5", "5 ans", "CDI", "Analyste Crédit Bancaire", "76%", "Analysé", "https://drive.google.com/cv5", "Finance analyst credit scoring"],
+        ["30/12/2024", "Bennani", "Mehdi", "mehdi.bennani@gmail.com", "0666789012", "Rabat", "Bac+5", "3 ans", "CDI", "Directeur d'Agence Bancaire", "72%", "Analysé", "https://drive.google.com/cv6", "Manager commercial banque"],
+        ["30/12/2024", "Skalli", "Othmane", "othmane.skalli@gmail.com", "0667890123", "Casablanca", "Bac+5", "7 ans", "CDI", "Recommandé: Trésorier Banque", "74%", "Analysé", "https://drive.google.com/cv7", "Trésorier marché financial operations"],
+
+        // ⭐ MEDIUM MATCHES (50-69%)
+        ["30/12/2024", "Idrissi", "Nadia", "nadia.idrissi@gmail.com", "0668901234", "Fès", "Bac+5", "4 ans", "CDI", "Recommandé: Développeur Applications Bancaires", "65%", "Analysé", "https://drive.google.com/cv8", "Developer software engineer"],
+        ["30/12/2024", "Kettani", "Hamza", "hamza.kettani@gmail.com", "0669012345", "Agadir", "Bac+5", "3 ans", "CDI", "Recommandé: Analyste Risques Financiers", "58%", "Analysé", "https://drive.google.com/cv9", "Risk analyst finance"],
+        ["30/12/2024", "Ouazzani", "Salma", "salma.ouazzani@gmail.com", "0670123456", "Oujda", "Bac+3", "2 ans", "CDD", "Recommandé: Conseiller Clientèle Particuliers", "52%", "Analysé", "https://drive.google.com/cv10", "Commercial client advisor"],
+        ["30/12/2024", "Senhaji", "Rachid", "rachid.senhaji@gmail.com", "0671234567", "Meknès", "Bac+5", "5 ans", "CDI", "Recommandé: Responsable Opérations Bancaires", "55%", "Analysé", "https://drive.google.com/cv11", "Operations manager back-office"],
+        ["30/12/2024", "Guedira", "Asmae", "asmae.guedira@gmail.com", "0672345678", "Tanger", "Bac+5", "4 ans", "CDI", "Recommandé: Chef de Produit Digital Banking", "61%", "Analysé", "https://drive.google.com/cv12", "Product manager digital innovation"],
+
+        // ⭐ LOW MATCHES (30-49%)
+        ["30/12/2024", "Filali", "Yassine", "yassine.filali@gmail.com", "0673456789", "Kenitra", "Bac+2", "1 an", "Stage", "Candidature Générale", "35%", "Analysé", "https://drive.google.com/cv13", "Technicien débutant"],
+        ["30/12/2024", "Zouaki", "Kenza", "kenza.zouaki@gmail.com", "0674567890", "Rabat", "Bac+3", "0 ans", "Stage", "Candidature Générale", "28%", "Analysé", "https://drive.google.com/cv14", "Étudiante commerce"],
+        ["30/12/2024", "Louafi", "Bilal", "bilal.louafi@gmail.com", "0675678901", "Tanger", "Bac", "1 an", "CDD", "Recommandé: Chargé de Recouvrement Bancaire", "32%", "Analysé", "https://drive.google.com/cv15", "Agent polyvalent"],
+        ["30/12/2024", "Haddad", "Meryem", "meryem.haddad@gmail.com", "0676789012", "Marrakech", "Bac+2", "0 ans", "Stage", "Candidature Générale", "25%", "Analysé", "https://drive.google.com/cv16", "Stagiaire administration"],
+
+        // ⭐ SENIOR PROFILES (75-90%)
+        ["30/12/2024", "Cherkaoui", "Nabil", "nabil.cherkaoui@gmail.com", "0677890123", "Casablanca", "Bac+5", "12 ans", "CDI", "Directeur d'Agence Bancaire", "87%", "Analysé", "https://drive.google.com/cv17", "Directeur expérimenté management banque"],
+        ["30/12/2024", "Bensouda", "Houda", "houda.bensouda@gmail.com", "0678901234", "Rabat", "Doctorat", "10 ans", "CDI", "Recommandé: Analyste Risques Financiers", "83%", "Analysé", "https://drive.google.com/cv18", "PhD finance risk modeling expert"],
+        ["30/12/2024", "Ait Taleb", "Mohamed", "mohamed.aittaleb@gmail.com", "0679012345", "Casablanca", "Bac+5", "15 ans", "CDI", "Responsable Conformité Bancaire", "91%", "Analysé", "https://drive.google.com/cv19", "Expert conformité réglementaire bancaire"],
+        ["30/12/2024", "Erraji", "Samira", "samira.erraji@gmail.com", "0680123456", "Casablanca", "Bac+5", "9 ans", "CDI", "Recommandé: Trésorier Banque", "78%", "Analysé", "https://drive.google.com/cv20", "Trésorière senior ALM market ops"]
+    ];
+
+    candidates.forEach(function (cand) {
+        candidateSheet.appendRow(cand);
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 4: Format Sheets
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // Format Offers header
+    offerSheet.getRange(1, 1, 1, 8).setBackground("#1a5276").setFontColor("#ffffff").setFontWeight("bold");
+    offerSheet.setFrozenRows(1);
+
+    // Format Candidates header
+    candidateSheet.getRange(1, 1, 1, 14).setBackground("#1a5276").setFontColor("#ffffff").setFontWeight("bold");
+    candidateSheet.setFrozenRows(1);
+
+    // Auto-resize columns
+    for (var i = 1; i <= 8; i++) offerSheet.autoResizeColumn(i);
+    for (var i = 1; i <= 14; i++) candidateSheet.autoResizeColumn(i);
+
+    Logger.log("✅ SEED COMPLETE: 10 Jobs + 20 Candidates with varied scores!");
+
+    return "SUCCESS: 10 Jobs + 20 Candidates created!";
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 6. 🧹 CLEAR ALL DATA (For Testing)
+// ══════════════════════════════════════════════════════════════════════════════
+
+function clearAllData() {
+    var ss = getMyDatabase();
+
+    var offerSheet = ss.getSheetByName("Offres");
+    if (offerSheet) offerSheet.clear();
+
+    var candidateSheet = ss.getSheetByName("All_Candidats");
+    if (candidateSheet) candidateSheet.clear();
+
+    Logger.log("🧹 All data cleared!");
+    return "All data cleared!";
+}

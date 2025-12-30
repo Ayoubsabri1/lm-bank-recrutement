@@ -599,3 +599,45 @@ function clearAllData() {
     Logger.log("🧹 All data cleared!");
     return "All data cleared!";
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 7. 🧪 TEST SCORING - Run this to verify the algorithm works!
+// ══════════════════════════════════════════════════════════════════════════════
+
+function testScoring() {
+    // Test candidate: Directeur profile applying for Directeur d'Agence
+    var testCandidate = {
+        specialite: "gestion",
+        ville: "Casablanca",
+        experience: "7 ans",
+        niveau: "Bac+5",
+        contrat: "CDI"
+    };
+
+    var testJob = {
+        title: "Directeur d'Agence",
+        desc: "Pilotage commercial et management de l'équipe agence.",
+        location: "Casablanca",
+        exp: "5+ ans",
+        contract: "CDI",
+        level: "Bac+5"
+    };
+
+    var score = calculateSimilarity(testCandidate, testJob);
+
+    Logger.log("═══════════════════════════════════════════════════════");
+    Logger.log("🧪 TEST SCORING RESULT:");
+    Logger.log("Candidate: Gestion specialist, Casablanca, 7 ans, Bac+5, CDI");
+    Logger.log("Job: Directeur d'Agence, Casablanca, 5+ ans, Bac+5, CDI");
+    Logger.log("═══════════════════════════════════════════════════════");
+    Logger.log("📊 CALCULATED SCORE: " + score + "%");
+    Logger.log("═══════════════════════════════════════════════════════");
+
+    if (score >= 70) {
+        Logger.log("✅ TEST PASSED! The scoring algorithm is working correctly.");
+    } else {
+        Logger.log("❌ TEST FAILED! Score is too low. Check keywords mapping.");
+    }
+
+    return "Score: " + score + "%";
+}

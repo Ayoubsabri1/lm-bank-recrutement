@@ -264,13 +264,22 @@ function doPost(e) {
 
         // ─── SAVE TO DATABASE ─────────────────────────────────────────────────────
         var masterSheet = ss.getSheetByName("All_Candidats");
+        var correctHeaders = [
+            "Date", "Nom", "Prénom", "Email", "Téléphone", "Ville",
+            "Niveau", "Expérience", "Contrat", "Poste/Cible",
+            "Score (%)", "Status IA", "CV Link", "OCR Extract (Snippet)"
+        ];
+
         if (!masterSheet) {
             masterSheet = ss.insertSheet("All_Candidats");
-            masterSheet.appendRow([
-                "Date", "Nom", "Prénom", "Email", "Téléphone", "Ville",
-                "Niveau", "Expérience", "Contrat", "Poste/Cible",
-                "Score (%)", "Status IA", "CV Link", "OCR Extract (Snippet)"
-            ]);
+            masterSheet.appendRow(correctHeaders);
+        } else {
+            // Verify headers are correct - if row 1 is empty or has wrong headers, fix it
+            var firstRow = masterSheet.getRange(1, 1, 1, 14).getValues()[0];
+            if (!firstRow[0] || firstRow[0] !== "Date" || firstRow.length < 14 || !firstRow[10]) {
+                // Clear row 1 and set correct headers
+                masterSheet.getRange(1, 1, 1, 14).setValues([correctHeaders]);
+            }
         }
 
         masterSheet.appendRow([

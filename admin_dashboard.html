@@ -1019,11 +1019,11 @@
                     return isNaN(d) ? dateStr : d.toLocaleDateString('fr-FR');
                 }
 
-                // Show ALL candidates (no restrictive filter)
-                const candidatesToShow = data;
+                // ✅ FILTER: Only spontaneous candidates (job field contains "Recommandé")
+                const spontaneousCandidates = data.filter(c => c.job && c.job.includes('Recommandé'));
 
                 // Map data to table format with ALL evaluation details
-                const tableData = candidatesToShow.map(candidate => {
+                const tableData = spontaneousCandidates.map(candidate => {
                     const scoreVal = parseInt(candidate.score) || 0;
 
                     // Score Badge with color coding

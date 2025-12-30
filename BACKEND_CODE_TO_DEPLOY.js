@@ -502,32 +502,26 @@ function seedTestData() {
 
     // Définition des profils candidats à générer
     var candidatesData = [
-        // --- TOP PROFILS (MATCH ~90-100%) ---
-        { nom: "El Amrani", prenom: "Youssef", city: "Casablanca", level: "Bac+5", exp: "7 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_youssef_dir.pdf" }, // Directeur d'Agence
-        { nom: "Benani", prenom: "Sara", city: "Rabat", level: "Bac+3", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sara_caisse.pdf" }, // Responsable de Caisse
-        { nom: "Chraibi", prenom: "Omar", city: "Marrakech", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_omar_client.pdf" }, // Chargé Clientèle Particuliers
+        // --- CANDIDATURES SPONTANÉES (avec "Recommandé:") ---
+        { nom: "El Amrani", prenom: "Youssef", city: "Casablanca", level: "Bac+5", exp: "7 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_youssef_dir.pdf", spontaneous: true },
+        { nom: "Tazi", prenom: "Leila", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_05", cv: "cv_leila_affaires.pdf", spontaneous: true },
+        { nom: "Alaoui", prenom: "Karim", city: "Tanger", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_06", cv: "cv_karim_compte.pdf", spontaneous: true },
+        { nom: "Fassi", prenom: "Amine", city: "Fès", level: "Bac+2", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_07", cv: "cv_amine_conseil.pdf", spontaneous: true },
+        { nom: "Berrada", prenom: "Sofia", city: "Agadir", level: "Bac+2", exp: "0 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_08", cv: "cv_sofia_guichet.pdf", spontaneous: true },
+        { nom: "Idrissi", prenom: "Hamza", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_09", cv: "cv_hamza_credit.pdf", spontaneous: true },
+        { nom: "Mernissi", prenom: "Salma", city: "Oujda", level: "Bac+2", exp: "2 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_10", cv: "cv_salma_recouv.pdf", spontaneous: true },
+        { nom: "Rami", prenom: "Samir", city: "Casablanca", level: "Bac+5", exp: "5 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_samir_gest.pdf", spontaneous: true },
 
-        // --- BONS PROFILS (MATCH ~70-85%) ---
-        { nom: "Guedira", prenom: "Mehdi", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_04", cv: "cv_mehdi_pro.pdf" }, // Chargé Clientèle Professionnels
-        { nom: "Tazi", prenom: "Leila", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_05", cv: "cv_leila_affaires.pdf" }, // Chargé d'Affaires
-        { nom: "Alaoui", prenom: "Karim", city: "Tanger", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_06", cv: "cv_karim_compte.pdf" }, // Chargé de Compte
+        // --- CANDIDATURES DIRECTES (sans "Recommandé:") ---
+        { nom: "Benani", prenom: "Sara", city: "Rabat", level: "Bac+3", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sara_caisse.pdf", spontaneous: false },
+        { nom: "Chraibi", prenom: "Omar", city: "Marrakech", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_omar_client.pdf", spontaneous: false },
+        { nom: "Guedira", prenom: "Mehdi", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_04", cv: "cv_mehdi_pro.pdf", spontaneous: false },
 
-        // --- PROFILS MOYENS (MATCH ~50-65%) ---
-        { nom: "Fassi", prenom: "Amine", city: "Fès", level: "Bac+2", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_07", cv: "cv_amine_conseil.pdf" }, // Conseiller Clientèle
-        { nom: "Berrada", prenom: "Sofia", city: "Agadir", level: "Bac+2", exp: "0 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_08", cv: "cv_sofia_guichet.pdf" }, // Guichetier
-
-        // --- PROFILS SPÉCIALISÉS ---
-        { nom: "Idrissi", prenom: "Hamza", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_09", cv: "cv_hamza_credit.pdf" }, // Analyste Crédit
-        { nom: "Mernissi", prenom: "Salma", city: "Oujda", level: "Bac+2", exp: "2 ans", contract: "CDD", spec: "commerce", targetJobId: "OFF_10", cv: "cv_salma_recouv.pdf" }, // Chargé Recouvrement
-
-        // --- PROFILS NON COMPATIBLES (MATCH <30%) ---
-        { nom: "Zouaki", prenom: "Nabil", city: "Meknès", level: "Bac", exp: "10 ans", contract: "CDI", spec: "logistique", targetJobId: "OFF_01", cv: "cv_nabil_log.pdf" }, // Logistique postule Directeur
-        { nom: "Hakam", prenom: "Mouna", city: "Kénitra", level: "Bac+2", exp: "2 ans", contract: "Stage", spec: "rh", targetJobId: "OFF_05", cv: "cv_mouna_rh.pdf" }, // RH postule Chargé d'Affaires
-
-        // --- DIVERS POUR STATISTIQUES ---
-        { nom: "Rami", prenom: "Samir", city: "Casablanca", level: "Bac+5", exp: "5 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_01", cv: "cv_samir_gest.pdf" },
-        { nom: "Sefiani", prenom: "Hiba", city: "Rabat", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_hiba_fin.pdf" },
-        { nom: "Benjelloun", prenom: "Othman", city: "Marrakech", level: "Bac+3", exp: "1 an", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_othman_com.pdf" }
+        // --- PROFILS NON COMPATIBLES ---
+        { nom: "Zouaki", prenom: "Nabil", city: "Meknès", level: "Bac", exp: "10 ans", contract: "CDI", spec: "logistique", targetJobId: "OFF_01", cv: "cv_nabil_log.pdf", spontaneous: true },
+        { nom: "Hakam", prenom: "Mouna", city: "Kénitra", level: "Bac+2", exp: "2 ans", contract: "Stage", spec: "rh", targetJobId: "OFF_05", cv: "cv_mouna_rh.pdf", spontaneous: true },
+        { nom: "Sefiani", prenom: "Hiba", city: "Rabat", level: "Bac+3", exp: "3 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_hiba_fin.pdf", spontaneous: false },
+        { nom: "Benjelloun", prenom: "Othman", city: "Marrakech", level: "Bac+3", exp: "1 an", contract: "CDI", spec: "commerce", targetJobId: "OFF_03", cv: "cv_othman_com.pdf", spontaneous: false }
     ];
 
     candidatesData.forEach(function (c) {
@@ -567,7 +561,7 @@ function seedTestData() {
             c.level,
             c.exp,
             c.contract,
-            targetJob.title, // Colonne Poste/Cible
+            c.spontaneous ? "Recommandé: " + targetJob.title : targetJob.title, // ✅ Add prefix for spontaneous
             realScore, // ✅ Save as NUMBER not TEXT
             "Analysé",
             "https://fake-cv-link.com/" + c.cv,

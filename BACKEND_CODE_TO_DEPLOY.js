@@ -54,76 +54,163 @@ function getLevelScore(levelStr) {
     return 2;
 }
 
-// ─── SCORING LOGIC WITH SPECIALIZATION ──────────────────────────────────────────────────────────
-function calculateSimilarity(candidate, job) {
-    var score = 0;
-    var jobTitle = (job.title || "").toLowerCase();
-    var jobDesc = (job.desc || "").toLowerCase();
-    var ocrText = (candidate.ocrText || "").toLowerCase();
-    var cvSpeciality = (candidate.specialite || "").toLowerCase();
+// ─── FORMULE DE CALCUL DU DEGRÉ DE SIMILARITÉ ──────────────────────────────────
+// Score = Σ (Wi × Si) / Σ Wi × 100
+// Basé uniquement sur les données du formulaire (PAS d'OCR)
+// ────────────────────────────────────────────────────────────────────────────────
 
-    // 1. SPECIALIZATION MATCH (Huge Bonus for explicit match)
-    // Map Specialities to Keywords
-    var specKeywords = {
-        "informatique": ["développeur", "developer", "ingénieur", "système", "réseau", "it", "data", "full stack", "java", "python", "tech"],
-        "finance": ["finance", "analyste", "bancaire", "crédit", "risque", "audit", "comptable"],
-        "comptabilité": ["comptable", "comptabilité", "audit", "financier", "trésorerie"],
-        "marketing": ["marketing", "communication", "digital", "brand", "média", "social"],
-        "rh": ["rh", "ressources humaines", "recrutement", "talent", "personnel", "paie"],
-        "juridique": ["juriste", "droit", "légal", "conformité", "contentieux", "avocat"],
-        "commerce": ["commercial", "vente", "business", "sales", "client", "compte"],
-        "gestion": ["gestion", "manager", "directeur", "chef", "responsable", "projet"],
-        "logistique": ["logistique", "supply", "achat", "transport", "stock"]
+function calculateSimilarity(candidate, job) {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DÉFINITION DES POIDS (Wi) - Total = 100%
+    // ═══════════════════════════════════════════════════════════════════════════
+    var POIDS = {
+        specialite: 0.35,    // 35% - Le plus important
+        ville: 0.20,         // 20%
+        experience: 0.20,    // 20%
+        niveau: 0.15,        // 15%
+        contrat: 0.10        // 10%
     };
 
-    if (cvSpeciality && specKeywords[cvSpeciality]) {
-        var keywords = specKeywords[cvSpeciality];
-        var matchFound = keywords.some(function (k) { return jobTitle.indexOf(k) > -1 || jobDesc.indexOf(k) > -1; });
-        if (matchFound) {
-            score += 30; // DIRECT HIT on Specialization
-        }
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CALCUL DES SCORES INDIVIDUELS (Si) - Chacun entre 0 et 1
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    var scores = {};
+
+    // ─── 1. SPÉCIALITÉ (35%) ─────────────────────────────────────────────────────
+    var jobTitle = (job.title || "").toLowerCase();
+    var jobDesc = (job.desc || "").toLowerCase();
+    var cvSpecialite = (candidate.specialite || "").toLowerCase();
+
+    var specKeywords = {
+        "informatique": ["développeur", "developer", "ingénieur", "data", "tech", "digital", "bancaire", "applications"],
+        "finance": ["finance", "analyste", "crédit", "risque", "trésorier", "bancaire", "financier"],
+        "comptabilité": ["comptable", "audit", "contrôle", "gestion"],
+        "marketing": ["marketing", "digital", "produit", "communication", "chef de produit"],
+        "rh": ["rh", "ressources", "recrutement", "formation"],
+        "juridique": ["juriste", "conformité", "droit", "réglementaire", "contentieux"],
+        "commerce": ["commercial", "client", "conseiller", "vente", "clientèle", "recouvrement"],
+        "gestion": ["directeur", "responsable", "manager", "chef", "opérations", "agence"]
+    };
+
+    scores.specialite = 0;
+    if (cvSpecialite && specKeywords[cvSpecialite]) {
+        var keywords = specKeywords[cvSpecialite];
+        var matchFound = keywords.some(function (k) {
+            return jobTitle.indexOf(k) > -1 || jobDesc.indexOf(k) > -1;
+        });
+        scores.specialite = matchFound ? 1 : 0;
     }
 
-    // 2. LOCATION MATCH (Existing logic)
+    // ─── 2. VILLE (20%) ──────────────────────────────────────────────────────────
     var jobCity = (job.location || "").toLowerCase().trim();
     var candCity = (candidate.ville || "").toLowerCase().trim();
 
-    // Fuzzy city matching
-    var cityMatch = false;
-    if (jobCity === candCity) cityMatch = true;
-    else if (jobCity.indexOf(candCity) > -1 && candCity.length > 3) cityMatch = true;
-    else if (candCity.indexOf(jobCity) > -1 && jobCity.length > 3) cityMatch = true;
-    // Specific Morocco alias
-    else if (candCity === "casa" && jobCity === "casablanca") cityMatch = true;
-    else if (candCity === "casablanca" && jobCity === "casa") cityMatch = true;
+    // Villes principales du Maroc avec proximité
+    var cityGroups = {
+        "casablanca": ["casablanca", "casa", "mohammedia"],
+        "rabat": ["rabat", "salé", "témara", "kenitra"],
+        "marrakech": ["marrakech"],
+        "tanger": ["tanger", "tétouan"],
+        "fès": ["fès", "fez", "meknès"],
+        "agadir": ["agadir"],
+        "oujda": ["oujda", "nador"]
+    };
 
-    if (cityMatch) score += 20;
-
-    // 3. EXPERIENCE & LEVEL (Simplified Base)
-    var candExp = parseInt(candidate.experience) || 0;
-    if (candExp > 0) score += 10;
-
-    // Level Bonus
-    var candLevel = getLevelScore(candidate.niveau);
-    if (candLevel > 0) score += 10;
-
-    // 4. OCR KEYWORD MATCH (Contextual Boost)
-    if (ocrText) {
-        var titleWords = jobTitle.split(" ").filter(function (w) { return w.length > 3; });
-        var keywordMatches = 0;
-        titleWords.forEach(function (w) {
-            if (ocrText.indexOf(w) > -1) keywordMatches++;
-        });
-        score += (keywordMatches * 10);
+    scores.ville = 0;
+    if (jobCity === candCity) {
+        scores.ville = 1; // Match exact
+    } else {
+        // Vérifier si dans le même groupe régional
+        for (var region in cityGroups) {
+            var cities = cityGroups[region];
+            if (cities.indexOf(jobCity) > -1 && cities.indexOf(candCity) > -1) {
+                scores.ville = 0.7; // Même région
+                break;
+            }
+        }
     }
 
-    // Cap at 100
-    if (score > 100) score = 100;
+    // ─── 3. EXPÉRIENCE (20%) ─────────────────────────────────────────────────────
+    var candExp = parseInt(candidate.experience) || 0;
+    var jobExpStr = (job.exp || "").toLowerCase();
 
-    // Add random micro-variance to prevent collisions (0-5%)
-    score += Math.floor(Math.random() * 5);
+    // Extraire l'expérience requise
+    var jobExpRequired = 0;
+    if (jobExpStr.indexOf("5+") > -1 || jobExpStr.indexOf("5 ans") > -1) jobExpRequired = 5;
+    else if (jobExpStr.indexOf("3-5") > -1) jobExpRequired = 4;
+    else if (jobExpStr.indexOf("2-4") > -1) jobExpRequired = 3;
+    else if (jobExpStr.indexOf("1-3") > -1) jobExpRequired = 2;
+    else if (jobExpStr.indexOf("0-1") > -1) jobExpRequired = 1;
 
-    return score;
+    if (jobExpRequired === 0) {
+        scores.experience = 1; // Pas d'exigence
+    } else {
+        // Ratio avec bonus si surqualifié (max 1)
+        scores.experience = Math.min(candExp / jobExpRequired, 1);
+    }
+
+    // ─── 4. NIVEAU D'ÉTUDES (15%) ────────────────────────────────────────────────
+    var levelValues = {
+        "doctorat": 10, "phd": 10,
+        "bac+5": 8, "master": 8, "ingénieur": 8,
+        "bac+4": 7,
+        "bac+3": 6, "licence": 6,
+        "bac+2": 4, "technicien": 4, "dut": 4, "bts": 4,
+        "bac": 2
+    };
+
+    function getNiveauValue(str) {
+        if (!str) return 0;
+        var s = str.toLowerCase();
+        for (var key in levelValues) {
+            if (s.indexOf(key) > -1) return levelValues[key];
+        }
+        return 2;
+    }
+
+    var candNiveau = getNiveauValue(candidate.niveau);
+    var jobNiveau = getNiveauValue(job.level);
+
+    if (jobNiveau === 0) {
+        scores.niveau = 1;
+    } else {
+        scores.niveau = Math.min(candNiveau / jobNiveau, 1);
+    }
+
+    // ─── 5. TYPE DE CONTRAT (10%) ────────────────────────────────────────────────
+    var candContrat = (candidate.contrat || "").toLowerCase();
+    var jobContrat = (job.contract || "").toLowerCase();
+
+    if (!jobContrat || jobContrat === candContrat) {
+        scores.contrat = 1;
+    } else if (candContrat === "cdi" && jobContrat === "cdd") {
+        scores.contrat = 0.5; // CDI peut accepter CDD
+    } else {
+        scores.contrat = 0;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CALCUL DU SCORE FINAL: Score = Σ (Wi × Si) × 100
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    var scoreFinal = 0;
+    scoreFinal += POIDS.specialite * scores.specialite;
+    scoreFinal += POIDS.ville * scores.ville;
+    scoreFinal += POIDS.experience * scores.experience;
+    scoreFinal += POIDS.niveau * scores.niveau;
+    scoreFinal += POIDS.contrat * scores.contrat;
+
+    // Convertir en pourcentage (0-100)
+    var scorePercent = Math.round(scoreFinal * 100);
+
+    // Ajouter micro-variance pour éviter les scores identiques (0-3%)
+    scorePercent += Math.floor(Math.random() * 4);
+
+    // Plafonner à 100
+    if (scorePercent > 100) scorePercent = 100;
+
+    return scorePercent;
 }
 
 // ══════════════════════════════════════════════════════════════════════════════

@@ -1384,6 +1384,34 @@
                 }
             });
         });
+
+        // Refresh All Data Function
+        function refreshAllData() {
+            const btn = event.target.closest('button');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            btn.disabled = true;
+
+            Promise.all([loadSimilarityData(), loadSheetData()])
+                .then(() => {
+                    icon.classList.remove('fa-spin');
+                    btn.disabled = false;
+                    showToast('✅ Données actualisées!');
+                })
+                .catch(err => {
+                    icon.classList.remove('fa-spin');
+                    btn.disabled = false;
+                    showToast('❌ Erreur', true);
+                });
+        }
+
+        function showToast(msg, isErr = false) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `position:fixed;top:80px;right:20px;background:${isErr ? '#dc3545' : '#28a745'};color:white;padding:12px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:10000;font-weight:500;`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
     </script>
 </body>
 

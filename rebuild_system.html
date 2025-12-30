@@ -280,64 +280,100 @@
         // JOB OFFERS DATA
         // ═══════════════════════════════════════════════════════════════════════════════
 
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // 10 وظائف للقطاع البنكي فقط
+        // ═══════════════════════════════════════════════════════════════════════════════
         const jobOffers = [
-            // IT / Informatique
-            { titre: "Développeur Full Stack", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Développement d'applications web avec React et Node.js" },
-            { titre: "Développeur Java Senior", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Développement backend Java Spring Boot" },
-            { titre: "Data Analyst", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse de données et création de rapports BI" },
-            { titre: "Ingénieur DevOps", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "CI/CD, Docker, Kubernetes, Cloud AWS" },
-            { titre: "Architecte Cloud", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Architecture cloud Azure et AWS" },
-            { titre: "Développeur Python", ville: "Tanger", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Développement Python et Machine Learning" },
-            { titre: "Tech Lead", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Lead technique équipe développement" },
-            { titre: "Ingénieur IT Support", ville: "Marrakech", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Support technique et infrastructure IT" },
-
-            // Finance
-            { titre: "Analyste Crédit", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse des dossiers de crédit bancaire" },
-            { titre: "Gestionnaire de Risque", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion des risques financiers et opérationnels" },
-            { titre: "Analyste Financier", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse financière et reporting" },
-            { titre: "Trésorier", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Gestion de la trésorerie bancaire" },
-            { titre: "Chargé de Recouvrement", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Recouvrement des créances" },
-
-            // Comptabilité
-            { titre: "Comptable Senior", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Comptabilité générale et analytique" },
-            { titre: "Auditeur Interne", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Audit interne et contrôle" },
-            { titre: "Contrôleur de Gestion", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Contrôle de gestion et reporting" },
-
-            // RH
-            { titre: "Chargé de Recrutement", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Recrutement et gestion des talents" },
-            { titre: "Responsable RH", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Management des ressources humaines" },
-            { titre: "Chargé de Formation", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Formation et développement des compétences" },
-            { titre: "Gestionnaire Paie", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Gestion de la paie et administration RH" },
-
-            // Commerce
-            { titre: "Commercial B2B", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Vente de produits bancaires aux entreprises" },
-            { titre: "Chargé de Clientèle", ville: "Marrakech", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Gestion de la relation client" },
-            { titre: "Responsable Commercial", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Direction commerciale régionale" },
-            { titre: "Business Developer", ville: "Tanger", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Développement commercial et partenariats" },
-
-            // Marketing
-            { titre: "Chef de Produit Digital", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Marketing digital et produits bancaires" },
-            { titre: "Community Manager", ville: "Rabat", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Gestion des réseaux sociaux" },
-            { titre: "Responsable Communication", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Communication institutionnelle" },
-
-            // Juridique
-            { titre: "Juriste Senior", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Droit bancaire et des affaires" },
-            { titre: "Responsable Conformité", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Conformité réglementaire bancaire" },
-            { titre: "Juriste Contentieux", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion du contentieux bancaire" },
-
-            // Gestion
-            { titre: "Chef de Projet", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion de projets transverses" },
-            { titre: "Directeur d'Agence", ville: "Marrakech", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Direction d'agence bancaire" },
-            { titre: "Responsable Opérations", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Gestion des opérations bancaires" },
-            { titre: "Coordinateur Projets", ville: "Rabat", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Coordination et suivi de projets" },
-
-            // Entry level / Stages
-            { titre: "Développeur Junior", ville: "Casablanca", contrat: "CDD", niveau: "Bac+5", exp: "0-1 an", desc: "Premier poste développement web" },
-            { titre: "Assistant RH", ville: "Rabat", contrat: "CDD", niveau: "Bac+3", exp: "0-1 an", desc: "Support administratif RH" },
-            { titre: "Stagiaire Finance", ville: "Casablanca", contrat: "Stage", niveau: "Bac+5", exp: "0", desc: "Stage en analyse financière" },
-            { titre: "Stagiaire Marketing", ville: "Casablanca", contrat: "Stage", niveau: "Bac+3", exp: "0", desc: "Stage en marketing digital" },
-            { titre: "Guichetier", ville: "Agadir", contrat: "CDI", niveau: "Bac+2", exp: "0-1 an", desc: "Accueil et opérations guichet" },
-            { titre: "Agent de Saisie", ville: "Fès", contrat: "CDD", niveau: "Bac", exp: "0-1 an", desc: "Saisie de données bancaires" }
+            // 1. تطوير تطبيقات بنكية
+            {
+                titre: "Développeur Applications Bancaires",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "3-5 ans",
+                desc: "Développement d'applications bancaires en Java/Spring, APIs REST, intégration systèmes de paiement, Core Banking"
+            },
+            // 2. محلل ائتمان
+            {
+                titre: "Analyste Crédit Bancaire",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "2-4 ans",
+                desc: "Analyse des dossiers de crédit, évaluation des risques, étude de solvabilité, crédit immobilier et consommation"
+            },
+            // 3. مدير وكالة بنكية
+            {
+                titre: "Directeur d'Agence Bancaire",
+                ville: "Rabat",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "5+ ans",
+                desc: "Gestion d'agence bancaire, management d'équipe, développement commercial, objectifs de collecte et placement"
+            },
+            // 4. مسؤول الامتثال
+            {
+                titre: "Responsable Conformité Bancaire",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "5+ ans",
+                desc: "Conformité réglementaire Bank Al-Maghrib, lutte anti-blanchiment, KYC, audit interne bancaire"
+            },
+            // 5. مستشار الزبائن الخواص
+            {
+                titre: "Conseiller Clientèle Particuliers",
+                ville: "Marrakech",
+                contrat: "CDI",
+                niveau: "Bac+3",
+                exp: "1-3 ans",
+                desc: "Conseil et vente de produits bancaires, gestion de portefeuille clients, crédit, épargne, assurance"
+            },
+            // 6. محلل المخاطر المالية
+            {
+                titre: "Analyste Risques Financiers",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "3-5 ans",
+                desc: "Gestion des risques de marché, risque de crédit, modélisation, stress testing, Bâle III"
+            },
+            // 7. أمين الخزينة
+            {
+                titre: "Trésorier Banque",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "5+ ans",
+                desc: "Gestion de la trésorerie, opérations de marché, change, placements interbancaires, ALM"
+            },
+            // 8. مسؤول العمليات البنكية
+            {
+                titre: "Responsable Opérations Bancaires",
+                ville: "Rabat",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "3-5 ans",
+                desc: "Back-office bancaire, virements internationaux, SWIFT, compensation, moyens de paiement"
+            },
+            // 9. مسؤول المنتجات البنكية الرقمية
+            {
+                titre: "Chef de Produit Digital Banking",
+                ville: "Casablanca",
+                contrat: "CDI",
+                niveau: "Bac+5",
+                exp: "3-5 ans",
+                desc: "Innovation digitale, mobile banking, e-banking, fintech, paiement électronique"
+            },
+            // 10. مكلف بالتحصيل
+            {
+                titre: "Chargé de Recouvrement Bancaire",
+                ville: "Tanger",
+                contrat: "CDI",
+                niveau: "Bac+3",
+                exp: "2-4 ans",
+                desc: "Recouvrement créances bancaires, négociation amiable, suivi contentieux, créances douteuses"
+            }
         ];
 
         // ═══════════════════════════════════════════════════════════════════════════════

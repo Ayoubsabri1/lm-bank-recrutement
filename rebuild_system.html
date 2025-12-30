@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>🔄 إعادة بناء النظام - LM BANK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00d4aa;
+        }
+
+        .step-card.inactive {
+            opacity: 0.5;
+            border-left-color: #666;
+        }
+
+        .step-card.active {
+            border-left-color: #f39c12;
+        }
+
+        .step-card.done {
+            border-left-color: #00d4aa;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00b894);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 170, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log {
+            background: #0a0a15;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry.success {
+            color: #00d4aa;
+        }
+
+        .log-entry.error {
+            color: #e74c3c;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        .log-entry.warning {
+            color: #f39c12;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔄 إعادة بناء النظام الكامل</h1>
+        <p class="subtitle">Complete System Rebuild - LM BANK Recruitment</p>
+
+        <!-- Step 1: Seed Offers -->
+        <div class="step-card" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">إنشاء الوظائف (Seed Offers)</div>
+            </div>
+            <p>إنشاء 40 وظيفة متنوعة مع كلمات مفتاحية تتوافق مع التخصصات</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress1" style="width: 0%"></div>
+            </div>
+            <div class="stats" id="stats1" style="display:none">
+                <div class="stat-box">
+                    <div class="number" id="offers-count">0</div>
+                    <div class="label">وظيفة</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="offers-it">0</div>
+                    <div class="label">IT</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="offers-finance">0</div>
+                    <div class="label">Finance</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="offers-other">0</div>
+                    <div class="label">أخرى</div>
+                </div>
+            </div>
+            <button id="btn1" onclick="seedOffers()">🏢 إنشاء الوظائف</button>
+        </div>
+
+        <!-- Step 2: Seed Candidates -->
+        <div class="step-card inactive" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">إنشاء المرشحين (Seed 43 Candidates)</div>
+            </div>
+            <p>إنشاء 43 مرشحاً بتخصصات ومواقع وخبرات متنوعة</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress2" style="width: 0%"></div>
+            </div>
+            <div class="stats" id="stats2" style="display:none">
+                <div class="stat-box">
+                    <div class="number" id="cand-count">0</div>
+                    <div class="label">مرشح</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="cand-spontaneous">0</div>
+                    <div class="label">تلقائي</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="cand-specific">0</div>
+                    <div class="label">وظيفة محددة</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="cand-avg">0%</div>
+                    <div class="label">متوسط النتيجة</div>
+                </div>
+            </div>
+            <button id="btn2" onclick="seedCandidates()" disabled>👥 إنشاء المرشحين</button>
+        </div>
+
+        <!-- Step 3: Verify -->
+        <div class="step-card inactive" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">التحقق (Verification)</div>
+            </div>
+            <p>افتح لوحة التحكم للتحقق من النتائج</p>
+            <div class="btn-group">
+                <button id="btn3" onclick="openDashboard()" disabled>📊 فتح Dashboard</button>
+                <button onclick="openSheet()" style="background: linear-gradient(135deg, #3498db, #2980b9);">📋 فتح
+                    Google Sheet</button>
+            </div>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-t9SJSfBZt3-5BU_N5yWehDPexStI859IeM-8SIQUS5VHFMz-s9Jl99HdhEesRB8w/exec';
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1EogVYQi260Lf4Ed4jh8Q_nMCcnuTCI0pXozr_RY_Ywc/edit';
+        const DASHBOARD_URL = 'https://ayoubsabri1.github.io/lm-bank-recrutement/admin_dashboard.html';
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // JOB OFFERS DATA
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        const jobOffers = [
+            // IT / Informatique
+            { titre: "Développeur Full Stack", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Développement d'applications web avec React et Node.js" },
+            { titre: "Développeur Java Senior", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Développement backend Java Spring Boot" },
+            { titre: "Data Analyst", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse de données et création de rapports BI" },
+            { titre: "Ingénieur DevOps", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "CI/CD, Docker, Kubernetes, Cloud AWS" },
+            { titre: "Architecte Cloud", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Architecture cloud Azure et AWS" },
+            { titre: "Développeur Python", ville: "Tanger", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Développement Python et Machine Learning" },
+            { titre: "Tech Lead", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Lead technique équipe développement" },
+            { titre: "Ingénieur IT Support", ville: "Marrakech", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Support technique et infrastructure IT" },
+
+            // Finance
+            { titre: "Analyste Crédit", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse des dossiers de crédit bancaire" },
+            { titre: "Gestionnaire de Risque", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion des risques financiers et opérationnels" },
+            { titre: "Analyste Financier", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Analyse financière et reporting" },
+            { titre: "Trésorier", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Gestion de la trésorerie bancaire" },
+            { titre: "Chargé de Recouvrement", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Recouvrement des créances" },
+
+            // Comptabilité
+            { titre: "Comptable Senior", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Comptabilité générale et analytique" },
+            { titre: "Auditeur Interne", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Audit interne et contrôle" },
+            { titre: "Contrôleur de Gestion", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Contrôle de gestion et reporting" },
+
+            // RH
+            { titre: "Chargé de Recrutement", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "2-4 ans", desc: "Recrutement et gestion des talents" },
+            { titre: "Responsable RH", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Management des ressources humaines" },
+            { titre: "Chargé de Formation", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Formation et développement des compétences" },
+            { titre: "Gestionnaire Paie", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Gestion de la paie et administration RH" },
+
+            // Commerce
+            { titre: "Commercial B2B", ville: "Casablanca", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Vente de produits bancaires aux entreprises" },
+            { titre: "Chargé de Clientèle", ville: "Marrakech", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Gestion de la relation client" },
+            { titre: "Responsable Commercial", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Direction commerciale régionale" },
+            { titre: "Business Developer", ville: "Tanger", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Développement commercial et partenariats" },
+
+            // Marketing
+            { titre: "Chef de Produit Digital", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Marketing digital et produits bancaires" },
+            { titre: "Community Manager", ville: "Rabat", contrat: "CDI", niveau: "Bac+3", exp: "1-3 ans", desc: "Gestion des réseaux sociaux" },
+            { titre: "Responsable Communication", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Communication institutionnelle" },
+
+            // Juridique
+            { titre: "Juriste Senior", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Droit bancaire et des affaires" },
+            { titre: "Responsable Conformité", ville: "Rabat", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Conformité réglementaire bancaire" },
+            { titre: "Juriste Contentieux", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion du contentieux bancaire" },
+
+            // Gestion
+            { titre: "Chef de Projet", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "3-5 ans", desc: "Gestion de projets transverses" },
+            { titre: "Directeur d'Agence", ville: "Marrakech", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Direction d'agence bancaire" },
+            { titre: "Responsable Opérations", ville: "Casablanca", contrat: "CDI", niveau: "Bac+5", exp: "5+ ans", desc: "Gestion des opérations bancaires" },
+            { titre: "Coordinateur Projets", ville: "Rabat", contrat: "CDI", niveau: "Bac+3", exp: "2-4 ans", desc: "Coordination et suivi de projets" },
+
+            // Entry level / Stages
+            { titre: "Développeur Junior", ville: "Casablanca", contrat: "CDD", niveau: "Bac+5", exp: "0-1 an", desc: "Premier poste développement web" },
+            { titre: "Assistant RH", ville: "Rabat", contrat: "CDD", niveau: "Bac+3", exp: "0-1 an", desc: "Support administratif RH" },
+            { titre: "Stagiaire Finance", ville: "Casablanca", contrat: "Stage", niveau: "Bac+5", exp: "0", desc: "Stage en analyse financière" },
+            { titre: "Stagiaire Marketing", ville: "Casablanca", contrat: "Stage", niveau: "Bac+3", exp: "0", desc: "Stage en marketing digital" },
+            { titre: "Guichetier", ville: "Agadir", contrat: "CDI", niveau: "Bac+2", exp: "0-1 an", desc: "Accueil et opérations guichet" },
+            { titre: "Agent de Saisie", ville: "Fès", contrat: "CDD", niveau: "Bac", exp: "0-1 an", desc: "Saisie de données bancaires" }
+        ];
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // CANDIDATES DATA
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        const candidates = [
+            // Perfect matches (High scores expected: 70-95%)
+            { nom: "El Mansouri", prenom: "Youssef", ville: "Casablanca", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "informatique", type: "spontaneous" },
+            { nom: "Benjelloun", prenom: "Sara", ville: "Casablanca", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "finance", type: "spontaneous" },
+            { nom: "Alaoui", prenom: "Karim", ville: "Casablanca", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "juridique", type: "spontaneous" },
+            { nom: "Bouazza", prenom: "Ahmed", ville: "Casablanca", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "informatique", type: "candidate", poste: "Développeur Full Stack" },
+            { nom: "Chraibi", prenom: "Layla", ville: "Casablanca", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "finance", type: "candidate", poste: "Analyste Crédit" },
+            { nom: "Bennani", prenom: "Mehdi", ville: "Rabat", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "rh", type: "candidate", poste: "Chargé de Recrutement" },
+            { nom: "Skalli", prenom: "Othmane", ville: "Casablanca", niveau: "Bac+5", experience: "7", contrat: "CDI", specialite: "informatique", type: "candidate", poste: "Architecte Cloud" },
+            { nom: "Jaidi", prenom: "Rim", ville: "Casablanca", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "juridique", type: "candidate", poste: "Juriste Senior" },
+
+            // Partial matches (Medium scores: 40-70%)
+            { nom: "Idrissi", prenom: "Nadia", ville: "Fès", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "informatique", type: "spontaneous" },
+            { nom: "Kettani", prenom: "Hamza", ville: "Agadir", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "finance", type: "spontaneous" },
+            { nom: "Ouazzani", prenom: "Salma", ville: "Oujda", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "comptabilité", type: "spontaneous" },
+            { nom: "Senhaji", prenom: "Rachid", ville: "Meknès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "commerce", type: "spontaneous" },
+            { nom: "Lahlou", prenom: "Amine", ville: "Fès", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "informatique", type: "candidate", poste: "Data Analyst" },
+            { nom: "Guedira", prenom: "Asmae", ville: "Tanger", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "finance", type: "spontaneous" },
+            { nom: "Tahiri", prenom: "Adil", ville: "Fès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "comptabilité", type: "spontaneous" },
+            { nom: "Naciri", prenom: "Zakaria", ville: "Casablanca", niveau: "Bac+3", experience: "3", contrat: "CDI", specialite: "commerce", type: "candidate", poste: "Commercial B2B" },
+
+            // Weak matches (Low scores: 10-40%)
+            { nom: "Filali", prenom: "Yassine", ville: "Kenitra", niveau: "Bac+2", experience: "1", contrat: "Stage", specialite: "logistique", type: "spontaneous" },
+            { nom: "Zouaki", prenom: "Kenza", ville: "Rabat", niveau: "Bac+3", experience: "0", contrat: "Stage", specialite: "autre", type: "spontaneous" },
+            { nom: "Louafi", prenom: "Bilal", ville: "Tanger", niveau: "Bac", experience: "1", contrat: "CDD", specialite: "logistique", type: "spontaneous" },
+            { nom: "Haddad", prenom: "Meryem", ville: "Marrakech", niveau: "Bac+2", experience: "0", contrat: "Stage", specialite: "autre", type: "spontaneous" },
+
+            // Mixed profiles
+            { nom: "El Amrani", prenom: "Soufiane", ville: "Casablanca", niveau: "Bac+5", experience: "8", contrat: "CDI", specialite: "gestion", type: "candidate", poste: "Chef de Projet" },
+            { nom: "Tazi", prenom: "Fatima", ville: "Tanger", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "marketing", type: "spontaneous" },
+            { nom: "Fassi", prenom: "Omar", ville: "Marrakech", niveau: "Bac+5", experience: "7", contrat: "CDI", specialite: "gestion", type: "spontaneous" },
+            { nom: "Berrada", prenom: "Imane", ville: "Kenitra", niveau: "Bac+3", experience: "2", contrat: "CDI", specialite: "marketing", type: "spontaneous" },
+            { nom: "Bouzidi", prenom: "Hajar", ville: "Casablanca", niveau: "Bac+2", experience: "2", contrat: "CDD", specialite: "rh", type: "spontaneous" },
+            { nom: "Lamrani", prenom: "Ghita", ville: "Marrakech", niveau: "Bac+3", experience: "2", contrat: "CDI", specialite: "marketing", type: "candidate", poste: "Community Manager" },
+
+            // Juniors
+            { nom: "Boutaleb", prenom: "Ayoub", ville: "Casablanca", niveau: "Bac+5", experience: "0", contrat: "Stage", specialite: "informatique", type: "spontaneous" },
+            { nom: "Sbai", prenom: "Wiam", ville: "Rabat", niveau: "Bac+3", experience: "0", contrat: "Stage", specialite: "finance", type: "spontaneous" },
+            { nom: "Rami", prenom: "Ilyas", ville: "Casablanca", niveau: "Bac+5", experience: "1", contrat: "CDD", specialite: "informatique", type: "candidate", poste: "Développeur Junior" },
+            { nom: "Kadiri", prenom: "Lina", ville: "Tanger", niveau: "Bac+2", experience: "0", contrat: "Stage", specialite: "comptabilité", type: "spontaneous" },
+            { nom: "Moussaoui", prenom: "Saad", ville: "Agadir", niveau: "Bac+3", experience: "1", contrat: "CDD", specialite: "commerce", type: "spontaneous" },
+
+            // Seniors
+            { nom: "Cherkaoui", prenom: "Nabil", ville: "Casablanca", niveau: "Bac+5", experience: "12", contrat: "CDI", specialite: "gestion", type: "candidate", poste: "Directeur d'Agence" },
+            { nom: "Bensouda", prenom: "Houda", ville: "Rabat", niveau: "Doctorat", experience: "10", contrat: "CDI", specialite: "finance", type: "spontaneous" },
+            { nom: "Ait Taleb", prenom: "Mohamed", ville: "Casablanca", niveau: "Bac+5", experience: "15", contrat: "CDI", specialite: "juridique", type: "candidate", poste: "Responsable Conformité" },
+            { nom: "Erraji", prenom: "Samira", ville: "Casablanca", niveau: "Bac+5", experience: "9", contrat: "CDI", specialite: "rh", type: "candidate", poste: "Responsable RH" },
+
+            // More variety
+            { nom: "Zerhouni", prenom: "Khalid", ville: "Casablanca", niveau: "Bac+5", experience: "6", contrat: "CDI", specialite: "informatique", type: "spontaneous" },
+            { nom: "Bahloul", prenom: "Nisrine", ville: "Rabat", niveau: "Bac+3", experience: "4", contrat: "CDI", specialite: "commerce", type: "candidate", poste: "Chargé de Clientèle" },
+            { nom: "Fikri", prenom: "Reda", ville: "Tanger", niveau: "Bac+5", experience: "3", contrat: "CDI", specialite: "marketing", type: "spontaneous" },
+            { nom: "Sefiani", prenom: "Loubna", ville: "Fès", niveau: "Bac+5", experience: "5", contrat: "CDI", specialite: "comptabilité", type: "candidate", poste: "Auditeur Interne" },
+            { nom: "Ameur", prenom: "Tarik", ville: "Casablanca", niveau: "Bac+5", experience: "4", contrat: "CDI", specialite: "finance", type: "candidate", poste: "Gestionnaire de Risque" },
+            { nom: "Hakimi", prenom: "Amina", ville: "Marrakech", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "rh", type: "spontaneous" },
+            { nom: "Benjdia", prenom: "Hiba", ville: "Agadir", niveau: "Bac+3", experience: "2", contrat: "CDD", specialite: "rh", type: "candidate", poste: "Assistant RH" }
+        ];
+
+        // Fake PDF
+        const fakePDF = "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvUmVzb3VyY2VzIDw8ID4+IC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdID4+CmVuZG9iagp4cmVmCjAgNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNCAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKMjE2CiUlRU9G";
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // LOGGING
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        function log(msg, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // STEP 1: SEED OFFERS
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        async function seedOffers() {
+            const btn = document.getElementById('btn1');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الإنشاء...';
+            document.getElementById('stats1').style.display = 'grid';
+            document.getElementById('step1').classList.add('active');
+
+            log('🏢 بدء إنشاء الوظائف...', 'info');
+
+            let count = 0, itCount = 0, finCount = 0, otherCount = 0;
+
+            for (let i = 0; i < jobOffers.length; i++) {
+                const job = jobOffers[i];
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'add_offer',
+                            ...job,
+                            niveau_requis: job.niveau,
+                            experience_requise: job.exp,
+                            description: job.desc
+                        })
+                    });
+
+                    count++;
+                    if (job.titre.toLowerCase().includes('développeur') || job.titre.toLowerCase().includes('data') || job.titre.toLowerCase().includes('tech') || job.titre.toLowerCase().includes('cloud') || job.titre.toLowerCase().includes('devops')) {
+                        itCount++;
+                    } else if (job.titre.toLowerCase().includes('financ') || job.titre.toLowerCase().includes('crédit') || job.titre.toLowerCase().includes('risque') || job.titre.toLowerCase().includes('trésor')) {
+                        finCount++;
+                    } else {
+                        otherCount++;
+                    }
+
+                    document.getElementById('offers-count').textContent = count;
+                    document.getElementById('offers-it').textContent = itCount;
+                    document.getElementById('offers-finance').textContent = finCount;
+                    document.getElementById('offers-other').textContent = otherCount;
+                    document.getElementById('progress1').style.width = ((i + 1) / jobOffers.length * 100) + '%';
+
+                    log(`✅ ${job.titre} - ${job.ville}`, 'success');
+
+                } catch (e) {
+                    log(`❌ خطأ: ${job.titre}`, 'error');
+                }
+
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            log(`🎉 تم إنشاء ${count} وظيفة بنجاح!`, 'success');
+
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('done');
+            document.getElementById('step2').classList.remove('inactive');
+            document.getElementById('btn2').disabled = false;
+            btn.textContent = '✅ تم!';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // STEP 2: SEED CANDIDATES
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        async function seedCandidates() {
+            const btn = document.getElementById('btn2');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الإنشاء...';
+            document.getElementById('stats2').style.display = 'grid';
+            document.getElementById('step2').classList.add('active');
+
+            log('👥 بدء إنشاء المرشحين...', 'info');
+
+            let count = 0, spontCount = 0, specCount = 0;
+            let scores = [];
+
+            for (let i = 0; i < candidates.length; i++) {
+                const cand = candidates[i];
+                const email = `${cand.prenom.toLowerCase()}.${cand.nom.toLowerCase()}@gmail.com`;
+                const phone = '06' + Math.floor(10000000 + Math.random() * 89999999);
+
+                const payload = {
+                    action: cand.type === 'spontaneous' ? 'spontaneous_application' : 'candidate',
+                    nom: cand.nom,
+                    prenom: cand.prenom,
+                    email: email,
+                    phone: phone,
+                    ville: cand.ville,
+                    niveau: cand.niveau,
+                    experience: cand.experience,
+                    contrat: cand.contrat,
+                    specialite: cand.specialite,
+                    poste: cand.poste || '',
+                    cvBase64: fakePDF,
+                    cvFileName: `CV_${cand.nom}_${cand.prenom}.pdf`,
+                    mimeType: 'application/pdf'
+                };
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    count++;
+                    if (cand.type === 'spontaneous') spontCount++;
+                    else specCount++;
+
+                    // Estimate score for display
+                    let estScore = 10;
+                    if (['informatique', 'finance', 'juridique', 'rh', 'gestion'].includes(cand.specialite)) estScore += 30;
+                    if (['Casablanca', 'Rabat'].includes(cand.ville)) estScore += 20;
+                    if (parseInt(cand.experience) > 0) estScore += 10;
+                    if (['Bac+5', 'Doctorat'].includes(cand.niveau)) estScore += 10;
+                    scores.push(Math.min(95, estScore + Math.floor(Math.random() * 10)));
+
+                    document.getElementById('cand-count').textContent = count;
+                    document.getElementById('cand-spontaneous').textContent = spontCount;
+                    document.getElementById('cand-specific').textContent = specCount;
+                    document.getElementById('cand-avg').textContent = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) + '%';
+                    document.getElementById('progress2').style.width = ((i + 1) / candidates.length * 100) + '%';
+
+                    log(`✅ ${cand.prenom} ${cand.nom} (${cand.specialite}) - ${cand.type === 'spontaneous' ? 'تلقائي' : cand.poste}`, 'success');
+
+                } catch (e) {
+                    log(`❌ خطأ: ${cand.nom}`, 'error');
+                }
+
+                await new Promise(r => setTimeout(r, 1200));
+            }
+
+            log(`🎉 تم إنشاء ${count} مرشحاً بنجاح!`, 'success');
+            log(`📊 متوسط النتيجة المتوقعة: ${Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)}%`, 'info');
+
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step2').classList.add('done');
+            document.getElementById('step3').classList.remove('inactive');
+            document.getElementById('btn3').disabled = false;
+            btn.textContent = '✅ تم!';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // STEP 3: OPEN VERIFICATION
+        // ═══════════════════════════════════════════════════════════════════════════════
+
+        function openDashboard() {
+            window.open(DASHBOARD_URL, '_blank');
+        }
+
+        function openSheet() {
+            window.open(SHEET_URL, '_blank');
+        }
+    </script>
+</body>
+
+</html>

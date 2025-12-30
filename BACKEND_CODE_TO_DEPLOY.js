@@ -83,14 +83,15 @@ function calculateSimilarity(candidate, job) {
     var cvSpecialite = (candidate.specialite || "").toLowerCase();
 
     var specKeywords = {
-        "informatique": ["développeur", "developer", "ingénieur", "data", "tech", "digital", "bancaire", "applications"],
-        "finance": ["finance", "analyste", "crédit", "risque", "trésorier", "bancaire", "financier"],
+        "informatique": ["développeur", "developer", "ingénieur", "data", "tech", "digital", "applications", "système", "réseau"],
+        "finance": ["finance", "analyste", "crédit", "risque", "trésorier", "financier", "affaires", "entreprises", "caisse", "compte"],
         "comptabilité": ["comptable", "audit", "contrôle", "gestion"],
         "marketing": ["marketing", "digital", "produit", "communication", "chef de produit"],
         "rh": ["rh", "ressources", "recrutement", "formation"],
         "juridique": ["juriste", "conformité", "droit", "réglementaire", "contentieux"],
-        "commerce": ["commercial", "client", "conseiller", "vente", "clientèle", "recouvrement"],
-        "gestion": ["directeur", "responsable", "manager", "chef", "opérations", "agence"]
+        "commerce": ["commercial", "client", "conseiller", "vente", "clientèle", "recouvrement", "chargé", "guichetier", "particuliers", "professionnels"],
+        "gestion": ["directeur", "responsable", "manager", "chef", "opérations", "agence", "caisse"],
+        "logistique": ["logistique", "transport", "supply", "approvisionnement", "stock"]
     };
 
     scores.specialite = 0;

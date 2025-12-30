@@ -525,10 +525,6 @@ function seedTestData() {
     ];
 
     candidatesData.forEach(function (c) {
-        // Trouver l'offre cible
-        var targetJob = jobsData.find(j => j.id === c.targetJobId);
-
-        // Préparer objet candidat pour le calcul
         var candidateObj = {
             specialite: c.spec,
             ville: c.city,
@@ -537,20 +533,48 @@ function seedTestData() {
             contrat: c.contract
         };
 
-        // Préparer objet job pour le calcul
-        var jobObj = {
-            title: targetJob.title,
-            desc: targetJob.desc,
-            location: targetJob.city,
-            exp: targetJob.exp,
-            contract: targetJob.contract,
-            level: targetJob.level
-        };
+        var jobTitle;
+        var realScore;
 
-        // 🔥 CALCUL DYNAMIQUE DU SCORE RÉEL 🔥
-        var realScore = calculateSimilarity(candidateObj, jobObj);
+        if (c.spontaneous) {
+            // ✅ SPONTANEOUS: Use algorithm to find BEST match
+            var bestScore = -1;
+            var bestJob = null;
 
-        // Formater l'expérience pour l'affichage (chiffre uniquement pour CSV propre)
+            jobsData.forEach(function (job) {
+                var jobObj = {
+                    title: job.title,
+                    desc: job.desc,
+                    location: job.city,
+                    exp: job.exp,
+                    contract: job.contract,
+                    level: job.level
+                };
+                var score = calculateSimilarity(candidateObj, jobObj);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestJob = job;
+                }
+            });
+
+            jobTitle = "Recommandé: " + (bestJob ? bestJob.title : "Aucune");
+            realScore = bestScore;
+
+        } else {
+            // Direct application: use specified job
+            var targetJob = jobsData.find(function (j) { return j.id === c.targetJobId; });
+            var jobObj = {
+                title: targetJob.title,
+                desc: targetJob.desc,
+                location: targetJob.city,
+                exp: targetJob.exp,
+                contract: targetJob.contract,
+                level: targetJob.level
+            };
+            realScore = calculateSimilarity(candidateObj, jobObj);
+            jobTitle = targetJob.title;
+        }
+
         candidateSheet.appendRow([
             "30/12/2024",
             c.nom,
@@ -561,8 +585,8 @@ function seedTestData() {
             c.level,
             c.exp,
             c.contract,
-            c.spontaneous ? "Recommandé: " + targetJob.title : targetJob.title, // ✅ Add prefix for spontaneous
-            realScore, // ✅ Save as NUMBER not TEXT
+            jobTitle,
+            realScore,
             "Analysé",
             "https://fake-cv-link.com/" + c.cv,
             "Contenu extrait automatiquement..."

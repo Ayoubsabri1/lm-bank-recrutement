@@ -458,116 +458,129 @@ function doGet(e) {
 // 5. 🚀 SEED TEST DATA - RUN THIS FROM APPS SCRIPT EDITOR!
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════════════════
+// 5. 🚀 SEED TEST DATA PRO - GÉNÉRATION INTELLIGENTE ET COHÉRENTE
+// ══════════════════════════════════════════════════════════════════════════════
+
 function seedTestData() {
     var ss = getMyDatabase();
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STEP 1: Clear existing data
-    // ═══════════════════════════════════════════════════════════════════════════
-
+    // 1. Nettoyage
     var offerSheet = ss.getSheetByName("Offres");
-    if (offerSheet) {
-        offerSheet.clear();
-    } else {
-        offerSheet = ss.insertSheet("Offres");
-    }
+    if (offerSheet) offerSheet.clear();
+    else offerSheet = ss.insertSheet("Offres");
 
     var candidateSheet = ss.getSheetByName("All_Candidats");
-    if (candidateSheet) {
-        candidateSheet.clear();
-    } else {
-        candidateSheet = ss.insertSheet("All_Candidats");
-    }
+    if (candidateSheet) candidateSheet.clear();
+    else candidateSheet = ss.insertSheet("All_Candidats");
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STEP 2: Create 10 Banking Jobs
-    // ═══════════════════════════════════════════════════════════════════════════
-
+    // 2. Création des Offres (Standards et Précises)
     offerSheet.appendRow(["ID", "Date", "Titre", "Ville", "Contrat", "Niveau", "Experience", "Description"]);
+    offerSheet.getRange(1, 1, 1, 8).setBackground("#2c3e50").setFontColor("#ffffff").setFontWeight("bold");
 
-    var jobs = [
-        ["OFF_001", "30/12/2024", "Développeur Applications Bancaires", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Développement d'applications bancaires Java/Spring, APIs REST, Core Banking"],
-        ["OFF_002", "30/12/2024", "Analyste Crédit Bancaire", "Casablanca", "CDI", "Bac+5", "2-4 ans", "Analyse des dossiers de crédit, évaluation des risques, scoring"],
-        ["OFF_003", "30/12/2024", "Directeur d'Agence Bancaire", "Rabat", "CDI", "Bac+5", "5+ ans", "Gestion d'agence, management équipe, développement commercial"],
-        ["OFF_004", "30/12/2024", "Responsable Conformité Bancaire", "Casablanca", "CDI", "Bac+5", "5+ ans", "Conformité Bank Al-Maghrib, LCB-FT, KYC, audit"],
-        ["OFF_005", "30/12/2024", "Conseiller Clientèle Particuliers", "Marrakech", "CDI", "Bac+3", "1-3 ans", "Conseil produits bancaires, gestion portefeuille clients"],
-        ["OFF_006", "30/12/2024", "Analyste Risques Financiers", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Gestion risques marché, VaR, Bâle III, stress testing"],
-        ["OFF_007", "30/12/2024", "Trésorier Banque", "Casablanca", "CDI", "Bac+5", "5+ ans", "Gestion trésorerie, opérations marché, change, ALM"],
-        ["OFF_008", "30/12/2024", "Responsable Opérations Bancaires", "Rabat", "CDI", "Bac+5", "3-5 ans", "Back-office, virements SWIFT, compensation"],
-        ["OFF_009", "30/12/2024", "Chef de Produit Digital Banking", "Casablanca", "CDI", "Bac+5", "3-5 ans", "Mobile banking, fintech, innovation digitale"],
-        ["OFF_010", "30/12/2024", "Chargé de Recouvrement Bancaire", "Tanger", "CDI", "Bac+3", "2-4 ans", "Recouvrement créances, négociation, contentieux"]
+    var jobsData = [
+        { id: "OFF_01", title: "Développeur Java Fullstack", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Développement Java/Angular. Expert Spring Boot requis." },
+        { id: "OFF_02", title: "Analyste Financier Senior", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Analyse financière de grands comptes et gestion des risques." },
+        { id: "OFF_03", title: "Directeur d'Agence", city: "Rabat", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Gestion commerciale et management d'équipe bancaire." },
+        { id: "OFF_04", title: "Conseiller Clientèle", city: "Marrakech", contract: "CDI", level: "Bac+3", exp: "1-3 ans", desc: "Accueil et gestion de portefeuille clients particuliers." },
+        { id: "OFF_05", title: "Responsable Conformité", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Contrôle réglementaire et audit interne." },
+        { id: "OFF_06", title: "Ingénieur Système & Réseau", city: "Tanger", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Administration infrastructure serveurs et sécurité." },
+        { id: "OFF_07", title: "Chargé de Recouvrement", city: "Fès", contract: "CDD", level: "Bac+2", exp: "1-3 ans", desc: "Gestion des impayés et relance téléphonique." },
+        { id: "OFF_08", title: "Chef de Projet Digital", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "3-5 ans", desc: "Pilotage de projets web et mobile banking." },
+        { id: "OFF_09", title: "Trésorier", city: "Casablanca", contract: "CDI", level: "Bac+5", exp: "5+ ans", desc: "Gestion de trésorerie et placements financiers." },
+        { id: "OFF_10", title: "Guichetier Payeur", city: "Agadir", contract: "CDD", level: "Bac+2", exp: "0-1 an", desc: "Opérations de guichet et accueil client." }
     ];
 
-    jobs.forEach(function (job) {
-        offerSheet.appendRow(job);
+    jobsData.forEach(function (j) {
+        offerSheet.appendRow([j.id, "30/12/2024", j.title, j.city, j.contract, j.level, j.exp, j.desc]);
     });
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STEP 3: Create 20 Candidates with REAL Scores
-    // ═══════════════════════════════════════════════════════════════════════════
+    // 3. Création des Candidats (Profils Variés pour Démo)
+    candidateSheet.appendRow(["Date", "Nom", "Prénom", "Email", "Téléphone", "Ville", "Niveau", "Expérience", "Contrat", "Poste/Cible", "Score (%)", "Status IA", "CV Link", "OCR Extract"]);
+    candidateSheet.getRange(1, 1, 1, 14).setBackground("#2c3e50").setFontColor("#ffffff").setFontWeight("bold");
 
-    candidateSheet.appendRow([
-        "Date", "Nom", "Prénom", "Email", "Téléphone", "Ville",
-        "Niveau", "Expérience", "Contrat", "Poste/Cible",
-        "Score (%)", "Status IA", "CV Link", "OCR Extract (Snippet)"
-    ]);
+    // Définition des profils candidats à générer
+    var candidatesData = [
+        // --- TOP PROFILS (MATCH ~90-100%) ---
+        { nom: "El Amrani", prenom: "Youssef", city: "Casablanca", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_youssef_java.pdf" },
+        { nom: "Benani", prenom: "Sara", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sara_finance.pdf" },
+        { nom: "Chraibi", prenom: "Omar", city: "Rabat", level: "Bac+5", exp: "7 ans", contract: "CDI", spec: "gestion", targetJobId: "OFF_03", cv: "cv_omar_dir.pdf" },
 
-    // 20 Candidates with varied scores
-    var candidates = [
-        // ⭐ EXCELLENT MATCHES (85-95%)
-        ["30/12/2024", "El Mansouri", "Youssef", "youssef.elmansouri@gmail.com", "0661234567", "Casablanca", "Bac+5", "5 ans", "CDI", "Recommandé: Développeur Applications Bancaires", "92%", "Analysé", "https://drive.google.com/cv1", "Java Spring Developer 5 years experience banking"],
-        ["30/12/2024", "Benjelloun", "Sara", "sara.benjelloun@gmail.com", "0662345678", "Casablanca", "Bac+5", "4 ans", "CDI", "Recommandé: Analyste Crédit Bancaire", "88%", "Analysé", "https://drive.google.com/cv2", "Analyste financier crédit risk expert"],
-        ["30/12/2024", "Alaoui", "Karim", "karim.alaoui@gmail.com", "0663456789", "Casablanca", "Bac+5", "6 ans", "CDI", "Recommandé: Responsable Conformité Bancaire", "85%", "Analysé", "https://drive.google.com/cv3", "Juriste conformité bancaire LCB-FT"],
+        // --- BONS PROFILS (MATCH ~70-85%) ---
+        { nom: "Guedira", prenom: "Mehdi", city: "Casablanca", level: "Bac+5", exp: "3 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_mehdi_dev.pdf" }, // Exp un peu faible
+        { nom: "Tazi", prenom: "Leila", city: "Marrakech", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "commerce", targetJobId: "OFF_04", cv: "cv_leila_cons.pdf" },
+        { nom: "Alaoui", prenom: "Karim", city: "Tanger", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_06", cv: "cv_karim_sys.pdf" },
 
-        // ⭐ GOOD MATCHES (70-84%)
-        ["30/12/2024", "Bouazza", "Ahmed", "ahmed.bouazza@gmail.com", "0664567890", "Casablanca", "Bac+5", "4 ans", "CDI", "Développeur Applications Bancaires", "79%", "Analysé", "https://drive.google.com/cv4", "Full stack developer Java APIs"],
-        ["30/12/2024", "Chraibi", "Layla", "layla.chraibi@gmail.com", "0665678901", "Casablanca", "Bac+5", "5 ans", "CDI", "Analyste Crédit Bancaire", "76%", "Analysé", "https://drive.google.com/cv5", "Finance analyst credit scoring"],
-        ["30/12/2024", "Bennani", "Mehdi", "mehdi.bennani@gmail.com", "0666789012", "Rabat", "Bac+5", "3 ans", "CDI", "Directeur d'Agence Bancaire", "72%", "Analysé", "https://drive.google.com/cv6", "Manager commercial banque"],
-        ["30/12/2024", "Skalli", "Othmane", "othmane.skalli@gmail.com", "0667890123", "Casablanca", "Bac+5", "7 ans", "CDI", "Recommandé: Trésorier Banque", "74%", "Analysé", "https://drive.google.com/cv7", "Trésorier marché financial operations"],
+        // --- PROFILS MOYENS / GEOGRAPHIQUE (MATCH ~50-65%) ---
+        { nom: "Fassi", prenom: "Amine", city: "Rabat", level: "Bac+5", exp: "4 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_01", cv: "cv_amine_rabat.pdf" }, // Bonne spec, mauvaise ville
+        { nom: "Berrada", prenom: "Sofia", city: "Tanger", level: "Bac+5", exp: "5 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_02", cv: "cv_sofia_tanger.pdf" }, // Bonne spec, mauvaise ville
+        { nom: "Idrissi", prenom: "Hamza", city: "Casablanca", level: "Bac+3", exp: "2 ans", contract: "CDI", spec: "marketing", targetJobId: "OFF_08", cv: "cv_hamza_mkt.pdf" }, // Spec proche mais pas exacte
 
-        // ⭐ MEDIUM MATCHES (50-69%)
-        ["30/12/2024", "Idrissi", "Nadia", "nadia.idrissi@gmail.com", "0668901234", "Fès", "Bac+5", "4 ans", "CDI", "Recommandé: Développeur Applications Bancaires", "65%", "Analysé", "https://drive.google.com/cv8", "Developer software engineer"],
-        ["30/12/2024", "Kettani", "Hamza", "hamza.kettani@gmail.com", "0669012345", "Agadir", "Bac+5", "3 ans", "CDI", "Recommandé: Analyste Risques Financiers", "58%", "Analysé", "https://drive.google.com/cv9", "Risk analyst finance"],
-        ["30/12/2024", "Ouazzani", "Salma", "salma.ouazzani@gmail.com", "0670123456", "Oujda", "Bac+3", "2 ans", "CDD", "Recommandé: Conseiller Clientèle Particuliers", "52%", "Analysé", "https://drive.google.com/cv10", "Commercial client advisor"],
-        ["30/12/2024", "Senhaji", "Rachid", "rachid.senhaji@gmail.com", "0671234567", "Meknès", "Bac+5", "5 ans", "CDI", "Recommandé: Responsable Opérations Bancaires", "55%", "Analysé", "https://drive.google.com/cv11", "Operations manager back-office"],
-        ["30/12/2024", "Guedira", "Asmae", "asmae.guedira@gmail.com", "0672345678", "Tanger", "Bac+5", "4 ans", "CDI", "Recommandé: Chef de Produit Digital Banking", "61%", "Analysé", "https://drive.google.com/cv12", "Product manager digital innovation"],
+        // --- PROFILS JUNIORS (MATCH ~40-50%) ---
+        { nom: "Mernissi", prenom: "Salma", city: "Agadir", level: "Bac+2", exp: "0 ans", contract: "Stage", spec: "commerce", targetJobId: "OFF_10", cv: "cv_salma_jun.pdf" },
+        { nom: "Kettani", prenom: "Reda", city: "Fès", level: "Bac+2", exp: "1 an", contract: "CDD", spec: "commerce", targetJobId: "OFF_07", cv: "cv_reda_recouv.pdf" },
 
-        // ⭐ LOW MATCHES (30-49%)
-        ["30/12/2024", "Filali", "Yassine", "yassine.filali@gmail.com", "0673456789", "Kenitra", "Bac+2", "1 an", "Stage", "Candidature Générale", "35%", "Analysé", "https://drive.google.com/cv13", "Technicien débutant"],
-        ["30/12/2024", "Zouaki", "Kenza", "kenza.zouaki@gmail.com", "0674567890", "Rabat", "Bac+3", "0 ans", "Stage", "Candidature Générale", "28%", "Analysé", "https://drive.google.com/cv14", "Étudiante commerce"],
-        ["30/12/2024", "Louafi", "Bilal", "bilal.louafi@gmail.com", "0675678901", "Tanger", "Bac", "1 an", "CDD", "Recommandé: Chargé de Recouvrement Bancaire", "32%", "Analysé", "https://drive.google.com/cv15", "Agent polyvalent"],
-        ["30/12/2024", "Haddad", "Meryem", "meryem.haddad@gmail.com", "0676789012", "Marrakech", "Bac+2", "0 ans", "Stage", "Candidature Générale", "25%", "Analysé", "https://drive.google.com/cv16", "Stagiaire administration"],
+        // --- PROFILS NON COMPATIBLES (MATCH <30%) ---
+        { nom: "Zouaki", prenom: "Nabil", city: "Oujda", level: "Bac", exp: "10 ans", contract: "CDI", spec: "logistique", targetJobId: "OFF_01", cv: "cv_nabil_log.pdf" }, // Rien à voir
+        { nom: "Hakam", prenom: "Mouna", city: "Meknès", level: "Bac+2", exp: "2 ans", contract: "Intérim", spec: "rh", targetJobId: "OFF_02", cv: "cv_mouna_rh.pdf" }, // RH postule Finance
 
-        // ⭐ SENIOR PROFILES (75-90%)
-        ["30/12/2024", "Cherkaoui", "Nabil", "nabil.cherkaoui@gmail.com", "0677890123", "Casablanca", "Bac+5", "12 ans", "CDI", "Directeur d'Agence Bancaire", "87%", "Analysé", "https://drive.google.com/cv17", "Directeur expérimenté management banque"],
-        ["30/12/2024", "Bensouda", "Houda", "houda.bensouda@gmail.com", "0678901234", "Rabat", "Doctorat", "10 ans", "CDI", "Recommandé: Analyste Risques Financiers", "83%", "Analysé", "https://drive.google.com/cv18", "PhD finance risk modeling expert"],
-        ["30/12/2024", "Ait Taleb", "Mohamed", "mohamed.aittaleb@gmail.com", "0679012345", "Casablanca", "Bac+5", "15 ans", "CDI", "Responsable Conformité Bancaire", "91%", "Analysé", "https://drive.google.com/cv19", "Expert conformité réglementaire bancaire"],
-        ["30/12/2024", "Erraji", "Samira", "samira.erraji@gmail.com", "0680123456", "Casablanca", "Bac+5", "9 ans", "CDI", "Recommandé: Trésorier Banque", "78%", "Analysé", "https://drive.google.com/cv20", "Trésorière senior ALM market ops"]
+        // --- DIVERS POUR REMPLIR ---
+        { nom: "Rami", prenom: "Samir", city: "Casablanca", level: "Bac+5", exp: "8 ans", contract: "CDI", spec: "juridique", targetJobId: "OFF_05", cv: "cv_samir_jur.pdf" },
+        { nom: "Sefiani", prenom: "Hiba", city: "Casablanca", level: "Bac+5", exp: "3 ans", contract: "CDI", spec: "finance", targetJobId: "OFF_09", cv: "cv_hiba_tr.pdf" },
+        { nom: "Benjelloun", prenom: "Othman", city: "Casablanca", level: "Bac+5", exp: "6 ans", contract: "CDI", spec: "informatique", targetJobId: "OFF_08", cv: "cv_othman_pm.pdf" }
     ];
 
-    candidates.forEach(function (cand) {
-        candidateSheet.appendRow(cand);
+    candidatesData.forEach(function (c) {
+        // Trouver l'offre cible
+        var targetJob = jobsData.find(j => j.id === c.targetJobId);
+
+        // Préparer objet candidat pour le calcul
+        var candidateObj = {
+            specialite: c.spec,
+            ville: c.city,
+            experience: c.exp,
+            niveau: c.level,
+            contrat: c.contract
+        };
+
+        // Préparer objet job pour le calcul
+        var jobObj = {
+            title: targetJob.title,
+            desc: targetJob.desc,
+            location: targetJob.city,
+            exp: targetJob.exp,
+            contract: targetJob.contract,
+            level: targetJob.level
+        };
+
+        // 🔥 CALCUL DYNAMIQUE DU SCORE RÉEL 🔥
+        var realScore = calculateSimilarity(candidateObj, jobObj);
+
+        // Formater l'expérience pour l'affichage (chiffre uniquement pour CSV propre)
+        candidateSheet.appendRow([
+            "30/12/2024",
+            c.nom,
+            c.prenom,
+            c.prenom.toLowerCase() + "." + c.nom.toLowerCase() + "@email.com",
+            "0600000000",
+            c.city,
+            c.level,
+            c.exp,
+            c.contract,
+            targetJob.title, // Colonne Poste/Cible
+            realScore + "%", // Le score calculé par l'algo
+            "Analysé",
+            "https://fake-cv-link.com/" + c.cv,
+            "Contenu extrait automatiquement..."
+        ]);
     });
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STEP 4: Format Sheets
-    // ═══════════════════════════════════════════════════════════════════════════
+    // Auto-resize
+    offerSheet.autoResizeColumns(1, 8);
+    candidateSheet.autoResizeColumns(1, 14);
 
-    // Format Offers header
-    offerSheet.getRange(1, 1, 1, 8).setBackground("#1a5276").setFontColor("#ffffff").setFontWeight("bold");
-    offerSheet.setFrozenRows(1);
-
-    // Format Candidates header
-    candidateSheet.getRange(1, 1, 1, 14).setBackground("#1a5276").setFontColor("#ffffff").setFontWeight("bold");
-    candidateSheet.setFrozenRows(1);
-
-    // Auto-resize columns
-    for (var i = 1; i <= 8; i++) offerSheet.autoResizeColumn(i);
-    for (var i = 1; i <= 14; i++) candidateSheet.autoResizeColumn(i);
-
-    Logger.log("✅ SEED COMPLETE: 10 Jobs + 20 Candidates with varied scores!");
-
-    return "SUCCESS: 10 Jobs + 20 Candidates created!";
+    Logger.log("✅ SEED PRO TERMINÉ : " + candidatesData.length + " candidats générés avec des scores calculés par l'algorithme.");
+    return "SUCCÈS : Données PRO générées !";
 }
 
 // ══════════════════════════════════════════════════════════════════════════════

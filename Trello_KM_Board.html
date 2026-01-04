@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Board - Projet KM Recrutement LM Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --trello-blue: #026AA7;
+            --bg-board: linear-gradient(135deg, #0079BF 0%, #5BA4E5 100%);
+            --card-bg: #ffffff;
+            --list-bg: #ebecf0;
+            --text-dark: #172b4d;
+            --text-gray: #5e6c84;
+            --urgent: #eb5a46;
+            --high: #f2d600;
+            --medium: #ff9f1a;
+            --low: #61bd4f;
+            --tech: #c377e0;
+            --km: #344563;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-board);
+            min-height: 100vh;
+        }
+
+        .board-header {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(8px);
+        }
+
+        .board-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .board-title h1 {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .board-title .tag {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .board-stats {
+            display: flex;
+            gap: 20px;
+            color: white;
+        }
+
+        .board-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .board-container {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            align-items: flex-start;
+        }
+
+        .list {
+            background: var(--list-bg);
+            border-radius: 12px;
+            min-width: 310px;
+            max-width: 310px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .list-header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header h2 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .count {
+            background: rgba(0, 0, 0, 0.12);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .list-cards {
+            padding: 0 8px 8px;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 5px solid transparent;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+            transform: translateY(-3px);
+        }
+
+        .card.low {
+            border-left-color: var(--low);
+        }
+
+        .card.medium {
+            border-left-color: var(--medium);
+        }
+
+        .card.high {
+            border-left-color: var(--high);
+        }
+
+        .card.tech {
+            border-left-color: var(--tech);
+        }
+
+        .card-labels {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .label {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .label.low {
+            background: var(--low);
+            color: white;
+        }
+
+        .label.medium {
+            background: var(--medium);
+            color: white;
+        }
+
+        .label.high {
+            background: var(--high);
+            color: #172b4d;
+        }
+
+        .label.tech {
+            background: var(--tech);
+            color: white;
+        }
+
+        .label.km {
+            background: var(--km);
+            color: white;
+        }
+
+        .label.frontend {
+            background: #51e898;
+            color: #172b4d;
+        }
+
+        .label.backend {
+            background: #ff78cb;
+            color: #172b4d;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #ddd;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eef0f2;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .due-date {
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .due-date.done {
+            background: #61bd4f;
+            color: white;
+        }
+
+        .due-date.soon {
+            background: #f2d600;
+            color: #172b4d;
+        }
+
+        .card-members {
+            display: flex;
+        }
+
+        .member {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            border: 2px solid white;
+            margin-left: -8px;
+        }
+
+        .member:first-child {
+            margin-left: 0;
+        }
+
+        .member.as {
+            background: linear-gradient(135deg, #0079bf, #00aeef);
+        }
+
+        .member.cb {
+            background: linear-gradient(135deg, #eb5a46, #ff8c69);
+        }
+
+        .member.ym {
+            background: linear-gradient(135deg, #61bd4f, #8ed67c);
+        }
+
+        .add-card {
+            padding: 12px 16px;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-card:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #dfe1e6;
+            border-radius: 3px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--low);
+            border-radius: 3px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .modal-close {
+            background: #f4f5f7;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            background: #eb5a46;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h3 {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .modal-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .checklist-item.done span {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            font-size: 0.8rem;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+        }
+
+        @media (max-width: 768px) {
+            .board-container {
+                flex-direction: column;
+            }
+
+            .list {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            .legend {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="board-header">
+        <div class="board-title">
+            <h1><i class="fab fa-trello"></i> Projet KM Recrutement - LM Bank</h1>
+            <span class="tag"><i class="fas fa-star"></i> Tableau Principal</span>
+        </div>
+        <div class="board-stats">
+            <div class="stat"><i class="fas fa-users"></i> 3 Membres</div>
+            <div class="stat"><i class="fas fa-layer-group"></i> 19 Cartes</div>
+            <div class="stat"><i class="fas fa-calendar-alt"></i> Janvier 2026</div>
+        </div>
+    </header>
+
+    <div class="board-container">
+
+        <!-- ══════════ COLONNE 1: BACKLOG ══════════ -->
+        <div class="list">
+            <div class="list-header">
+                <h2>📋 Backlog <span class="count">4</span></h2>
+            </div>
+            <div class="list-cards">
+
+                <div class="card medium" onclick="openModal(this)" data-title="🧪 Tests Fonctionnels de la Plateforme"
+                    data-description="Tester le bon fonctionnement de la plateforme: soumission formulaire candidature, calcul scoring via calculateSimilarity(), affichage résultats sur admin_dashboard.html, export Excel via SheetJS."
+                    data-checklist="Test formulaire.html soumission:false,Test spontanee.html soumission:false,Vérifier calcul score (5 critères):false,Test Dashboard affichage données:false,Test export Excel SheetJS:false,Test filtres DataTables:false">
+                    <div class="card-labels">
+                        <span class="label medium">Priorité</span>
+                        <span class="label tech">Tech</span>
+                    </div>
+                    <div class="card-title">🧪 Tests Fonctionnels Plateforme</div>
+                    <div class="card-desc">Tester soumission, calcul scoring, dashboard, export Excel.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/6</span>
+                            <span><i class="fas fa-comment"></i> 2</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card medium" onclick="openModal(this)" data-title="🤖 Tests Chatbot FAQ"
+                    data-description="Valider le widget chatbot FAQ ajouté aux pages formulaire.html et spontanee.html: bouton flottant, ouverture/fermeture, 5 réponses FAQ, affichage mobile responsive."
+                    data-checklist="Test bouton flottant visible:false,Test ouverture/fermeture:false,Test 5 réponses FAQ:false,Test responsive mobile:false,Test sur formulaire.html:false,Test sur spontanee.html:false">
+                    <div class="card-labels">
+                        <span class="label medium">Priorité</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🤖 Tests Chatbot FAQ</div>
+                    <div class="card-desc">Valider chatbot: ouverture, FAQ, mobile.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/6</span>
+                            <span><i class="fas fa-comment"></i> 1</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="📚 Documentation Technique"
+                    data-description="Rédiger la documentation: Architecture Google Apps Script, endpoints doGet/doPost, structure Google Sheets (Offres + All_Candidats), algorithme calculateSimilarity() avec 5 poids."
+                    data-checklist="Doc architecture Apps Script:false,Doc API endpoints:false,Doc structure Google Sheets:false,Doc algorithme scoring:false,Doc guide Dashboard:false">
+                    <div class="card-labels">
+                        <span class="label low">Planifié</span>
+                        <span class="label km">KM</span>
+                    </div>
+                    <div class="card-title">📚 Documentation Technique</div>
+                    <div class="card-desc">Doc: Apps Script, API, Sheets, scoring.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/5</span>
+                            <span><i class="fas fa-comment"></i> 2</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member ym">YM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="� Tests Authentification Recruteur"
+                    data-description="Valider le système login recruteur_form.html et admin_dashboard.html: login avec mot de passe (admin123), Cookie + SessionStorage dual-layer, expiration session 2 min, logout."
+                    data-checklist="Test login correct:false,Test login incorrect:false,Test expiration cookie 2min:false,Test sessionStorage:false,Test logout:false,Test redirect si non connecté:false">
+                    <div class="card-labels">
+                        <span class="label low">Planifié</span>
+                        <span class="label backend">Backend</span>
+                    </div>
+                    <div class="card-title">� Tests Auth Recruteur</div>
+                    <div class="card-desc">Valider login, cookie, session, expiration, logout.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/6</span>
+                            <span><i class="fas fa-comment"></i> 1</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="add-card"><i class="fas fa-plus"></i> Ajouter une carte</div>
+        </div>
+
+        <!-- ══════════ COLONNE 2: À FAIRE ══════════ -->
+        <div class="list">
+            <div class="list-header">
+                <h2>📌 À Faire <span class="count">3</span></h2>
+            </div>
+            <div class="list-cards">
+
+                <div class="card medium" onclick="openModal(this)" data-title="✨ Améliorer UX Formulaires"
+                    data-description="Ajouter des améliorations UX aux formulaires formulaire.html et spontanee.html: indicateur de progression des étapes, tooltips explicatifs, validation visuelle en temps réel avec icônes ✓/✗."
+                    data-checklist="Stepper visuel 4 étapes:false,Tooltips sur champs clés:false,Validation temps réel:false,Icônes succès/erreur:false,Animation soumission:false">
+                    <div class="card-labels">
+                        <span class="label medium">Moyenne</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">✨ Améliorer UX Formulaires</div>
+                    <div class="card-desc">Stepper, tooltips et validation temps réel pour formulaire.html.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/5</span>
+                            <span><i class="fas fa-comment"></i> 3</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card medium" onclick="openModal(this)" data-title="🔒 Renforcer Validations"
+                    data-description="Ajouter des validations frontend robustes: regex email, format téléphone marocain (+212), vérification extension .pdf pour CV, limite taille 5MB avec message clair."
+                    data-checklist="Regex email RFC:false,Format téléphone +212:false,Extension .pdf uniquement:false,Limite 5MB CV:false,Messages erreur clairs:false">
+                    <div class="card-labels">
+                        <span class="label medium">Moyenne</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🔒 Renforcer Validations</div>
+                    <div class="card-desc">Validations email, téléphone +212, PDF only, limite 5MB.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/5</span>
+                            <span><i class="fas fa-comment"></i> 2</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="📱 Améliorer Responsive Mobile"
+                    data-description="Optimiser l'affichage mobile pour index.html, formulaire.html et admin_dashboard.html: hamburger menu, zones tactiles 44px min, ajustement breakpoints pour tablettes."
+                    data-checklist="Hamburger menu:false,Touch targets 44px:false,Breakpoint tablette 768px:false,Tests Android/iOS:false,Dashboard mobile:false">
+                    <div class="card-labels">
+                        <span class="label low">Basse</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">📱 Améliorer Responsive Mobile</div>
+                    <div class="card-desc">Hamburger menu, touch targets, tests mobile réels.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 0/5</span>
+                            <span><i class="fas fa-comment"></i> 2</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="add-card"><i class="fas fa-plus"></i> Ajouter une carte</div>
+        </div>
+
+        <!-- ══════════ COLONNE 3: EN COURS ══════════ -->
+        <div class="list">
+            <div class="list-header">
+                <h2>🔄 En Cours <span class="count">2</span></h2>
+            </div>
+            <div class="list-cards">
+
+                <div class="card high" onclick="openModal(this)" data-title="⚡ Optimisation Chargement"
+                    data-description="Améliorer les temps de chargement: minifier styles.css et app.js, lazy loading des offres dans index.html, cache localStorage pour les données API fréquentes."
+                    data-checklist="Minifier styles.css:true,Minifier app.js:true,Lazy loading offres:false,Cache localStorage API:false,Mesurer avec DevTools:false">
+                    <div class="card-labels">
+                        <span class="label high">Haute</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">⚡ Optimisation Chargement</div>
+                    <div class="card-desc">Minification CSS/JS, lazy loading, cache localStorage.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date soon"><i class="fas fa-clock"></i> 5 Jan</span>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 2/5</span>
+                            <span><i class="fas fa-comment"></i> 4</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card medium" onclick="openModal(this)" data-title="🎨 Design Cohérent LM Bank"
+                    data-description="Harmoniser le design sur toutes les pages avec la charte LM Bank: couleurs #0056B3/#00AEEF/#F15A24, police Outfit, boutons et cartes uniformes, animations hover cohérentes."
+                    data-checklist="Variables CSS root:true,Boutons uniformes:true,Cartes style cohérent:false,Animations hover:false,Vérifier toutes pages:false">
+                    <div class="card-labels">
+                        <span class="label medium">Moyenne</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🎨 Design Cohérent LM Bank</div>
+                    <div class="card-desc">Charte couleurs, police Outfit, cartes et boutons uniformes.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date soon"><i class="fas fa-clock"></i> 6 Jan</span>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 2/5</span>
+                            <span><i class="fas fa-comment"></i> 3</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="add-card"><i class="fas fa-plus"></i> Ajouter une carte</div>
+        </div>
+
+        <!-- ══════════ COLONNE 4: EN RÉVISION ══════════ -->
+        <div class="list">
+            <div class="list-header">
+                <h2>👀 En Révision <span class="count">2</span></h2>
+            </div>
+            <div class="list-cards">
+
+                <div class="card tech" onclick="openModal(this)" data-title="🔐 Système Login localStorage"
+                    data-description="Révision du système d'authentification basé sur localStorage: vérification du token recruiterId dans admin_dashboard.html, redirection vers recruteur_form.html si non connecté, déconnexion sécurisée."
+                    data-checklist="Check localStorage onload:true,Redirection si non connecté:true,Affichage nom recruteur:true,Bouton déconnexion:true,Tests multi-onglets:false">
+                    <div class="card-labels">
+                        <span class="label tech">Tech</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🔐 Système Login localStorage</div>
+                    <div class="card-desc">Vérification token localStorage, redirection, déconnexion.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date soon"><i class="fas fa-clock"></i> 4 Jan</span>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 4/5</span>
+                            <span><i class="fas fa-comment"></i> 3</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card medium" onclick="openModal(this)" data-title="📤 Export Excel SheetJS"
+                    data-description="Révision de la fonctionnalité d'export Excel dans admin_dashboard.html: utilisation de SheetJS (xlsx.full.min.js), export de tous les candidats avec scores, formatage des colonnes."
+                    data-checklist="Inclure SheetJS CDN:true,Fonction exportToExcel():true,Export tableau complet:true,Formatage colonnes:true,Nom fichier avec date:false">
+                    <div class="card-labels">
+                        <span class="label medium">Moyenne</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">📤 Export Excel SheetJS</div>
+                    <div class="card-desc">Export candidats vers Excel avec SheetJS, colonnes formatées.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date soon"><i class="fas fa-clock"></i> 4 Jan</span>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tasks"></i> 4/5</span>
+                            <span><i class="fas fa-comment"></i> 2</span>
+                        </div>
+                        <div class="card-members">
+                            <div class="member ym">YM</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="add-card"><i class="fas fa-plus"></i> Ajouter une carte</div>
+        </div>
+
+        <!-- ══════════ COLONNE 5: TERMINÉ ══════════ -->
+        <div class="list">
+            <div class="list-header">
+                <h2>✅ Terminé <span class="count">8</span></h2>
+            </div>
+            <div class="list-cards">
+
+                <div class="card low" onclick="openModal(this)" data-title="🔧 Setup Google Apps Script"
+                    data-description="Configuration initiale du projet: création BACKEND_CLEAN.js dans Google Apps Script, connexion à Google Sheets via SPREADSHEET_ID, activation Drive API pour OCR, déploiement Web App."
+                    data-checklist="Créer projet Apps Script:true,Définir SPREADSHEET_ID:true,Activer Drive API:true,Fonction getDatabase():true,Déployer Web App:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label backend">Backend</span>
+                    </div>
+                    <div class="card-title">🔧 Setup Google Apps Script</div>
+                    <div class="card-desc">BACKEND_CLEAN.js, SPREADSHEET_ID, Drive API, Web App deployed.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 24 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 5/5</span></div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="🗄️ Structure Google Sheets"
+                    data-description="Création des feuilles dans Google Sheets: feuille 'Offres' (8 colonnes: ID, Date, Titre, Ville, Contrat, Niveau, Experience, Description), feuille 'All_Candidats' (14 colonnes incluant Score et OCR Extract)."
+                    data-checklist="Feuille Offres (8 cols):true,Feuille All_Candidats (14 cols):true,OFFERS_HEADERS définis:true,CANDIDATES_HEADERS définis:true,getOrCreateSheet():true,Formatage en-têtes bleu:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label backend">Backend</span>
+                    </div>
+                    <div class="card-title">🗄️ Structure Google Sheets</div>
+                    <div class="card-desc">Feuilles Offres (8 cols) + All_Candidats (14 cols) avec headers.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 26 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 6/6</span></div>
+                        <div class="card-members">
+                            <div class="member ym">YM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="⚙️ API Backend doGet/doPost"
+                    data-description="Implémentation des endpoints API: doGet() avec actions getOffers et getCandidates, doPost() avec actions candidate, spontaneous_application, add_offer et delete_offer. Upload CV vers Drive et réponses JSON."
+                    data-checklist="doGet getOffers:true,doGet getCandidates:true,doPost candidate:true,doPost spontaneous_application:true,doPost add_offer:true,doPost delete_offer:true,jsonResponse():true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label backend">Backend</span>
+                    </div>
+                    <div class="card-title">⚙️ API Backend doGet/doPost</div>
+                    <div class="card-desc">6 endpoints: getOffers, getCandidates, candidate, spontaneous, add/delete.
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 28 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 7/7</span></div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="🤖 Algorithme Scoring (calculateSimilarity)"
+                    data-description="Implémentation de calculateSimilarity() basé sur formulaire avec 5 critères pondérés: Spécialité (35%), Ville (20%), Expérience (20%), Niveau (15%), Contrat (10%). Formule: Score = Σ(Wi×Si)/ΣWi×100. Matching via specKeywords (9 domaines)."
+                    data-checklist="specKeywords 9 domaines:true,Poids Spécialité 35%:true,Poids Ville 20%:true,Poids Expérience 20%:true,Poids Niveau 15%:true,Poids Contrat 10%:true,getLevelScore():true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label tech">Tech</span>
+                        <span class="label km">KM</span>
+                    </div>
+                    <div class="card-title">🤖 Scoring (5 poids: calculateSimilarity)</div>
+                    <div class="card-desc">Spécialité 35% + Ville 20% + Exp 20% + Niveau 15% + Contrat 10%.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 29 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 6/6</span></div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                            <div class="member ym">YM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="🎨 Frontend - index.html (Offres)"
+                    data-description="Page d'accueil avec liste des offres: design LM Bank (#0056B3, #00AEEF, #F15A24), sidebar filtres (ville, contrat, niveau), chargement dynamique depuis API, pagination, animations hover sur cartes."
+                    data-checklist="Header navbar LM Bank:true,Sidebar 3 filtres:true,fetch API getOffers:true,Affichage cartes offres:true,Pagination 10/page:true,Animations CSS hover:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🎨 Frontend - index.html (Offres)</div>
+                    <div class="card-desc">Liste offres, filtres sidebar, fetch API, design LM Bank.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 30 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 6/6</span></div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="🎨 Frontend - Formulaires Candidature"
+                    data-description="Pages formulaire.html (candidature offre) et spontanee.html (candidature spontanée): 12 champs, upload CV avec prévisualisation, select spécialité, envoi vers API doPost, message succès avec score retourné."
+                    data-checklist="formulaire.html 12 champs:true,spontanee.html département:true,Upload CV drag & drop:true,Prévisualisation fichier:true,fetch POST vers API:true,Affichage score retour:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label frontend">Frontend</span>
+                    </div>
+                    <div class="card-title">🎨 Frontend - Formulaires</div>
+                    <div class="card-desc">formulaire.html + spontanee.html, upload CV, fetch API, score.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 31 Déc</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 6/6</span></div>
+                        <div class="card-members">
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="📊 Dashboard RH (admin_dashboard.html)"
+                    data-description="Tableau de bord complet: 3 KPIs (Total Candidatures, Offres Actives, Matches Parfaits), graphiques Chart.js (bar scores, doughnut villes), tableau DataTables avec tri/recherche, export Excel via SheetJS, login localStorage."
+                    data-checklist="3 stat-cards KPIs:true,Chart.js bar (scores):true,Chart.js doughnut (villes):true,DataTables candidats:true,Tri et recherche:true,Export Excel SheetJS:true,Login localStorage check:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label frontend">Frontend</span>
+                        <span class="label km">KM</span>
+                    </div>
+                    <div class="card-title">📊 Dashboard RH (Chart.js + DataTables)</div>
+                    <div class="card-desc">3 KPIs, graphiques Chart.js, DataTables, export Excel, login.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 1 Jan</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 7/7</span></div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                            <div class="member ym">YM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card low" onclick="openModal(this)" data-title="� Chatbot FAQ Candidature"
+                    data-description="Widget chatbot interactif intégré aux pages formulaire.html et spontanee.html pour assister les candidats: réponses FAQ automatiques (formats CV, délai réponse, scoring IA, contact RH, postes disponibles), interface conversationnelle moderne avec bulles de chat."
+                    data-checklist="Widget chatbot fixe (bottom-right):true,5 FAQ prédéfinies:true,Interface bulles chat:true,Animations ouverture/fermeture:true,Responsive mobile:true,Intégré formulaire.html:true,Intégré spontanee.html:true">
+                    <div class="card-labels">
+                        <span class="label low">Complété</span>
+                        <span class="label frontend">Frontend</span>
+                        <span class="label km">KM</span>
+                    </div>
+                    <div class="card-title">� Chatbot FAQ Candidature</div>
+                    <div class="card-desc">Widget FAQ interactif sur formulaire.html et spontanee.html.</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="due-date done"><i class="fas fa-check"></i> 4 Jan</span>
+                        <div class="card-meta"><span><i class="fas fa-tasks"></i> 7/7</span></div>
+                        <div class="card-members">
+                            <div class="member as">AS</div>
+                            <div class="member cb">CB</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="add-card"><i class="fas fa-plus"></i> Ajouter une carte</div>
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalTitle">Titre</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-align-left"></i> Description</h3>
+                    <p id="modalDescription">Description...</p>
+                </div>
+                <div class="modal-section" id="checklistSection">
+                    <h3><i class="fas fa-tasks"></i> Checklist</h3>
+                    <div id="modalChecklist"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <h4><i class="fas fa-palette"></i> Labels</h4>
+        <div class="legend-item"><span class="label high">Haute</span></div>
+        <div class="legend-item"><span class="label medium">Moyenne</span></div>
+        <div class="legend-item"><span class="label low">Complété</span></div>
+        <div class="legend-item"><span class="label tech">Tech</span></div>
+        <div class="legend-item"><span class="label km">KM</span></div>
+        <hr style="margin: 10px 0; border: none; border-top: 1px solid #eee;">
+        <h4><i class="fas fa-users"></i> Équipe</h4>
+        <div class="legend-item">
+            <div class="member as" style="margin:0;width:24px;height:24px;font-size:0.65rem;">AS</div>
+            <span>Ayoub SABRI</span>
+        </div>
+        <div class="legend-item">
+            <div class="member cb" style="margin:0;width:24px;height:24px;font-size:0.65rem;">CB</div>
+            <span>Chaimae BAKADOUR</span>
+        </div>
+        <div class="legend-item">
+            <div class="member ym" style="margin:0;width:24px;height:24px;font-size:0.65rem;">YM</div>
+            <span>Yassine MARZOUK</span>
+        </div>
+    </div>
+
+    <script>
+        function openModal(card) {
+            document.getElementById('modalTitle').textContent = card.dataset.title || '';
+            document.getElementById('modalDescription').textContent = card.dataset.description || '';
+
+            const checklist = card.dataset.checklist || '';
+            const container = document.getElementById('modalChecklist');
+            container.innerHTML = '';
+
+            if (checklist) {
+                checklist.split(',').forEach((item, i) => {
+                    const [text, done] = item.split(':');
+                    const div = document.createElement('div');
+                    div.className = 'checklist-item' + (done === 'true' ? ' done' : '');
+                    div.innerHTML = `<input type="checkbox" ${done === 'true' ? 'checked' : ''}><span>${text}</span>`;
+                    container.appendChild(div);
+                });
+                document.getElementById('checklistSection').style.display = 'block';
+            } else {
+                document.getElementById('checklistSection').style.display = 'none';
+            }
+
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    </script>
+
+</body>
+
+</html>

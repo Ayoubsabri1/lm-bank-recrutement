@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Classroom - Formation Recrutement LM Bank</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --green: #1e8e3e;
+            --blue: #1a73e8;
+            --red: #d93025;
+            --yellow: #f9ab00;
+            --purple: #7c4dff;
+            --bg: #f1f3f4;
+            --text: #202124;
+            --text2: #5f6368;
+            --border: #dadce0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            background: var(--bg);
+        }
+
+        .header {
+            background: white;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            color: var(--text2);
+        }
+
+        .logo i {
+            color: var(--green);
+            font-size: 28px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #1a73e8 0%, #34a853 100%);
+            color: white;
+            padding: 40px;
+            margin: 24px;
+            border-radius: 12px;
+        }
+
+        .banner h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .banner p {
+            opacity: 0.9;
+        }
+
+        .main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+        }
+
+        .module {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .module-header:hover {
+            background: var(--bg);
+        }
+
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .module-icon.m1 {
+            background: var(--blue);
+        }
+
+        .module-icon.m2 {
+            background: var(--green);
+        }
+
+        .module-icon.m3 {
+            background: var(--yellow);
+        }
+
+        .module-icon.m4 {
+            background: var(--purple);
+        }
+
+        .module-icon.m5 {
+            background: var(--red);
+        }
+
+        .module-info h3 {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .module-info span {
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+
+        .toggle {
+            margin-left: auto;
+            color: var(--text2);
+        }
+
+        .items {
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .module.open .items {
+            display: block;
+        }
+
+        .module.open .toggle {
+            transform: rotate(180deg);
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item:hover {
+            background: var(--bg);
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-icon.doc {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .item-icon.video {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .item-icon.quiz {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .item-info h4 {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .item-info span {
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo"><i class="fas fa-graduation-cap"></i><span>Classroom</span></div>
+        <div class="avatar">RH</div>
+    </header>
+
+    <div class="banner">
+        <h1>📚 Formation - Gestion Plateforme Recrutement</h1>
+        <p>Guide pour l'équipe RH • Comment utiliser la plateforme de recrutement LM Bank</p>
+    </div>
+
+    <main class="main">
+        <!-- Module 1: Accueil et Navigation -->
+        <div class="module open">
+            <div class="module-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="module-icon m1"><i class="fas fa-home"></i></div>
+                <div class="module-info">
+                    <h3>Module 1 : Découvrir la Plateforme</h3>
+                    <span>4 éléments • Introduction et navigation</span>
+                </div>
+                <i class="fas fa-chevron-down toggle"></i>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-file-alt"></i></div>
+                    <div class="item-info">
+                        <h4>📋 Présentation de la plateforme de recrutement</h4>
+                        <span>Document • Objectifs, fonctionnalités principales, public cible</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-map"></i></div>
+                    <div class="item-info">
+                        <h4>🗺️ Guide de navigation - Pages principales</h4>
+                        <span>Document • Accueil, Formulaire, Dashboard, Espace Recruteur</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon video"><i class="fas fa-play-circle"></i></div>
+                    <div class="item-info">
+                        <h4>🎬 Vidéo : Tour complet de la plateforme</h4>
+                        <span>Vidéo • 5 min • Démonstration des pages</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon quiz"><i class="fas fa-question-circle"></i></div>
+                    <div class="item-info">
+                        <h4>✅ Quiz : Connaître les fonctionnalités</h4>
+                        <span>Quiz • 5 questions • Évaluation des connaissances</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 2: Gérer les Candidatures -->
+        <div class="module">
+            <div class="module-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="module-icon m2"><i class="fas fa-users"></i></div>
+                <div class="module-info">
+                    <h3>Module 2 : Gérer les Candidatures</h3>
+                    <span>5 éléments • Réception et traitement des CV</span>
+                </div>
+                <i class="fas fa-chevron-down toggle"></i>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-inbox"></i></div>
+                    <div class="item-info">
+                        <h4>📥 Comment les candidatures arrivent</h4>
+                        <span>Document • Formulaire candidat → Google Sheets → Dashboard</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-table"></i></div>
+                    <div class="item-info">
+                        <h4>📊 Consulter les candidatures dans le Dashboard</h4>
+                        <span>Document • Filtrer, trier, rechercher des profils</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-star"></i></div>
+                    <div class="item-info">
+                        <h4>⭐ Comprendre le Score de matching</h4>
+                        <span>Document • 5 critères : Spécialité, Ville, Expérience, Niveau, Contrat</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon video"><i class="fas fa-play-circle"></i></div>
+                    <div class="item-info">
+                        <h4>🎬 Vidéo : Traiter une candidature de A à Z</h4>
+                        <span>Vidéo • 8 min • Du dépôt à la décision</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-file-excel"></i></div>
+                    <div class="item-info">
+                        <h4>📥 Exporter les candidatures en Excel</h4>
+                        <span>Document • Utiliser le bouton Export pour créer un fichier Excel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 3: Publier des Offres -->
+        <div class="module">
+            <div class="module-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="module-icon m3"><i class="fas fa-briefcase"></i></div>
+                <div class="module-info">
+                    <h3>Module 3 : Publier des Offres d'Emploi</h3>
+                    <span>4 éléments • Créer et gérer les offres</span>
+                </div>
+                <i class="fas fa-chevron-down toggle"></i>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-lock"></i></div>
+                    <div class="item-info">
+                        <h4>🔐 Se connecter à l'Espace Recruteur</h4>
+                        <span>Document • Utiliser le mot de passe pour accéder</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-plus-circle"></i></div>
+                    <div class="item-info">
+                        <h4>➕ Créer une nouvelle offre d'emploi</h4>
+                        <span>Document • Remplir : Titre, Ville, Contrat, Niveau, Description</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon video"><i class="fas fa-play-circle"></i></div>
+                    <div class="item-info">
+                        <h4>🎬 Vidéo : Publier une offre en 2 minutes</h4>
+                        <span>Vidéo • 3 min • Démonstration pas à pas</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon quiz"><i class="fas fa-question-circle"></i></div>
+                    <div class="item-info">
+                        <h4>✅ Quiz : Maîtriser la publication d'offres</h4>
+                        <span>Quiz • 5 questions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: FAQ Candidats -->
+        <div class="module">
+            <div class="module-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="module-icon m4"><i class="fas fa-comments"></i></div>
+                <div class="module-info">
+                    <h3>Module 4 : FAQ et Communication</h3>
+                    <span>3 éléments • Répondre aux questions des candidats</span>
+                </div>
+                <i class="fas fa-chevron-down toggle"></i>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-robot"></i></div>
+                    <div class="item-info">
+                        <h4>🤖 Le Chatbot FAQ pour les candidats</h4>
+                        <span>Document • Comment le chatbot répond automatiquement</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-list"></i></div>
+                    <div class="item-info">
+                        <h4>❓ Questions fréquentes des candidats</h4>
+                        <span>Document • Formats CV, délais, scoring, contact</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-envelope"></i></div>
+                    <div class="item-info">
+                        <h4>📧 Modèles de réponses email</h4>
+                        <span>Document • Templates pour confirmation, refus, convocation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 5: Bonnes Pratiques -->
+        <div class="module">
+            <div class="module-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="module-icon m5"><i class="fas fa-lightbulb"></i></div>
+                <div class="module-info">
+                    <h3>Module 5 : Bonnes Pratiques RH</h3>
+                    <span>3 éléments • Conseils pour un recrutement efficace</span>
+                </div>
+                <i class="fas fa-chevron-down toggle"></i>
+            </div>
+            <div class="items">
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-check-circle"></i></div>
+                    <div class="item-info">
+                        <h4>✅ Critères de sélection objectifs</h4>
+                        <span>Document • Utiliser le score comme premier filtre</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-clock"></i></div>
+                    <div class="item-info">
+                        <h4>⏱️ Gagner du temps avec le tri automatique</h4>
+                        <span>Document • Réduction de 80% du temps de présélection</span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-icon doc"><i class="fas fa-users-cog"></i></div>
+                    <div class="item-info">
+                        <h4>👥 Collaboration équipe via Trello</h4>
+                        <span>Document • Suivre les tâches et partager les décisions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

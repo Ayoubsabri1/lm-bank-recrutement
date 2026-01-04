@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map - Plateforme Recrutement IA LM Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .mindmap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            position: relative;
+        }
+
+        /* Central Node */
+        .center {
+            background: linear-gradient(135deg, #004B87, #00AEEF);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0, 75, 135, 0.3);
+            z-index: 10;
+            line-height: 1.4;
+        }
+
+        /* Branches container */
+        .branches-left,
+        .branches-right {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .branches-left {
+            align-items: flex-end;
+        }
+
+        .branches-right {
+            align-items: flex-start;
+        }
+
+        /* Branch */
+        .branch {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .branch-left {
+            flex-direction: row-reverse;
+        }
+
+        .branch-title {
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        /* Branch colors */
+        .resultats .branch-title {
+            background: #FECACA;
+            color: #991B1B;
+        }
+
+        .outils .branch-title {
+            background: #FED7AA;
+            color: #9A3412;
+        }
+
+        .processus .branch-title {
+            background: #D9F99D;
+            color: #3F6212;
+        }
+
+        .acteurs .branch-title {
+            background: #A7F3D0;
+            color: #065F46;
+        }
+
+        .problematique .branch-title {
+            background: #FECACA;
+            color: #991B1B;
+        }
+
+        .solution .branch-title {
+            background: #BBF7D0;
+            color: #166534;
+        }
+
+        .connaissances .branch-title {
+            background: #FED7AA;
+            color: #9A3412;
+        }
+
+        /* Sub-items */
+        .sub-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .branch-left .sub-items {
+            text-align: right;
+        }
+
+        .sub-item {
+            padding: 6px 14px;
+            background: #f1f5f9;
+            border-radius: 15px;
+            border-left: 3px solid;
+        }
+
+        .branch-left .sub-item {
+            border-left: none;
+            border-right: 3px solid;
+        }
+
+        .resultats .sub-item {
+            border-color: #EF4444;
+        }
+
+        .outils .sub-item {
+            border-color: #F97316;
+        }
+
+        .processus .sub-item {
+            border-color: #84CC16;
+        }
+
+        .acteurs .sub-item {
+            border-color: #10B981;
+        }
+
+        .problematique .sub-item {
+            border-color: #EF4444;
+        }
+
+        .solution .sub-item {
+            border-color: #22C55E;
+        }
+
+        .connaissances .sub-item {
+            border-color: #F97316;
+        }
+
+        /* Sub-sub items */
+        .sub-sub {
+            margin-left: 20px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .branch-left .sub-sub {
+            margin-left: 0;
+            margin-right: 20px;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mindmap">
+        <div class="layout">
+            <!-- LEFT BRANCHES -->
+            <div class="branches-left">
+                <!-- RESULTATS ATTENDUS -->
+                <div class="branch branch-left resultats">
+                    <div class="sub-items">
+                        <div class="sub-item">Réduction 80% temps tri</div>
+                        <div class="sub-item">Meilleure qualité recrutement</div>
+                        <div class="sub-item">Décisions objectives</div>
+                        <div class="sub-item">Partage connaissances équipe</div>
+                    </div>
+                    <div class="branch-title">RÉSULTATS ATTENDUS</div>
+                </div>
+                <!-- OUTILS UTILISES -->
+                <div class="branch branch-left outils">
+                    <div class="sub-items">
+                        <div class="sub-item">Google Apps Script - Backend API</div>
+                        <div class="sub-item">Google Sheets - Base de données</div>
+                        <div class="sub-item">Antigravity AI - Développement assisté</div>
+                        <div class="sub-item">GitHub - Gestion versions code</div>
+                        <div class="sub-item">Trello - Gestion projet collaborative</div>
+                        <div class="sub-item">Google Classroom - Formation équipe</div>
+                    </div>
+                    <div class="branch-title">OUTILS UTILISÉS</div>
+                </div>
+                <!-- PROCESSUS -->
+                <div class="branch branch-left processus">
+                    <div class="sub-items">
+                        <div class="sub-item">1. Dépôt candidature en ligne</div>
+                        <div class="sub-item">2. Analyse automatique par IA</div>
+                        <div class="sub-item">3. Calcul score de matching</div>
+                        <div class="sub-item">4. Affichage sur Dashboard</div>
+                        <div class="sub-item">5. Décision RH assistée</div>
+                    </div>
+                    <div class="branch-title">PROCESSUS</div>
+                </div>
+                <!-- ACTEURS -->
+                <div class="branch branch-left acteurs">
+                    <div class="sub-items">
+                        <div class="sub-item">Candidats - Déposent CV</div>
+                        <div class="sub-item">Recruteurs - Évaluent profils</div>
+                        <div class="sub-item">Managers - Valident choix</div>
+                        <div class="sub-item">Système IA - Calcule scores</div>
+                    </div>
+                    <div class="branch-title">ACTEURS</div>
+                </div>
+            </div>
+
+            <!-- CENTER -->
+            <div class="center">
+                PLATEFORME<br>RECRUTEMENT IA -<br>LM BANK
+            </div>
+
+            <!-- RIGHT BRANCHES -->
+            <div class="branches-right">
+                <!-- PROBLEMATIQUE -->
+                <div class="branch problematique">
+                    <div class="branch-title">PROBLÉMATIQUE</div>
+                    <div class="sub-items">
+                        <div class="sub-item">Trop de CV à traiter manuellement</div>
+                        <div class="sub-item">Perte de temps en tri</div>
+                        <div class="sub-item">Risque erreurs humaines</div>
+                        <div class="sub-item">Difficulté partager informations</div>
+                    </div>
+                </div>
+                <!-- SOLUTION PROPOSEE -->
+                <div class="branch solution">
+                    <div class="branch-title">SOLUTION PROPOSÉE</div>
+                    <div class="sub-items">
+                        <div class="sub-item">Portail en ligne pour candidats</div>
+                        <div class="sub-item">Scoring automatique par IA</div>
+                        <div class="sub-item">Dashboard centralisé pour RH</div>
+                        <div class="sub-item">Collaboration via outils KM</div>
+                    </div>
+                </div>
+                <!-- CONNAISSANCES A GERER -->
+                <div class="branch connaissances">
+                    <div class="branch-title">CONNAISSANCES À GÉRER</div>
+                    <div class="sub-items">
+                        <div class="sub-item">Profils candidats
+                            <div class="sub-sub">• Compétences • Expérience • Formation</div>
+                        </div>
+                        <div class="sub-item">Besoins entreprise
+                            <div class="sub-sub">• Postes disponibles • Critères requis</div>
+                        </div>
+                        <div class="sub-item">Expertise RH
+                            <div class="sub-sub">• Savoir-faire recruteurs • Historique décisions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

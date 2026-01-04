@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+    <head>
+        <title>Plateforme Recrutement IA - LM Bank</title>
+    </head>
+    <body>
+        <outline text="PLATEFORME RECRUTEMENT IA - LM BANK">
+            
+            <outline text="PROBLEMATIQUE">
+                <outline text="Trop de CV a traiter manuellement"/>
+                <outline text="Perte de temps en tri"/>
+                <outline text="Risque erreurs humaines"/>
+                <outline text="Difficulte partager informations"/>
+            </outline>
+            
+            <outline text="SOLUTION PROPOSEE">
+                <outline text="Portail en ligne pour candidats"/>
+                <outline text="Scoring automatique par IA"/>
+                <outline text="Dashboard centralise pour RH"/>
+                <outline text="Collaboration via outils KM"/>
+            </outline>
+            
+            <outline text="CONNAISSANCES A GERER">
+                <outline text="Profils candidats">
+                    <outline text="Competences"/>
+                    <outline text="Experience"/>
+                    <outline text="Formation"/>
+                </outline>
+                <outline text="Besoins entreprise">
+                    <outline text="Postes disponibles"/>
+                    <outline text="Criteres requis"/>
+                </outline>
+                <outline text="Expertise RH">
+                    <outline text="Savoir-faire recruteurs"/>
+                    <outline text="Historique decisions"/>
+                </outline>
+            </outline>
+            
+            <outline text="ACTEURS">
+                <outline text="Candidats - Deposent CV"/>
+                <outline text="Recruteurs - Evaluent profils"/>
+                <outline text="Managers - Valident choix"/>
+                <outline text="Systeme IA - Calcule scores"/>
+            </outline>
+            
+            <outline text="PROCESSUS">
+                <outline text="1. Depot candidature en ligne"/>
+                <outline text="2. Analyse automatique par IA"/>
+                <outline text="3. Calcul score de matching"/>
+                <outline text="4. Affichage sur Dashboard"/>
+                <outline text="5. Decision RH assistee"/>
+            </outline>
+            
+            <outline text="OUTILS UTILISES">
+                <outline text="Google Apps Script - Backend API"/>
+                <outline text="Google Sheets - Base de donnees"/>
+                <outline text="Antigravity AI - Developpement assiste"/>
+                <outline text="GitHub - Gestion versions code"/>
+                <outline text="Trello - Gestion projet collaborative"/>
+                <outline text="Google Classroom - Formation equipe"/>
+            </outline>
+            
+            <outline text="RESULTATS ATTENDUS">
+                <outline text="Reduction 80% temps tri"/>
+                <outline text="Meilleure qualite recrutement"/>
+                <outline text="Decisions objectives"/>
+                <outline text="Partage connaissances equipe"/>
+            </outline>
+            
+        </outline>
+    </body>
+</opml>

@@ -669,7 +669,239 @@
             const links = document.querySelector('.nav-links');
             links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
         }
+
+        // Chatbot Functions
+        const faqResponses = {
+            'formats': "📄 <strong>Formats acceptés:</strong> PDF, Word (.doc, .docx). Taille maximum: 5 MB. Nous recommandons le format PDF pour une meilleure lisibilité.",
+            'delai': "⏱️ <strong>Délai de réponse:</strong> Notre équipe RH examine chaque candidature sous 5 à 10 jours ouvrés. Si votre profil correspond, vous serez contacté(e) pour un entretien.",
+            'scoring': "🤖 <strong>Scoring IA:</strong> Notre algorithme analyse votre profil selon 5 critères pondérés: Spécialité (35%), Ville (20%), Expérience (20%), Niveau (15%), Contrat (10%).",
+            'contact': "📞 <strong>Contact RH:</strong> Pour toute question, contactez-nous à <strong>recrutement@lmbank.ma</strong> ou appelez le <strong>05 22 XX XX XX</strong> (du lundi au vendredi, 9h-18h).",
+            'postes': "💼 <strong>Postes disponibles:</strong> Consultez toutes nos offres sur cette page. Nous recrutons régulièrement des profils en Informatique, Finance, Commerce et RH."
+        };
+
+        function toggleChatbot() {
+            document.getElementById('chatbot-window').classList.toggle('open');
+        }
+
+        function askQuestion(key) {
+            const body = document.getElementById('chatbot-body');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user';
+            const questionText = document.querySelector(`[onclick="askQuestion('${key}')"]`).textContent;
+            userMsg.innerHTML = `<div class="bubble"><p>${questionText}</p></div>`;
+            body.appendChild(userMsg);
+
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message bot';
+                botMsg.innerHTML = `<div class="bubble"><p>${faqResponses[key]}</p></div>`;
+                body.appendChild(botMsg);
+                body.scrollTop = body.scrollHeight;
+            }, 500);
+
+            body.scrollTop = body.scrollHeight;
+        }
     </script>
+
+    <style>
+        .chatbot-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0056B3, #00AEEF);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 86, 179, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .chatbot-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-btn i {
+            color: white;
+            font-size: 24px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #FF5722;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 380px;
+            height: 520px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s;
+        }
+
+        .chatbot-window.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #0056B3, #00AEEF);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar i {
+            color: #0056B3;
+            font-size: 20px;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .info h4 {
+            margin: 0;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .info span {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.75rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+        .chatbot-body {
+            padding: 20px;
+            height: 380px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.5;
+        }
+
+        .bot .bubble {
+            background: #f0f7ff;
+            color: #333;
+            align-self: flex-start;
+        }
+
+        .user .bubble {
+            background: linear-gradient(135deg, #0056B3, #00AEEF);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .faq-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .faq-btn {
+            background: white;
+            color: #0056B3;
+            border: 1px solid #d0e8f9;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .faq-btn:hover {
+            background: #0056B3;
+            color: white;
+        }
+    </style>
+
+    <button class="chatbot-btn" id="chatbot-toggle" onclick="toggleChatbot()">
+        <i class="fas fa-robot"></i>
+        <span class="badge">?</span>
+    </button>
+
+    <div class="chatbot-window" id="chatbot-window">
+        <div class="chatbot-header">
+            <div class="avatar"><i class="fas fa-robot"></i></div>
+            <div class="info">
+                <h4>Assistant LM Bank</h4>
+                <span>💬 En ligne - FAQ Recrutement</span>
+            </div>
+            <button class="close-btn" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+            <div class="chat-message bot">
+                <div class="bubble">
+                    <p>👋 Bonjour ! Je suis l'assistant virtuel de LM Bank. Comment puis-je vous aider ?</p>
+                    <div class="faq-options">
+                        <button class="faq-btn" onclick="askQuestion('formats')">📄 Formats CV acceptés</button>
+                        <button class="faq-btn" onclick="askQuestion('delai')">⏱️ Délai de réponse</button>
+                        <button class="faq-btn" onclick="askQuestion('scoring')">🤖 Scoring IA</button>
+                        <button class="faq-btn" onclick="askQuestion('contact')">📞 Contacter RH</button>
+                        <button class="faq-btn" onclick="askQuestion('postes')">💼 Postes disponibles</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 
